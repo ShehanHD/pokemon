@@ -1,0 +1,144 @@
+<h2>Freemium Tier Design</h2>
+<p class="subtitle">Three tiers — free entry, ad-free comfort, pro power</p>
+
+<style>
+  .tiers { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 20px; }
+  .tier { background: #1e1e2e; border: 1px solid #313244; border-radius: 12px; padding: 18px; }
+  .tier.adfree { border-color: #89b4fa; background: #1a2035; }
+  .tier.pro { border-color: #cba6f7; background: #1e1a2e; }
+  .tier-header { text-align: center; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid #313244; }
+  .tier-name { font-size: 16px; font-weight: 700; color: #cdd6f4; }
+  .tier.adfree .tier-name { color: #89b4fa; }
+  .tier.pro .tier-name { color: #cba6f7; }
+  .tier-price { font-size: 26px; font-weight: 800; color: #cdd6f4; margin: 6px 0 2px; }
+  .tier-period { font-size: 11px; color: #6c7086; }
+  .tier-badge { display: inline-block; font-size: 10px; background: #313244; border-radius: 20px; padding: 3px 10px; color: #6c7086; margin-top: 6px; }
+  .tier.adfree .tier-badge { background: #89b4fa33; color: #89b4fa; }
+  .tier.pro .tier-badge { background: #cba6f733; color: #cba6f7; }
+  .feature-group { margin-bottom: 12px; }
+  .feature-group-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #6c7086; margin-bottom: 6px; }
+  .feature { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; font-size: 11px; color: #9399b2; }
+  .feature .icon { flex-shrink: 0; width: 16px; text-align: center; }
+  .feature .icon.yes   { color: #a6e3a1; }
+  .feature .icon.no    { color: #45475a; }
+  .feature .icon.blue  { color: #89b4fa; }
+  .feature .icon.pro   { color: #cba6f7; }
+  .feature-text { line-height: 1.4; }
+  .feature-text em { font-style: normal; color: #6c7086; font-size: 10px; }
+  .upgrade-hook { background: #1a2035; border: 1px solid #89b4fa44; border-radius: 8px; padding: 10px 14px; margin-top: 16px; font-size: 11px; color: #9399b2; line-height: 1.6; }
+  .upgrade-hook strong { color: #89b4fa; }
+  .ads-note { background: #2a1818; border: 1px solid #f38ba844; border-radius: 8px; padding: 8px 12px; font-size: 11px; color: #9399b2; margin-top: 10px; }
+  .ads-note strong { color: #f38ba8; }
+</style>
+
+<div class="tiers">
+
+  <!-- Free -->
+  <div class="tier">
+    <div class="tier-header">
+      <div class="tier-name">Free</div>
+      <div class="tier-price">€0</div>
+      <div class="tier-period">forever</div>
+      <div class="tier-badge">Ad-supported</div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Card Catalog</div>
+      <div class="feature"><span class="icon yes">✓</span><span class="feature-text">Browse all cards &amp; sets</span></div>
+      <div class="feature"><span class="icon yes">✓</span><span class="feature-text">Current price (EUR, today)</span></div>
+      <div class="feature"><span class="icon yes">✓</span><span class="feature-text">7-day price chart</span></div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Full 90-day / 1-year history</span></div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Collection Tracker</div>
+      <div class="feature"><span class="icon yes">✓</span><span class="feature-text">Track up to <strong>500 cards</strong></span></div>
+      <div class="feature"><span class="icon yes">✓</span><span class="feature-text">Condition, variant, language</span></div>
+      <div class="feature"><span class="icon yes">✓</span><span class="feature-text">Total collection value (live)</span></div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Gain/loss vs. purchase price</span></div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Export CSV / PDF</span></div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Alerts &amp; Extras</div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Price alerts</span></div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Wishlist with target price</span></div>
+    </div>
+
+    <div class="ads-note"><strong>Ads:</strong> Banners on catalog pages. No ads inside the collection tracker.</div>
+  </div>
+
+  <!-- Ad-Free -->
+  <div class="tier adfree">
+    <div class="tier-header">
+      <div class="tier-name">Ad-Free ◆</div>
+      <div class="tier-price">€0.99</div>
+      <div class="tier-period">per month</div>
+      <div class="tier-badge">No ads · Same features</div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Card Catalog</div>
+      <div class="feature"><span class="icon blue">◆</span><span class="feature-text">Everything in Free</span></div>
+      <div class="feature"><span class="icon blue">◆</span><span class="feature-text">No ads anywhere</span></div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Full price history</span></div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Collection Tracker</div>
+      <div class="feature"><span class="icon blue">◆</span><span class="feature-text">Up to <strong>500 cards</strong> (same limit)</span></div>
+      <div class="feature"><span class="icon blue">◆</span><span class="feature-text">Ad-free tracker experience</span></div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Gain/loss vs. purchase price</span></div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Export CSV / PDF</span></div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Alerts &amp; Extras</div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Price alerts</span></div>
+      <div class="feature"><span class="icon no">–</span><span class="feature-text">Wishlist with target price</span></div>
+    </div>
+
+    <div class="upgrade-hook" style="margin-top:8px; font-size:10px;">
+      <strong>Best for:</strong> casual collectors who hate ads but don't need advanced analytics.
+    </div>
+  </div>
+
+  <!-- Pro -->
+  <div class="tier pro">
+    <div class="tier-header">
+      <div class="tier-name">Pro ✦</div>
+      <div class="tier-price">€4.99</div>
+      <div class="tier-period">per month <em style="font-size:10px;color:#6c7086">(or €39/yr)</em></div>
+      <div class="tier-badge">No ads · Full access</div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Card Catalog</div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Full price history — up to 1 year</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">avg1 / avg7 / avg30 trend charts</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">All holo variant prices</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Italian edition comparisons</span></div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Collection Tracker</div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Unlimited cards</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Gain/loss vs. purchase price</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Collection value history chart</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Export CSV &amp; PDF report</span></div>
+    </div>
+
+    <div class="feature-group">
+      <div class="feature-group-label">Alerts &amp; Extras</div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Price drop / spike alerts (email)</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Wishlist with target price notification</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Ad-free everywhere</span></div>
+      <div class="feature"><span class="icon pro">✦</span><span class="feature-text">Priority support</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="upgrade-hook">
+  <strong>Upgrade hooks:</strong> Price history blurs beyond 7 days for Free/Ad-Free. Collection counter shows "437 / 500" for free users. Gain/loss column visible but locked with a Pro badge — shown in context, not behind a wall.
+</div>

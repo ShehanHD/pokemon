@@ -1,0 +1,410 @@
+<h2>Browse Hierarchy: Series → Sets → Cards</h2>
+<p class="subtitle">Three levels of drill-down — click the tabs to preview each level</p>
+
+<style>
+  .mockup-wrap { background: #11111b; border: 1px solid #313244; border-radius: 12px; overflow: hidden; margin-top: 16px; font-size: 12px; display: flex; height: 580px; }
+
+  /* Sidebar nav */
+  .mock-sidenav { width: 160px; flex-shrink: 0; background: #181825; border-right: 1px solid #313244; display: flex; flex-direction: column; padding: 14px 0; }
+  .mock-logo { font-weight: 800; font-size: 14px; color: #cdd6f4; letter-spacing: -0.5px; padding: 0 14px 14px; border-bottom: 1px solid #313244; margin-bottom: 10px; }
+  .mock-logo span { color: #f38ba8; }
+  .nav-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #45475a; padding: 10px 14px 4px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 14px; font-size: 11px; color: #6c7086; cursor: pointer; }
+  .nav-item.active { background: #89b4fa15; color: #cdd6f4; border-right: 2px solid #89b4fa; }
+  .nav-icon { width: 14px; text-align: center; }
+  .mock-sidenav-footer { margin-top: auto; border-top: 1px solid #313244; padding: 10px 14px; }
+  .nav-user { display: flex; align-items: center; gap: 8px; }
+  .nav-avatar { width: 24px; height: 24px; background: #cba6f7; border-radius: 50%; flex-shrink: 0; }
+  .nav-user-name { font-size: 10px; color: #9399b2; }
+  .nav-plan { font-size: 9px; color: #cba6f7; }
+
+  /* Main */
+  .mock-main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .mock-topbar { background: #181825; border-bottom: 1px solid #313244; padding: 10px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .mock-topbar-title { font-size: 13px; font-weight: 700; color: #cdd6f4; flex: 1; }
+  .mock-search-bar { background: #1e1e2e; border: 1px solid #313244; border-radius: 6px; padding: 5px 10px; font-size: 11px; color: #6c7086; width: 200px; }
+  .mock-lang { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: #9399b2; }
+
+  /* Breadcrumb */
+  .breadcrumb { display: flex; align-items: center; gap: 6px; padding: 10px 16px; font-size: 11px; color: #6c7086; border-bottom: 1px solid #31324466; flex-shrink: 0; min-height: 36px; }
+  .breadcrumb .crumb { color: #89b4fa; cursor: pointer; }
+  .breadcrumb .crumb.current { color: #cdd6f4; cursor: default; }
+  .breadcrumb .sep { color: #45475a; }
+
+  /* Level tabs */
+  .level-tabs { display: flex; gap: 0; border-bottom: 1px solid #313244; flex-shrink: 0; }
+  .level-tab { padding: 8px 16px; font-size: 11px; color: #6c7086; cursor: pointer; border-bottom: 2px solid transparent; user-select: none; }
+  .level-tab:hover { color: #9399b2; }
+  .level-tab.active { color: #89b4fa; border-bottom-color: #89b4fa; }
+  .level-tab .step { font-size: 9px; color: #45475a; display: block; margin-bottom: 1px; }
+
+  .level-content { flex: 1; overflow-y: auto; padding: 14px 16px; }
+  .level-panel { display: none; }
+  .level-panel.active { display: block; }
+
+  /* ── Level 1: Series ── */
+  .series-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .series-card { background: #1e1e2e; border: 1px solid #313244; border-radius: 10px; padding: 14px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+  .series-card:hover { border-color: #89b4fa; }
+  .series-icon { font-size: 26px; width: 42px; height: 42px; background: #313244; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .series-info { flex: 1; min-width: 0; }
+  .series-name { font-size: 12px; font-weight: 700; color: #cdd6f4; }
+  .series-meta { font-size: 10px; color: #6c7086; margin-top: 2px; }
+  .series-owned { font-size: 10px; color: #89b4fa; margin-top: 4px; }
+  .series-arrow { color: #45475a; font-size: 14px; }
+
+  /* ── Level 2: Sets ── */
+  .sets-list { display: flex; flex-direction: column; gap: 8px; }
+  .set-row { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+  .set-row:hover { border-color: #89b4fa; }
+  .set-logo-sm { width: 32px; height: 32px; background: #313244; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .set-row-info { flex: 1; }
+  .set-row-name { font-size: 12px; font-weight: 600; color: #cdd6f4; }
+  .set-row-meta { font-size: 10px; color: #6c7086; margin-top: 1px; }
+  .set-row-right { text-align: right; min-width: 90px; }
+  .progress-bar-wrap { background: #181825; border-radius: 3px; height: 4px; overflow: hidden; margin: 5px 0 3px; width: 100%; }
+  .progress-bar { height: 100%; border-radius: 3px; background: #89b4fa; }
+  .progress-bar.full { background: #a6e3a1; }
+  .set-row-pct { font-size: 9px; color: #6c7086; }
+  .set-row-value { font-size: 11px; font-weight: 600; color: #a6e3a1; }
+
+  /* ── Level 3: Cards ── */
+  .set-header-info { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; }
+  .shi-icon { font-size: 22px; width: 36px; height: 36px; background: #313244; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .shi-name { font-size: 13px; font-weight: 700; color: #cdd6f4; }
+  .shi-meta { font-size: 10px; color: #6c7086; }
+  .shi-progress { flex: 1; }
+  .shi-value { font-size: 13px; font-weight: 700; color: #a6e3a1; text-align: right; }
+
+  .filter-bar { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .filter-chip { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 3px 9px; font-size: 10px; color: #9399b2; cursor: pointer; }
+  .filter-chip.active { background: #89b4fa22; border-color: #89b4fa; color: #89b4fa; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .mock-card { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; overflow: hidden; cursor: pointer; }
+  .mock-card:hover { border-color: #89b4fa; }
+  .mock-card.owned { border-color: #cba6f788; }
+  .mock-card.not-owned .mock-card-img { opacity: 0.32; }
+  .mock-card-img { background: linear-gradient(135deg, #313244 60%, #45475a); height: 72px; display: flex; align-items: center; justify-content: center; font-size: 26px; position: relative; }
+  .owned-badge { position: absolute; bottom: 4px; right: 4px; font-size: 8px; background: #cba6f7; color: #11111b; border-radius: 50%; width: 13px; height: 13px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .mock-card-body { padding: 6px 7px; }
+  .mock-card-num { font-size: 9px; color: #45475a; }
+  .mock-card-name { font-size: 10px; font-weight: 600; color: #cdd6f4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mock-card-price { font-size: 10px; font-weight: 700; color: #a6e3a1; margin-top: 2px; }
+</style>
+
+<div class="mockup-wrap">
+
+  <!-- Sidebar -->
+  <div class="mock-sidenav">
+    <div class="mock-logo">Poke<span>Vault</span></div>
+    <div class="nav-section-label">Browse</div>
+    <div class="nav-item active"><span class="nav-icon">📺</span> Series</div>
+    <div class="nav-item" style="padding-left:26px;font-size:10px;color:#45475a">↳ Sets</div>
+    <div class="nav-item" style="padding-left:38px;font-size:10px;color:#45475a">↳ Cards</div>
+    <div class="nav-section-label">My Collection</div>
+    <div class="nav-item"><span class="nav-icon">🗂️</span> My Cards</div>
+    <div class="nav-item"><span class="nav-icon">📊</span> Dashboard</div>
+    <div class="nav-item"><span class="nav-icon">⭐</span> Wishlist</div>
+    <div class="nav-item"><span class="nav-icon">📉</span> Analytics</div>
+    <div class="mock-sidenav-footer">
+      <div class="nav-user">
+        <div class="nav-avatar"></div>
+        <div>
+          <div class="nav-user-name">Don</div>
+          <div class="nav-plan">✦ Pro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="mock-main">
+    <div class="mock-topbar">
+      <div class="mock-topbar-title" id="topbar-title">Browse</div>
+      <div class="mock-search-bar">🔍 Search cards, sets, series…</div>
+      <div class="mock-lang">🇮🇹 IT · EUR</div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb" id="breadcrumb">
+      <span class="crumb current">Series</span>
+    </div>
+
+    <!-- Level tabs -->
+    <div class="level-tabs">
+      <div class="level-tab active" onclick="showLevel(0)" id="tab-0">
+        <span class="step">Step 1</span>
+        Series
+      </div>
+      <div class="level-tab" onclick="showLevel(1)" id="tab-1">
+        <span class="step">Step 2</span>
+        Sets <span style="color:#45475a;font-size:9px">· Scarlet &amp; Violet</span>
+      </div>
+      <div class="level-tab" onclick="showLevel(2)" id="tab-2">
+        <span class="step">Step 3</span>
+        Cards <span style="color:#45475a;font-size:9px">· 151</span>
+      </div>
+    </div>
+
+    <div class="level-content">
+
+      <!-- LEVEL 1: Series -->
+      <div class="level-panel active" id="panel-0">
+        <div style="font-size:11px;color:#6c7086;margin-bottom:12px;">Choose a series to see its sets</div>
+        <div class="series-grid">
+          <div class="series-card">
+            <div class="series-icon">🟥</div>
+            <div class="series-info">
+              <div class="series-name">Scarlet &amp; Violet</div>
+              <div class="series-meta">2023–present · 12 sets</div>
+              <div class="series-owned">437 cards owned</div>
+            </div>
+            <div class="series-arrow">›</div>
+          </div>
+          <div class="series-card">
+            <div class="series-icon">⚔️</div>
+            <div class="series-info">
+              <div class="series-name">Sword &amp; Shield</div>
+              <div class="series-meta">2020–2023 · 15 sets</div>
+              <div class="series-owned">112 cards owned</div>
+            </div>
+            <div class="series-arrow">›</div>
+          </div>
+          <div class="series-card">
+            <div class="series-icon">🌙</div>
+            <div class="series-info">
+              <div class="series-name">Sun &amp; Moon</div>
+              <div class="series-meta">2017–2020 · 13 sets</div>
+              <div class="series-owned">24 cards owned</div>
+            </div>
+            <div class="series-arrow">›</div>
+          </div>
+          <div class="series-card">
+            <div class="series-icon">🔷</div>
+            <div class="series-info">
+              <div class="series-name">XY</div>
+              <div class="series-meta">2014–2017 · 13 sets</div>
+              <div class="series-owned">0 cards owned</div>
+            </div>
+            <div class="series-arrow">›</div>
+          </div>
+          <div class="series-card">
+            <div class="series-icon">⚫</div>
+            <div class="series-info">
+              <div class="series-name">Black &amp; White</div>
+              <div class="series-meta">2011–2013 · 12 sets</div>
+              <div class="series-owned">0 cards owned</div>
+            </div>
+            <div class="series-arrow">›</div>
+          </div>
+          <div class="series-card">
+            <div class="series-icon">❤️</div>
+            <div class="series-info">
+              <div class="series-name">HeartGold &amp; SoulSilver</div>
+              <div class="series-meta">2010–2011 · 5 sets</div>
+              <div class="series-owned">0 cards owned</div>
+            </div>
+            <div class="series-arrow">›</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEVEL 2: Sets within Scarlet & Violet -->
+      <div class="level-panel" id="panel-1">
+        <div class="sets-list">
+          <div class="set-row">
+            <div class="set-logo-sm">🟥</div>
+            <div class="set-row-info">
+              <div class="set-row-name">Scarlet &amp; Violet Base</div>
+              <div class="set-row-meta">Mar 2023 · 258 cards</div>
+            </div>
+            <div class="set-row-right">
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:88%"></div></div>
+              <div class="set-row-pct" style="color:#6c7086">227 / 258 · 88%</div>
+              <div class="set-row-value">€341</div>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-logo-sm">🔴</div>
+            <div class="set-row-info">
+              <div class="set-row-name">Scarlet &amp; Violet 151</div>
+              <div class="set-row-meta">Sep 2023 · 165 cards</div>
+            </div>
+            <div class="set-row-right">
+              <div class="progress-bar-wrap"><div class="progress-bar full" style="width:100%"></div></div>
+              <div class="set-row-pct" style="color:#a6e3a1">165 / 165 · ✓ Complete</div>
+              <div class="set-row-value">€610</div>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-logo-sm">⚡</div>
+            <div class="set-row-info">
+              <div class="set-row-name">Paldea Evolved</div>
+              <div class="set-row-meta">Jun 2023 · 279 cards</div>
+            </div>
+            <div class="set-row-right">
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:38%"></div></div>
+              <div class="set-row-pct">93 / 279 · 38%</div>
+              <div class="set-row-value">€312</div>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-logo-sm">🌋</div>
+            <div class="set-row-info">
+              <div class="set-row-name">Obsidian Flames</div>
+              <div class="set-row-meta">Aug 2023 · 230 cards</div>
+            </div>
+            <div class="set-row-right">
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:72%"></div></div>
+              <div class="set-row-pct">152 / 230 · 72%</div>
+              <div class="set-row-value">€284</div>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-logo-sm">🌿</div>
+            <div class="set-row-info">
+              <div class="set-row-name">Twilight Masquerade</div>
+              <div class="set-row-meta">May 2024 · 167 cards</div>
+            </div>
+            <div class="set-row-right">
+              <div class="progress-bar-wrap"><div class="progress-bar" style="width:15%"></div></div>
+              <div class="set-row-pct">27 / 167 · 15%</div>
+              <div class="set-row-value">€87</div>
+            </div>
+          </div>
+          <div class="set-row" style="border-style:dashed;justify-content:center;color:#45475a;font-size:11px;gap:6px;">
+            <span>＋</span> More sets in this series
+          </div>
+        </div>
+      </div>
+
+      <!-- LEVEL 3: Cards inside 151 -->
+      <div class="level-panel" id="panel-2">
+        <div class="set-header-info">
+          <div class="shi-icon">🔴</div>
+          <div class="shi-progress">
+            <div class="shi-name">Scarlet &amp; Violet 151</div>
+            <div class="shi-meta">165 cards · Sep 2023 · Scarlet &amp; Violet</div>
+            <div class="progress-bar-wrap" style="margin-top:6px"><div class="progress-bar full" style="width:100%"></div></div>
+          </div>
+          <div class="shi-value">€610<br><span style="font-size:9px;color:#a6e3a1;font-weight:400">✓ Complete</span></div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="filter-chip active">All</div>
+          <div class="filter-chip">Owned</div>
+          <div class="filter-chip">Missing</div>
+          <div class="filter-chip">Holo</div>
+          <div class="filter-chip">Ex</div>
+          <div class="filter-chip">Secret Rare</div>
+        </div>
+
+        <div class="card-grid">
+          <!-- owned cards -->
+          <div class="mock-card owned">
+            <div class="mock-card-img">🌿<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">001/165</div>
+              <div class="mock-card-name">Bulbasaur</div>
+              <div class="mock-card-price">€0.18</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">🌿<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">002/165</div>
+              <div class="mock-card-name">Ivysaur</div>
+              <div class="mock-card-price">€0.22</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">🌿<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">003/165</div>
+              <div class="mock-card-name">Venusaur ex</div>
+              <div class="mock-card-price">€4.20</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">🔥<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">004/165</div>
+              <div class="mock-card-name">Charmander</div>
+              <div class="mock-card-price">€0.35</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">🔥<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">005/165</div>
+              <div class="mock-card-name">Charmeleon</div>
+              <div class="mock-card-price">€0.28</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">🔥<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">006/165</div>
+              <div class="mock-card-name">Charizard ex</div>
+              <div class="mock-card-price">€18.50</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">💧<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">007/165</div>
+              <div class="mock-card-name">Squirtle</div>
+              <div class="mock-card-price">€0.20</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">💧<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">007/165</div>
+              <div class="mock-card-name">Wartortle</div>
+              <div class="mock-card-price">€0.24</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">💧<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">009/165</div>
+              <div class="mock-card-name">Blastoise ex</div>
+              <div class="mock-card-price">€3.80</div>
+            </div>
+          </div>
+          <div class="mock-card owned">
+            <div class="mock-card-img">🐛<div class="owned-badge">✓</div></div>
+            <div class="mock-card-body">
+              <div class="mock-card-num">010/165</div>
+              <div class="mock-card-name">Caterpie</div>
+              <div class="mock-card-price">€0.10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:14px;text-align:center;color:#6c7086;font-size:11px;">
+  Click the tabs above to preview each drill-down level · Series → Sets → Cards
+</p>
+
+<script>
+  const breadcrumbs = [
+    '<span class="crumb current">Series</span>',
+    '<span class="crumb">Series</span><span class="sep">›</span><span class="crumb current">Scarlet &amp; Violet</span>',
+    '<span class="crumb">Series</span><span class="sep">›</span><span class="crumb">Scarlet &amp; Violet</span><span class="sep">›</span><span class="crumb current">151</span>'
+  ];
+  const titles = ['Browse', 'Scarlet &amp; Violet', 'Scarlet &amp; Violet 151'];
+
+  function showLevel(n) {
+    document.querySelectorAll('.level-tab').forEach((t,i) => t.classList.toggle('active', i===n));
+    document.querySelectorAll('.level-panel').forEach((p,i) => p.classList.toggle('active', i===n));
+    document.getElementById('breadcrumb').innerHTML = breadcrumbs[n];
+    document.getElementById('topbar-title').innerHTML = titles[n];
+  }
+</script>

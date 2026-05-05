@@ -1,0 +1,207 @@
+<h2>App Structure — TCGCollector-inspired</h2>
+<p class="subtitle">Sidebar nav · Set-first browsing · Dashboard stats</p>
+
+<style>
+  .mockup-wrap { background: #11111b; border: 1px solid #313244; border-radius: 12px; overflow: hidden; margin-top: 16px; font-size: 12px; display: flex; height: 560px; }
+
+  /* Left sidebar nav */
+  .mock-sidenav { width: 160px; flex-shrink: 0; background: #181825; border-right: 1px solid #313244; display: flex; flex-direction: column; padding: 14px 0; }
+  .mock-logo { font-weight: 800; font-size: 14px; color: #cdd6f4; letter-spacing: -0.5px; padding: 0 14px 14px; border-bottom: 1px solid #313244; margin-bottom: 10px; }
+  .mock-logo span { color: #f38ba8; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 14px; font-size: 11px; color: #6c7086; cursor: pointer; }
+  .nav-item.active { background: #89b4fa15; color: #cdd6f4; border-right: 2px solid #89b4fa; }
+  .nav-item .nav-icon { width: 14px; text-align: center; }
+  .nav-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #45475a; padding: 10px 14px 4px; }
+  .mock-sidenav-footer { margin-top: auto; border-top: 1px solid #313244; padding: 10px 14px; }
+  .nav-user { display: flex; align-items: center; gap: 8px; }
+  .nav-avatar { width: 24px; height: 24px; background: #cba6f7; border-radius: 50%; flex-shrink: 0; }
+  .nav-user-name { font-size: 10px; color: #9399b2; }
+  .nav-plan { font-size: 9px; color: #cba6f7; }
+
+  /* Main content area */
+  .mock-main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+  /* Top bar */
+  .mock-topbar { background: #181825; border-bottom: 1px solid #313244; padding: 10px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .mock-topbar-title { font-size: 13px; font-weight: 700; color: #cdd6f4; flex: 1; }
+  .mock-search-bar { background: #1e1e2e; border: 1px solid #313244; border-radius: 6px; padding: 5px 10px; font-size: 11px; color: #6c7086; width: 200px; }
+  .mock-topbar-lang { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: #9399b2; }
+
+  /* Dashboard stats row */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 14px 16px; flex-shrink: 0; }
+  .stat-card { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; padding: 12px 14px; }
+  .stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #6c7086; margin-bottom: 6px; }
+  .stat-value { font-size: 20px; font-weight: 800; color: #cdd6f4; }
+  .stat-sub { font-size: 10px; color: #6c7086; margin-top: 2px; }
+  .stat-sub .up { color: #a6e3a1; }
+  .stat-sub .down { color: #f38ba8; }
+
+  /* Sets section */
+  .section-header { display: flex; align-items: center; gap: 10px; padding: 6px 16px 10px; flex-shrink: 0; }
+  .section-title { font-size: 12px; font-weight: 700; color: #cdd6f4; flex: 1; }
+  .section-filter { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: #9399b2; }
+  .sets-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 16px 14px; }
+  .set-card { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; padding: 12px; cursor: pointer; }
+  .set-card:hover { border-color: #89b4fa; }
+  .set-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .set-logo { width: 28px; height: 28px; background: #313244; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .set-info { flex: 1; min-width: 0; }
+  .set-name { font-size: 11px; font-weight: 600; color: #cdd6f4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .set-series { font-size: 9px; color: #6c7086; }
+  .progress-bar-wrap { background: #181825; border-radius: 4px; height: 5px; overflow: hidden; margin: 6px 0 4px; }
+  .progress-bar { height: 100%; border-radius: 4px; background: #89b4fa; }
+  .progress-bar.full { background: #a6e3a1; }
+  .set-stats { display: flex; justify-content: space-between; font-size: 9px; color: #6c7086; }
+  .set-stats .owned { color: #89b4fa; }
+  .set-value { font-size: 10px; font-weight: 600; color: #a6e3a1; margin-top: 4px; }
+
+  .ad-banner { background: #1a1a1a; border: 1px dashed #313244; border-radius: 6px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #45475a; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 16px 10px; }
+</style>
+
+<div class="mockup-wrap">
+
+  <!-- Sidebar nav -->
+  <div class="mock-sidenav">
+    <div class="mock-logo">Poke<span>Vault</span></div>
+
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active"><span class="nav-icon">📊</span> Dashboard</div>
+    <div class="nav-item"><span class="nav-icon">📦</span> Sets</div>
+    <div class="nav-item"><span class="nav-icon">🃏</span> Cards</div>
+    <div class="nav-item"><span class="nav-icon">📈</span> Prices</div>
+
+    <div class="nav-section-label">My Collection</div>
+    <div class="nav-item"><span class="nav-icon">🗂️</span> My Cards</div>
+    <div class="nav-item"><span class="nav-icon">⭐</span> Wishlist</div>
+    <div class="nav-item"><span class="nav-icon">📉</span> Analytics</div>
+
+    <div class="mock-sidenav-footer">
+      <div class="nav-user">
+        <div class="nav-avatar"></div>
+        <div>
+          <div class="nav-user-name">Don</div>
+          <div class="nav-plan">✦ Pro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="mock-main">
+
+    <!-- Top bar -->
+    <div class="mock-topbar">
+      <div class="mock-topbar-title">Dashboard</div>
+      <div class="mock-search-bar">🔍 Search cards, sets…</div>
+      <div class="mock-topbar-lang">🇮🇹 IT · EUR</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Cards Owned</div>
+        <div class="stat-value">437</div>
+        <div class="stat-sub"><span class="up">+12</span> this week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Collection Value</div>
+        <div class="stat-value">€1,842</div>
+        <div class="stat-sub"><span class="up">▲ €38</span> vs last week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Sets Tracked</div>
+        <div class="stat-value">8</div>
+        <div class="stat-sub">2 complete</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Gain / Loss</div>
+        <div class="stat-value" style="color:#a6e3a1">+€124</div>
+        <div class="stat-sub">vs purchase price</div>
+      </div>
+    </div>
+
+    <!-- Ad banner (free tier only) -->
+    <div class="ad-banner">[ AdSense banner — free &amp; ad-free tiers ]</div>
+
+    <!-- Sets being collected -->
+    <div class="section-header">
+      <div class="section-title">Sets You're Collecting</div>
+      <select class="section-filter"><option>Series: All</option></select>
+      <select class="section-filter"><option>Sort: Recent</option></select>
+    </div>
+
+    <div class="sets-grid">
+
+      <div class="set-card">
+        <div class="set-card-header">
+          <div class="set-logo">🌋</div>
+          <div class="set-info">
+            <div class="set-name">Obsidian Flames</div>
+            <div class="set-series">Scarlet &amp; Violet</div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:72%"></div></div>
+        <div class="set-stats"><span class="owned">152 / 230</span><span>72%</span></div>
+        <div class="set-value">€284 value</div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-header">
+          <div class="set-logo">🔴</div>
+          <div class="set-info">
+            <div class="set-name">Scarlet &amp; Violet 151</div>
+            <div class="set-series">Scarlet &amp; Violet</div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar full" style="width:100%"></div></div>
+        <div class="set-stats"><span class="owned" style="color:#a6e3a1">165 / 165</span><span style="color:#a6e3a1">✓ Complete</span></div>
+        <div class="set-value">€610 value</div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-header">
+          <div class="set-logo">⚡</div>
+          <div class="set-info">
+            <div class="set-name">Paldea Evolved</div>
+            <div class="set-series">Scarlet &amp; Violet</div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:38%"></div></div>
+        <div class="set-stats"><span class="owned">93 / 279</span><span>38%</span></div>
+        <div class="set-value">€312 value</div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-header">
+          <div class="set-logo">🌿</div>
+          <div class="set-info">
+            <div class="set-name">Twilight Masquerade</div>
+            <div class="set-series">Scarlet &amp; Violet</div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:15%"></div></div>
+        <div class="set-stats"><span class="owned">27 / 167</span><span>15%</span></div>
+        <div class="set-value">€87 value</div>
+      </div>
+
+      <div class="set-card">
+        <div class="set-card-header">
+          <div class="set-logo">💧</div>
+          <div class="set-info">
+            <div class="set-name">Vivid Voltage</div>
+            <div class="set-series">Sword &amp; Shield</div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:55%"></div></div>
+        <div class="set-stats"><span class="owned">111 / 203</span><span>55%</span></div>
+        <div class="set-value">€198 value</div>
+      </div>
+
+      <div class="set-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;color:#45475a;font-size:11px;gap:6px;">
+        <span>＋</span> Add a set to track
+      </div>
+
+    </div>
+
+  </div>
+</div>

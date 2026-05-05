@@ -1,0 +1,257 @@
+<h2>Card Catalog — UI Mockup</h2>
+<p class="subtitle">Main browsing experience — desktop layout</p>
+
+<style>
+  .mockup-wrap { background: #11111b; border: 1px solid #313244; border-radius: 12px; overflow: hidden; margin-top: 16px; font-size: 12px; }
+  /* Top nav */
+  .mock-topnav { background: #181825; border-bottom: 1px solid #313244; display: flex; align-items: center; gap: 12px; padding: 10px 16px; }
+  .mock-logo { font-weight: 800; font-size: 14px; color: #cdd6f4; letter-spacing: -0.5px; }
+  .mock-logo span { color: #f38ba8; }
+  .mock-navlinks { display: flex; gap: 16px; font-size: 11px; color: #6c7086; margin-left: 8px; }
+  .mock-navlinks .active { color: #cdd6f4; }
+  .mock-spacer { flex: 1; }
+  .mock-search-bar { background: #1e1e2e; border: 1px solid #313244; border-radius: 6px; padding: 5px 10px; font-size: 11px; color: #6c7086; width: 180px; }
+  .mock-avatar { width: 24px; height: 24px; background: #cba6f7; border-radius: 50%; }
+
+  /* Layout */
+  .mock-body { display: flex; height: 520px; }
+
+  /* Sidebar filters */
+  .mock-sidebar { width: 180px; flex-shrink: 0; background: #181825; border-right: 1px solid #313244; padding: 14px; overflow-y: auto; }
+  .filter-section { margin-bottom: 14px; }
+  .filter-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #6c7086; margin-bottom: 8px; }
+  .filter-chip { display: inline-block; background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 3px 8px; font-size: 10px; color: #9399b2; margin: 2px 2px 2px 0; cursor: pointer; }
+  .filter-chip.active { background: #89b4fa22; border-color: #89b4fa; color: #89b4fa; }
+  .filter-chip.type-fire { background: #f38ba822; border-color: #f38ba8; color: #f38ba8; }
+  .filter-chip.type-water { background: #89b4fa22; border-color: #89b4fa; color: #89b4fa; }
+  .filter-chip.type-grass { background: #a6e3a122; border-color: #a6e3a1; color: #a6e3a1; }
+  .filter-chip.type-psychic { background: #cba6f722; border-color: #cba6f7; color: #cba6f7; }
+  .filter-chip.type-lightning { background: #f9e2af22; border-color: #f9e2af; color: #f9e2af; }
+  .mock-input-sm { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: #9399b2; width: 100%; box-sizing: border-box; }
+
+  /* Card grid */
+  .mock-main { flex: 1; padding: 14px; overflow-y: auto; }
+  .mock-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .mock-result-count { font-size: 11px; color: #6c7086; flex: 1; }
+  .mock-sort { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: #9399b2; }
+  .mock-view-toggle { display: flex; gap: 4px; }
+  .mock-view-btn { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 4px 7px; font-size: 11px; color: #6c7086; }
+  .mock-view-btn.active { background: #89b4fa22; border-color: #89b4fa; color: #89b4fa; }
+  .card-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .mock-card { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; overflow: hidden; cursor: pointer; transition: border-color 0.15s; }
+  .mock-card:hover { border-color: #89b4fa; }
+  .mock-card-img { background: linear-gradient(135deg, #313244 60%, #45475a); height: 80px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .mock-card-img .card-placeholder { font-size: 28px; opacity: 0.4; }
+  .mock-card-img .rarity-dot { position: absolute; top: 5px; right: 5px; width: 6px; height: 6px; border-radius: 50%; background: #f9e2af; }
+  .mock-card-img .rarity-dot.rare { background: #89b4fa; }
+  .mock-card-img .rarity-dot.ultra { background: #cba6f7; }
+  .mock-card-body { padding: 7px 8px; }
+  .mock-card-name { font-size: 10px; font-weight: 600; color: #cdd6f4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mock-card-set { font-size: 9px; color: #6c7086; margin: 1px 0; }
+  .mock-card-price { font-size: 11px; font-weight: 700; color: #a6e3a1; margin-top: 3px; }
+  .mock-card-price .trend { font-size: 9px; color: #f38ba8; margin-left: 3px; }
+  .mock-card-price .trend.up { color: #a6e3a1; }
+  .mock-card.in-collection { border-color: #cba6f788; }
+  .mock-card.in-collection .mock-card-img::after { content: '✓'; position: absolute; bottom: 5px; right: 5px; font-size: 10px; background: #cba6f7; color: #11111b; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .mock-pagination { display: flex; justify-content: center; gap: 6px; margin-top: 14px; }
+  .mock-page-btn { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 4px 9px; font-size: 10px; color: #6c7086; }
+  .mock-page-btn.active { background: #89b4fa22; border-color: #89b4fa; color: #89b4fa; }
+
+  /* Ad banner placeholder */
+  .mock-ad { background: #1a1a1a; border: 1px dashed #313244; border-radius: 6px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #45475a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+
+  .legend { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #6c7086; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+</style>
+
+<div class="mockup-wrap">
+  <!-- Nav -->
+  <div class="mock-topnav">
+    <div class="mock-logo">Poke<span>Vault</span></div>
+    <div class="mock-navlinks">
+      <span class="active">Catalog</span>
+      <span>My Collection</span>
+      <span>Prices</span>
+    </div>
+    <div class="mock-spacer"></div>
+    <div class="mock-search-bar">🔍 Search cards, sets…</div>
+    <div class="mock-avatar"></div>
+  </div>
+
+  <!-- Body -->
+  <div class="mock-body">
+    <!-- Filters sidebar -->
+    <div class="mock-sidebar">
+      <div class="filter-section">
+        <div class="filter-label">Set / Series</div>
+        <input class="mock-input-sm" placeholder="Search sets…" readonly>
+        <div style="margin-top:6px">
+          <div class="filter-chip active">Scarlet &amp; Violet</div>
+          <div class="filter-chip">Sword &amp; Shield</div>
+          <div class="filter-chip">Sun &amp; Moon</div>
+          <div class="filter-chip">XY</div>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-label">Type</div>
+        <div class="filter-chip type-fire">🔥 Fire</div>
+        <div class="filter-chip type-water">💧 Water</div>
+        <div class="filter-chip type-grass">🌿 Grass</div>
+        <div class="filter-chip type-psychic">🔮 Psychic</div>
+        <div class="filter-chip type-lightning">⚡ Lightning</div>
+        <div class="filter-chip">+ 7 more</div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-label">Rarity</div>
+        <div class="filter-chip">Common</div>
+        <div class="filter-chip">Uncommon</div>
+        <div class="filter-chip">Rare</div>
+        <div class="filter-chip active">Rare Holo</div>
+        <div class="filter-chip">Ultra Rare</div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-label">Language</div>
+        <div class="filter-chip active">🇮🇹 IT</div>
+        <div class="filter-chip">🇬🇧 EN</div>
+        <div class="filter-chip">🇫🇷 FR</div>
+        <div class="filter-chip">🇩🇪 DE</div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-label">Price Range (EUR)</div>
+        <div style="display:flex;gap:4px">
+          <input class="mock-input-sm" placeholder="Min" style="width:48%" readonly>
+          <input class="mock-input-sm" placeholder="Max" style="width:48%" readonly>
+        </div>
+      </div>
+      <div class="filter-section">
+        <div class="filter-label">Show</div>
+        <div class="filter-chip active">All cards</div>
+        <div class="filter-chip">In my collection</div>
+        <div class="filter-chip">Not owned</div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="mock-main">
+      <!-- Ad for free users -->
+      <div class="mock-ad">[ AdSense banner — free tier only ]</div>
+
+      <div class="mock-toolbar">
+        <div class="mock-result-count">1,284 cards · Scarlet &amp; Violet · Rare Holo</div>
+        <select class="mock-sort"><option>Sort: Price ↓</option></select>
+        <div class="mock-view-toggle">
+          <div class="mock-view-btn active">⊞</div>
+          <div class="mock-view-btn">☰</div>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <!-- Card 1 — in collection -->
+        <div class="mock-card in-collection">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot ultra"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Charizard ex</div>
+            <div class="mock-card-set">SV · Paldea Evolved</div>
+            <div class="mock-card-price">€38.50 <span class="trend up">▲2%</span></div>
+          </div>
+        </div>
+        <!-- Card 2 -->
+        <div class="mock-card">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot rare"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Gardevoir ex</div>
+            <div class="mock-card-set">SV · Scarlet &amp; Violet</div>
+            <div class="mock-card-price">€12.20 <span class="trend">▼1%</span></div>
+          </div>
+        </div>
+        <!-- Card 3 -->
+        <div class="mock-card">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot ultra"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Miraidon ex</div>
+            <div class="mock-card-set">SV · Scarlet &amp; Violet</div>
+            <div class="mock-card-price">€9.80 <span class="trend up">▲5%</span></div>
+          </div>
+        </div>
+        <!-- Card 4 — in collection -->
+        <div class="mock-card in-collection">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot rare"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Koraidon ex</div>
+            <div class="mock-card-set">SV · Scarlet &amp; Violet</div>
+            <div class="mock-card-price">€8.40 <span class="trend">▼3%</span></div>
+          </div>
+        </div>
+        <!-- Card 5 -->
+        <div class="mock-card">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Arcanine ex</div>
+            <div class="mock-card-set">SV · Paldea Evolved</div>
+            <div class="mock-card-price">€5.10</div>
+          </div>
+        </div>
+        <!-- Row 2 -->
+        <div class="mock-card">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot ultra"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Mewtwo ex</div>
+            <div class="mock-card-set">SV · 151</div>
+            <div class="mock-card-price">€22.00 <span class="trend up">▲8%</span></div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot rare"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Blastoise ex</div>
+            <div class="mock-card-set">SV · 151</div>
+            <div class="mock-card-price">€14.70</div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Venusaur ex</div>
+            <div class="mock-card-set">SV · 151</div>
+            <div class="mock-card-price">€11.30 <span class="trend">▼2%</span></div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot rare"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Pikachu ex</div>
+            <div class="mock-card-set">SV · 151</div>
+            <div class="mock-card-price">€18.90 <span class="trend up">▲4%</span></div>
+          </div>
+        </div>
+        <div class="mock-card">
+          <div class="mock-card-img"><span class="card-placeholder">🃏</span><div class="rarity-dot ultra"></div></div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">Gengar ex</div>
+            <div class="mock-card-set">SV · 151</div>
+            <div class="mock-card-price">€7.60</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mock-pagination">
+        <div class="mock-page-btn">‹</div>
+        <div class="mock-page-btn active">1</div>
+        <div class="mock-page-btn">2</div>
+        <div class="mock-page-btn">3</div>
+        <div class="mock-page-btn">…</div>
+        <div class="mock-page-btn">26</div>
+        <div class="mock-page-btn">›</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#cba6f788;border:1px solid #cba6f7"></div> Purple border = in your collection</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#cba6f7"></div> ✓ badge = owned</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a6e3a1"></div> Green price = today's market</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f38ba8"></div> ▼ red = price dropped</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a6e3a1"></div> ▲ green = price up</div>
+</div>

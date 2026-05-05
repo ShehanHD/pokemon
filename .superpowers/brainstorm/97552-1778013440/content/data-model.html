@@ -1,0 +1,185 @@
+<h2>Data Model</h2>
+<p class="subtitle">MongoDB collections — what gets stored and why</p>
+
+<style>
+  .collections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+  }
+  .coll {
+    background: #1e1e2e;
+    border: 1px solid #313244;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .coll.primary { border-color: #89b4fa; }
+  .coll.user    { border-color: #cba6f7; }
+  .coll.price   { border-color: #a6e3a1; }
+  .coll.join    { border-color: #f9e2af; }
+  .coll-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .coll-icon { font-size: 18px; }
+  .coll-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #cdd6f4;
+    font-family: monospace;
+  }
+  .coll-badge {
+    margin-left: auto;
+    font-size: 9px;
+    background: #313244;
+    border-radius: 4px;
+    padding: 2px 6px;
+    color: #6c7086;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .field {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid #181825;
+    font-size: 11px;
+  }
+  .field:last-child { border-bottom: none; }
+  .field-name {
+    font-family: monospace;
+    color: #89b4fa;
+    min-width: 130px;
+    flex-shrink: 0;
+  }
+  .coll.user .field-name { color: #cba6f7; }
+  .coll.price .field-name { color: #a6e3a1; }
+  .coll.join .field-name { color: #f9e2af; }
+  .field-type {
+    color: #6c7086;
+    min-width: 60px;
+    flex-shrink: 0;
+  }
+  .field-desc { color: #9399b2; }
+  .source-row {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .source-pill {
+    font-size: 11px;
+    background: #1e1e2e;
+    border: 1px solid #313244;
+    border-radius: 20px;
+    padding: 5px 14px;
+    color: #9399b2;
+  }
+  .source-pill strong { color: #cdd6f4; }
+</style>
+
+<div class="collections">
+
+  <!-- cards -->
+  <div class="coll primary">
+    <div class="coll-header">
+      <span class="coll-icon">🃏</span>
+      <span class="coll-name">cards</span>
+      <span class="coll-badge">synced daily</span>
+    </div>
+    <div class="field"><span class="field-name">_id</span><span class="field-type">String</span><span class="field-desc">pokemontcg.io card ID</span></div>
+    <div class="field"><span class="field-name">name</span><span class="field-type">String</span><span class="field-desc">English name</span></div>
+    <div class="field"><span class="field-name">localizedNames</span><span class="field-type">Map</span><span class="field-desc">{ it, fr, de, es, pt… }</span></div>
+    <div class="field"><span class="field-name">setId</span><span class="field-type">String</span><span class="field-desc">ref → sets</span></div>
+    <div class="field"><span class="field-name">number</span><span class="field-type">String</span><span class="field-desc">Card number in set</span></div>
+    <div class="field"><span class="field-name">rarity</span><span class="field-type">String</span><span class="field-desc">Common / Rare / etc.</span></div>
+    <div class="field"><span class="field-name">imageUrl</span><span class="field-type">String</span><span class="field-desc">Card art image</span></div>
+    <div class="field"><span class="field-name">types</span><span class="field-type">String[]</span><span class="field-desc">Fire, Water, etc.</span></div>
+    <div class="field"><span class="field-name">pricing</span><span class="field-type">Object</span><span class="field-desc">Latest prices (cardmarket, tcgplayer, ebay)</span></div>
+    <div class="field"><span class="field-name">pricingUpdatedAt</span><span class="field-type">Date</span><span class="field-desc">Last sync timestamp</span></div>
+  </div>
+
+  <!-- sets -->
+  <div class="coll primary">
+    <div class="coll-header">
+      <span class="coll-icon">📦</span>
+      <span class="coll-name">sets</span>
+      <span class="coll-badge">synced daily</span>
+    </div>
+    <div class="field"><span class="field-name">_id</span><span class="field-type">String</span><span class="field-desc">pokemontcg.io set ID</span></div>
+    <div class="field"><span class="field-name">name</span><span class="field-type">String</span><span class="field-desc">Set name</span></div>
+    <div class="field"><span class="field-name">series</span><span class="field-type">String</span><span class="field-desc">Scarlet & Violet, Sun & Moon…</span></div>
+    <div class="field"><span class="field-name">releaseDate</span><span class="field-type">Date</span></div>
+    <div class="field"><span class="field-name">total</span><span class="field-type">Number</span><span class="field-desc">Total cards in set</span></div>
+    <div class="field"><span class="field-name">logoUrl</span><span class="field-type">String</span></div>
+    <div class="field"><span class="field-name">symbolUrl</span><span class="field-type">String</span></div>
+    <div class="field"><span class="field-name">languages</span><span class="field-type">String[]</span><span class="field-desc">Available print languages</span></div>
+  </div>
+
+  <!-- price_history -->
+  <div class="coll price">
+    <div class="coll-header">
+      <span class="coll-icon">📈</span>
+      <span class="coll-name">price_history</span>
+      <span class="coll-badge">appended daily</span>
+    </div>
+    <div class="field"><span class="field-name">cardId</span><span class="field-type">String</span><span class="field-desc">ref → cards</span></div>
+    <div class="field"><span class="field-name">date</span><span class="field-type">Date</span><span class="field-desc">Snapshot date (UTC)</span></div>
+    <div class="field"><span class="field-name">source</span><span class="field-type">Enum</span><span class="field-desc">cardmarket | tcgplayer | ebay</span></div>
+    <div class="field"><span class="field-name">currency</span><span class="field-type">Enum</span><span class="field-desc">EUR | USD | GBP…</span></div>
+    <div class="field"><span class="field-name">avg</span><span class="field-type">Number</span><span class="field-desc">Average market price</span></div>
+    <div class="field"><span class="field-name">low</span><span class="field-type">Number</span></div>
+    <div class="field"><span class="field-name">trend</span><span class="field-type">Number</span><span class="field-desc">Cardmarket trend price</span></div>
+    <div class="field"><span class="field-name">variant</span><span class="field-type">String</span><span class="field-desc">normal | holofoil | reverseHolo</span></div>
+  </div>
+
+  <!-- users -->
+  <div class="coll user">
+    <div class="coll-header">
+      <span class="coll-icon">👤</span>
+      <span class="coll-name">users</span>
+      <span class="coll-badge">Auth.js managed</span>
+    </div>
+    <div class="field"><span class="field-name">_id</span><span class="field-type">ObjectId</span></div>
+    <div class="field"><span class="field-name">email</span><span class="field-type">String</span><span class="field-desc">Unique, indexed</span></div>
+    <div class="field"><span class="field-name">name</span><span class="field-type">String</span></div>
+    <div class="field"><span class="field-name">image</span><span class="field-type">String</span><span class="field-desc">Avatar URL</span></div>
+    <div class="field"><span class="field-name">plan</span><span class="field-type">Enum</span><span class="field-desc">free | pro</span></div>
+    <div class="field"><span class="field-name">stripeCustomerId</span><span class="field-type">String</span></div>
+    <div class="field"><span class="field-name">preferredCurrency</span><span class="field-type">String</span><span class="field-desc">EUR default</span></div>
+    <div class="field"><span class="field-name">preferredLanguage</span><span class="field-type">String</span><span class="field-desc">it default</span></div>
+    <div class="field"><span class="field-name">createdAt</span><span class="field-type">Date</span></div>
+  </div>
+
+  <!-- collections -->
+  <div class="coll join" style="grid-column: 1 / -1;">
+    <div class="coll-header">
+      <span class="coll-icon">🗂️</span>
+      <span class="coll-name">collection_items</span>
+      <span class="coll-badge">user-owned cards</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;">
+      <div class="field"><span class="field-name">userId</span><span class="field-type">ObjectId</span><span class="field-desc">ref → users</span></div>
+      <div class="field"><span class="field-name">cardId</span><span class="field-type">String</span><span class="field-desc">ref → cards</span></div>
+      <div class="field"><span class="field-name">quantity</span><span class="field-type">Number</span><span class="field-desc">How many copies owned</span></div>
+      <div class="field"><span class="field-name">condition</span><span class="field-type">Enum</span><span class="field-desc">NM | EX | GD | LP | PO</span></div>
+      <div class="field"><span class="field-name">purchasePrice</span><span class="field-type">Number</span><span class="field-desc">What you paid (optional)</span></div>
+      <div class="field"><span class="field-name">language</span><span class="field-type">String</span><span class="field-desc">it | en | fr… (card print language)</span></div>
+      <div class="field"><span class="field-name">notes</span><span class="field-type">String</span><span class="field-desc">Free text notes</span></div>
+      <div class="field"><span class="field-name">addedAt</span><span class="field-type">Date</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="source-row">
+  <div class="source-pill"><strong>pokemontcg.io</strong> → cards + sets metadata</div>
+  <div class="source-pill"><strong>tcgdex.dev</strong> → Cardmarket EUR prices + history</div>
+  <div class="source-pill"><strong>eBay API</strong> → completed listings supplementary</div>
+  <div class="source-pill"><strong>Stripe</strong> → plan management</div>
+</div>

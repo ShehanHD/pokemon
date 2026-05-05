@@ -1,0 +1,155 @@
+<h2>System Architecture</h2>
+<p class="subtitle">Next.js + MongoDB + Auth.js — everything on Vercel</p>
+
+<style>
+  .arch {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+    font-family: inherit;
+  }
+  .arch-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: stretch;
+  }
+  .arch-box {
+    background: #1e1e2e;
+    border: 1px solid #313244;
+    border-radius: 10px;
+    padding: 14px 18px;
+    min-width: 140px;
+    text-align: center;
+    position: relative;
+  }
+  .arch-box.highlight {
+    border-color: #89b4fa;
+    background: #1a2035;
+  }
+  .arch-box.green {
+    border-color: #a6e3a1;
+    background: #1a2a1e;
+  }
+  .arch-box.yellow {
+    border-color: #f9e2af;
+    background: #2a2418;
+  }
+  .arch-box.red {
+    border-color: #f38ba8;
+    background: #2a1820;
+  }
+  .arch-box .box-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6c7086;
+    margin-bottom: 4px;
+  }
+  .arch-box h4 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: #cdd6f4;
+  }
+  .arch-box p {
+    margin: 0;
+    font-size: 11px;
+    color: #9399b2;
+    line-height: 1.4;
+  }
+  .arch-box .tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 10px;
+    background: #313244;
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: #89b4fa;
+  }
+  .arch-box.green .tag { color: #a6e3a1; }
+  .arch-box.yellow .tag { color: #f9e2af; }
+  .arch-box.red .tag { color: #f38ba8; }
+  .arrow {
+    text-align: center;
+    color: #6c7086;
+    font-size: 20px;
+    margin: -4px 0;
+  }
+  .vercel-box {
+    border: 2px dashed #89b4fa33;
+    border-radius: 14px;
+    padding: 16px;
+    background: #12121f;
+  }
+  .vercel-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #89b4fa88;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+</style>
+
+<div class="arch">
+
+  <!-- Users -->
+  <div class="arch-row">
+    <div class="arch-box">
+      <div class="box-label">Clients</div>
+      <h4>🌐 Browser / Mobile Web</h4>
+      <p>Italian collectors, casual users, future community</p>
+    </div>
+  </div>
+
+  <div class="arrow">↕</div>
+
+  <!-- Everything on Vercel -->
+  <div class="vercel-box">
+    <div class="vercel-label">▲ Vercel — all services</div>
+    <div class="arch-row">
+      <div class="arch-box highlight" style="flex:2">
+        <div class="box-label">App + API Routes</div>
+        <h4>Next.js App Router</h4>
+        <p>SSR card pages (SEO) · Client collection tracker · Auth.js v5 sessions · REST API routes</p>
+        <span class="tag">TypeScript</span>
+        <span class="tag">Tailwind</span>
+        <span class="tag">Auth.js v5</span>
+      </div>
+      <div class="arch-box yellow" style="flex:1">
+        <div class="box-label">Scheduled jobs</div>
+        <h4>⏰ Vercel Cron</h4>
+        <p>Daily price sync · Triggers API route · Fetches Cardmarket + eBay · Writes to MongoDB</p>
+        <span class="tag">vercel.json cron</span>
+        <span class="tag">Cheerio / fetch</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow">↕</div>
+
+  <!-- Database -->
+  <div class="arch-row">
+    <div class="arch-box green" style="min-width:320px">
+      <div class="box-label">Database — MongoDB Atlas</div>
+      <h4>🍃 MongoDB</h4>
+      <p>cards · sets · price_history · users · collections</p>
+      <span class="tag">Mongoose</span>
+      <span class="tag">Free tier → scale</span>
+    </div>
+    <div class="arch-box red">
+      <div class="box-label">External</div>
+      <h4>📦 Price Sources</h4>
+      <p>Cardmarket · eBay Completed Listings · Future: TCGPlayer</p>
+      <span class="tag">Affiliate links</span>
+    </div>
+    <div class="arch-box">
+      <div class="box-label">Monetization</div>
+      <h4>💶 Revenue</h4>
+      <p>Stripe · AdSense · Affiliate commissions</p>
+      <span class="tag">Freemium</span>
+    </div>
+  </div>
+
+</div>

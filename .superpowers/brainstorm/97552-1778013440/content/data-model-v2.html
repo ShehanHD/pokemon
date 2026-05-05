@@ -1,0 +1,150 @@
+<h2>Data Model — Revised</h2>
+<p class="subtitle">Field names mapped directly from pokemontcg.io + TCGdex real API responses</p>
+
+<style>
+  .collections { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+  .coll { background: #1e1e2e; border: 1px solid #313244; border-radius: 10px; padding: 16px; }
+  .coll.primary { border-color: #89b4fa; }
+  .coll.user    { border-color: #cba6f7; }
+  .coll.price   { border-color: #a6e3a1; }
+  .coll.join    { border-color: #f9e2af; }
+  .coll-header  { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .coll-icon    { font-size: 18px; }
+  .coll-name    { font-size: 13px; font-weight: 700; color: #cdd6f4; font-family: monospace; }
+  .coll-badge   { margin-left: auto; font-size: 9px; background: #313244; border-radius: 4px; padding: 2px 6px; color: #6c7086; text-transform: uppercase; letter-spacing: 0.08em; }
+  .field        { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; border-bottom: 1px solid #181825; font-size: 11px; }
+  .field:last-child { border-bottom: none; }
+  .field-name   { font-family: monospace; color: #89b4fa; min-width: 150px; flex-shrink: 0; }
+  .coll.user  .field-name { color: #cba6f7; }
+  .coll.price .field-name { color: #a6e3a1; }
+  .coll.join  .field-name { color: #f9e2af; }
+  .field-type   { color: #6c7086; min-width: 60px; flex-shrink: 0; }
+  .field-desc   { color: #9399b2; }
+  .source-tag   { display: inline-block; font-size: 9px; background: #313244; border-radius: 3px; padding: 1px 5px; color: #89b4fa; margin-left: 4px; }
+  .source-row   { margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .source-pill  { font-size: 11px; background: #1e1e2e; border: 1px solid #313244; border-radius: 20px; padding: 5px 14px; color: #9399b2; }
+  .source-pill strong { color: #cdd6f4; }
+  .note { font-size: 11px; background: #1a2035; border: 1px solid #89b4fa44; border-radius: 8px; padding: 10px 14px; color: #9399b2; margin-bottom: 14px; line-height: 1.6; }
+  .note strong { color: #89b4fa; }
+</style>
+
+<div class="note">
+  <strong>Data strategy:</strong> pokemontcg.io is the primary card catalog source — it already embeds Cardmarket + TCGPlayer prices in each card response. TCGdex adds Italian/multilingual card names (query <code>/it/cards/…</code>) and detailed holo variant pricing. Daily cron fetches both and merges into MongoDB.
+</div>
+
+<div class="collections">
+
+  <!-- cards -->
+  <div class="coll primary">
+    <div class="coll-header">
+      <span class="coll-icon">🃏</span>
+      <span class="coll-name">cards</span>
+      <span class="coll-badge">daily sync</span>
+    </div>
+    <div class="field"><span class="field-name">_id</span><span class="field-type">String</span><span class="field-desc">"swsh4-25" — pokemontcg.io card ID</span></div>
+    <div class="field"><span class="field-name">tcgdexId</span><span class="field-type">String</span><span class="field-desc">"swsh3-136" — for cross-ref with TCGdex</span></div>
+    <div class="field"><span class="field-name">name</span><span class="field-type">String</span><span class="field-desc">English name <span class="source-tag">pokemontcg</span></span></div>
+    <div class="field"><span class="field-name">localizedNames</span><span class="field-type">Map</span><span class="field-desc">{ it: "Charizard", fr: "Dracaufeu"… } <span class="source-tag">TCGdex /it/cards</span></span></div>
+    <div class="field"><span class="field-name">supertype</span><span class="field-type">String</span><span class="field-desc">"Pokémon" | "Energy" | "Trainer"</span></div>
+    <div class="field"><span class="field-name">subtypes</span><span class="field-type">String[]</span><span class="field-desc">"Stage 2", "EX", "V", etc.</span></div>
+    <div class="field"><span class="field-name">hp</span><span class="field-type">String</span><span class="field-desc">"170"</span></div>
+    <div class="field"><span class="field-name">types</span><span class="field-type">String[]</span><span class="field-desc">["Fire"]</span></div>
+    <div class="field"><span class="field-name">evolvesFrom</span><span class="field-type">String</span><span class="field-desc">"Charmeleon"</span></div>
+    <div class="field"><span class="field-name">number</span><span class="field-type">String</span><span class="field-desc">"25" — card number in set</span></div>
+    <div class="field"><span class="field-name">artist</span><span class="field-type">String</span><span class="field-desc">"Ryuta Fuse" (illustrator field in TCGdex)</span></div>
+    <div class="field"><span class="field-name">rarity</span><span class="field-type">String</span><span class="field-desc">"Rare", "Common", "Rare Holo V"…</span></div>
+    <div class="field"><span class="field-name">images</span><span class="field-type">Object</span><span class="field-desc">{ small: URL, large: URL } <span class="source-tag">pokemontcg</span></span></div>
+    <div class="field"><span class="field-name">setId</span><span class="field-type">String</span><span class="field-desc">"swsh4" — ref → sets</span></div>
+    <div class="field"><span class="field-name">variants</span><span class="field-type">Object</span><span class="field-desc">{ normal, holo, reverse, firstEdition } booleans <span class="source-tag">TCGdex</span></span></div>
+    <div class="field"><span class="field-name">nationalPokedexNumbers</span><span class="field-type">Number[]</span><span class="field-desc">[6]</span></div>
+    <div class="field"><span class="field-name">regulationMark</span><span class="field-type">String</span><span class="field-desc">"D", "E", "F"…</span></div>
+    <div class="field"><span class="field-name">legalities</span><span class="field-type">Object</span><span class="field-desc">{ unlimited, standard, expanded }</span></div>
+    <div class="field"><span class="field-name">pricing</span><span class="field-type">Object</span><span class="field-desc">Latest snapshot — see price shape below</span></div>
+    <div class="field"><span class="field-name">pricingUpdatedAt</span><span class="field-type">Date</span><span class="field-desc">Last sync timestamp</span></div>
+  </div>
+
+  <!-- sets -->
+  <div class="coll primary">
+    <div class="coll-header">
+      <span class="coll-icon">📦</span>
+      <span class="coll-name">sets</span>
+      <span class="coll-badge">daily sync</span>
+    </div>
+    <div class="field"><span class="field-name">_id</span><span class="field-type">String</span><span class="field-desc">"swsh4"</span></div>
+    <div class="field"><span class="field-name">name</span><span class="field-type">String</span><span class="field-desc">"Vivid Voltage"</span></div>
+    <div class="field"><span class="field-name">series</span><span class="field-type">String</span><span class="field-desc">"Sword & Shield"</span></div>
+    <div class="field"><span class="field-name">printedTotal</span><span class="field-type">Number</span><span class="field-desc">185 (on card backs)</span></div>
+    <div class="field"><span class="field-name">total</span><span class="field-type">Number</span><span class="field-desc">203 (including secrets)</span></div>
+    <div class="field"><span class="field-name">ptcgoCode</span><span class="field-type">String</span><span class="field-desc">"VIV"</span></div>
+    <div class="field"><span class="field-name">releaseDate</span><span class="field-type">String</span><span class="field-desc">"2020/11/13"</span></div>
+    <div class="field"><span class="field-name">images</span><span class="field-type">Object</span><span class="field-desc">{ symbol: URL, logo: URL }</span></div>
+    <div class="field"><span class="field-name">legalities</span><span class="field-type">Object</span><span class="field-desc">{ unlimited, standard, expanded }</span></div>
+    <div class="field"><span class="field-name">languages</span><span class="field-type">String[]</span><span class="field-desc">["en","it","fr","de"] — available prints <span class="source-tag">TCGdex</span></span></div>
+  </div>
+
+  <!-- price_history -->
+  <div class="coll price">
+    <div class="coll-header">
+      <span class="coll-icon">📈</span>
+      <span class="coll-name">price_history</span>
+      <span class="coll-badge">append-only</span>
+    </div>
+    <div class="field"><span class="field-name">cardId</span><span class="field-type">String</span><span class="field-desc">ref → cards._id</span></div>
+    <div class="field"><span class="field-name">date</span><span class="field-type">Date</span><span class="field-desc">UTC day of snapshot (index this)</span></div>
+    <div class="field"><span class="field-name">source</span><span class="field-type">Enum</span><span class="field-desc">"cardmarket" | "tcgplayer" | "ebay"</span></div>
+    <div class="field"><span class="field-name">currency</span><span class="field-type">String</span><span class="field-desc">"EUR" | "USD"</span></div>
+    <div class="field"><span class="field-name">avg</span><span class="field-type">Number</span><span class="field-desc">averageSellPrice (cardmarket) / market (tcgplayer)</span></div>
+    <div class="field"><span class="field-name">low</span><span class="field-type">Number</span><span class="field-desc">lowPrice (cardmarket) / low (tcgplayer)</span></div>
+    <div class="field"><span class="field-name">trend</span><span class="field-type">Number</span><span class="field-desc">trendPrice — Cardmarket only</span></div>
+    <div class="field"><span class="field-name">avg1</span><span class="field-type">Number</span><span class="field-desc">1-day average</span></div>
+    <div class="field"><span class="field-name">avg7</span><span class="field-type">Number</span><span class="field-desc">7-day average</span></div>
+    <div class="field"><span class="field-name">avg30</span><span class="field-type">Number</span><span class="field-desc">30-day average</span></div>
+    <div class="field"><span class="field-name">variant</span><span class="field-type">String</span><span class="field-desc">"normal" | "holo" | "reverseHolo" | "firstEdition"</span></div>
+  </div>
+
+  <!-- users -->
+  <div class="coll user">
+    <div class="coll-header">
+      <span class="coll-icon">👤</span>
+      <span class="coll-name">users</span>
+      <span class="coll-badge">Auth.js managed</span>
+    </div>
+    <div class="field"><span class="field-name">_id</span><span class="field-type">ObjectId</span></div>
+    <div class="field"><span class="field-name">name</span><span class="field-type">String</span><span class="field-desc">Display name</span></div>
+    <div class="field"><span class="field-name">email</span><span class="field-type">String</span><span class="field-desc">Unique, indexed</span></div>
+    <div class="field"><span class="field-name">image</span><span class="field-type">String</span><span class="field-desc">Avatar URL</span></div>
+    <div class="field"><span class="field-name">plan</span><span class="field-type">Enum</span><span class="field-desc">"free" | "pro"</span></div>
+    <div class="field"><span class="field-name">stripeCustomerId</span><span class="field-type">String</span></div>
+    <div class="field"><span class="field-name">preferredCurrency</span><span class="field-type">String</span><span class="field-desc">Default "EUR"</span></div>
+    <div class="field"><span class="field-name">preferredLanguage</span><span class="field-type">String</span><span class="field-desc">Default "it"</span></div>
+    <div class="field"><span class="field-name">createdAt</span><span class="field-type">Date</span></div>
+  </div>
+
+  <!-- collection_items -->
+  <div class="coll join" style="grid-column: 1 / -1;">
+    <div class="coll-header">
+      <span class="coll-icon">🗂️</span>
+      <span class="coll-name">collection_items</span>
+      <span class="coll-badge">user-owned cards</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;">
+      <div class="field"><span class="field-name">userId</span><span class="field-type">ObjectId</span><span class="field-desc">ref → users</span></div>
+      <div class="field"><span class="field-name">cardId</span><span class="field-type">String</span><span class="field-desc">ref → cards._id</span></div>
+      <div class="field"><span class="field-name">quantity</span><span class="field-type">Number</span><span class="field-desc">Copies owned</span></div>
+      <div class="field"><span class="field-name">condition</span><span class="field-type">Enum</span><span class="field-desc">"NM" | "EX" | "GD" | "LP" | "PO"</span></div>
+      <div class="field"><span class="field-name">variant</span><span class="field-type">String</span><span class="field-desc">"normal" | "holo" | "reverseHolo" | "firstEdition"</span></div>
+      <div class="field"><span class="field-name">language</span><span class="field-type">String</span><span class="field-desc">"it" | "en" | "fr"… — print language of card owned</span></div>
+      <div class="field"><span class="field-name">purchasePrice</span><span class="field-type">Number</span><span class="field-desc">Optional — what you paid</span></div>
+      <div class="field"><span class="field-name">purchaseCurrency</span><span class="field-type">String</span><span class="field-desc">"EUR" default</span></div>
+      <div class="field"><span class="field-name">notes</span><span class="field-type">String</span><span class="field-desc">Free text</span></div>
+      <div class="field"><span class="field-name">addedAt</span><span class="field-type">Date</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="source-row">
+  <div class="source-pill"><strong>pokemontcg.io</strong> → cards, sets, Cardmarket & TCGPlayer prices</div>
+  <div class="source-pill"><strong>TCGdex /it/cards</strong> → Italian names, holo variant pricing, languages</div>
+  <div class="source-pill"><strong>eBay API</strong> → completed listings (supplementary)</div>
+</div>

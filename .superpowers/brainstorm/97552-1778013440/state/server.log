@@ -1,0 +1,13 @@
+{"type":"server-started","port":58367,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:58367","screen_dir":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content","state_dir":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/state"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/architecture.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/architecture-v2.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/data-model.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/data-model-v2.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/freemium-tiers.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/freemium-tiers-v2.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/ui-catalog.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/ui-catalog-v2.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/ui-catalog-v3.html"}
+{"type":"screen-updated","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/ui-catalog-v3.html"}
+{"type":"screen-added","file":"/Users/don/Desktop/Software/pokemon/.superpowers/brainstorm/97552-1778013440/content/ui-catalog-v4.html"}
+{"type":"server-stopped","reason":"idle timeout"}

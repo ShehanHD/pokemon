@@ -1,0 +1,381 @@
+<h2>App Navigation</h2>
+<p class="subtitle">Click anywhere to navigate — Series › Sets › Cards drill-down + Dashboard</p>
+
+<style>
+  .mockup-wrap { background: #11111b; border: 1px solid #313244; border-radius: 12px; overflow: hidden; margin-top: 16px; font-size: 12px; display: flex; height: 600px; }
+
+  /* Sidebar */
+  .mock-sidenav { width: 158px; flex-shrink: 0; background: #181825; border-right: 1px solid #313244; display: flex; flex-direction: column; padding: 14px 0; }
+  .mock-logo { font-weight: 800; font-size: 14px; color: #cdd6f4; letter-spacing: -0.5px; padding: 0 14px 14px; border-bottom: 1px solid #313244; margin-bottom: 10px; }
+  .mock-logo span { color: #f38ba8; }
+  .nav-section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: #45475a; padding: 10px 14px 4px; }
+  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 14px; font-size: 11px; color: #6c7086; cursor: pointer; border-right: 2px solid transparent; }
+  .nav-item:hover { color: #9399b2; }
+  .nav-item.active { background: #89b4fa15; color: #cdd6f4; border-right-color: #89b4fa; }
+  .nav-icon { width: 14px; text-align: center; flex-shrink: 0; }
+  .mock-sidenav-footer { margin-top: auto; border-top: 1px solid #313244; padding: 10px 14px; }
+  .nav-avatar { width: 24px; height: 24px; background: #cba6f7; border-radius: 50%; flex-shrink: 0; }
+  .nav-user-name { font-size: 10px; color: #9399b2; }
+  .nav-plan { font-size: 9px; color: #cba6f7; }
+
+  /* Main */
+  .mock-main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .mock-topbar { background: #181825; border-bottom: 1px solid #313244; padding: 10px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .topbar-title { font-size: 13px; font-weight: 700; color: #cdd6f4; flex: 1; }
+  .mock-search { background: #1e1e2e; border: 1px solid #313244; border-radius: 6px; padding: 5px 10px; font-size: 11px; color: #6c7086; width: 190px; }
+  .mock-lang { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 4px 8px; font-size: 10px; color: #9399b2; }
+
+  /* Breadcrumb */
+  .breadcrumb { display: flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 11px; color: #6c7086; border-bottom: 1px solid #31324455; flex-shrink: 0; min-height: 34px; }
+  .bc-link { color: #89b4fa; cursor: pointer; }
+  .bc-link:hover { text-decoration: underline; }
+  .bc-cur { color: #cdd6f4; }
+  .bc-sep { color: #45475a; }
+
+  /* Pages */
+  .page { display: none; flex: 1; overflow-y: auto; padding: 14px 16px; flex-direction: column; }
+  .page.active { display: flex; }
+
+  /* ── Dashboard ── */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; padding: 12px 14px; }
+  .stat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: #6c7086; margin-bottom: 6px; }
+  .stat-val { font-size: 20px; font-weight: 800; color: #cdd6f4; }
+  .stat-sub { font-size: 10px; color: #6c7086; margin-top: 2px; }
+  .up { color: #a6e3a1; }
+  .section-title { font-size: 12px; font-weight: 700; color: #cdd6f4; margin-bottom: 10px; }
+  .dash-sets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .dash-set { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; padding: 12px; cursor: pointer; }
+  .dash-set:hover { border-color: #89b4fa; }
+  .ds-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .ds-icon { width: 28px; height: 28px; background: #313244; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  .ds-name { font-size: 11px; font-weight: 600; color: #cdd6f4; }
+  .ds-series { font-size: 9px; color: #6c7086; }
+  .pbar-wrap { background: #181825; border-radius: 3px; height: 4px; overflow: hidden; margin: 4px 0; }
+  .pbar { height: 100%; border-radius: 3px; background: #89b4fa; }
+  .pbar.full { background: #a6e3a1; }
+  .ds-stats { display: flex; justify-content: space-between; font-size: 9px; color: #6c7086; }
+  .ds-val { font-size: 10px; font-weight: 600; color: #a6e3a1; margin-top: 4px; }
+  .ad-banner { background: #1a1a1a; border: 1px dashed #313244; border-radius: 6px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #45475a; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 14px; flex-shrink: 0; }
+
+  /* ── Series ── */
+  .series-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .series-card { background: #1e1e2e; border: 1px solid #313244; border-radius: 10px; padding: 14px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+  .series-card:hover { border-color: #89b4fa; }
+  .series-icon { font-size: 24px; width: 40px; height: 40px; background: #313244; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .series-info { flex: 1; min-width: 0; }
+  .series-name { font-size: 12px; font-weight: 700; color: #cdd6f4; }
+  .series-meta { font-size: 10px; color: #6c7086; margin-top: 2px; }
+  .series-owned { font-size: 10px; color: #89b4fa; margin-top: 3px; }
+  .series-arrow { color: #45475a; font-size: 16px; }
+
+  /* ── Sets ── */
+  .sets-list { display: flex; flex-direction: column; gap: 8px; }
+  .set-row { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+  .set-row:hover { border-color: #89b4fa; }
+  .set-icon { width: 32px; height: 32px; background: #313244; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .set-info { flex: 1; }
+  .set-name { font-size: 12px; font-weight: 600; color: #cdd6f4; }
+  .set-meta { font-size: 10px; color: #6c7086; margin-top: 1px; }
+  .set-right { text-align: right; min-width: 90px; }
+  .set-pct { font-size: 9px; color: #6c7086; }
+  .set-val { font-size: 11px; font-weight: 600; color: #a6e3a1; }
+
+  /* ── Cards ── */
+  .set-header { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  .sh-icon { width: 36px; height: 36px; background: #313244; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .sh-name { font-size: 13px; font-weight: 700; color: #cdd6f4; }
+  .sh-meta { font-size: 10px; color: #6c7086; }
+  .sh-prog { flex: 1; }
+  .sh-val { font-size: 13px; font-weight: 700; color: #a6e3a1; text-align: right; }
+  .filter-bar { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; flex-shrink: 0; }
+  .chip { background: #1e1e2e; border: 1px solid #313244; border-radius: 4px; padding: 3px 9px; font-size: 10px; color: #9399b2; cursor: pointer; }
+  .chip.active { background: #89b4fa22; border-color: #89b4fa; color: #89b4fa; }
+  .card-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .mock-card { background: #1e1e2e; border: 1px solid #313244; border-radius: 8px; overflow: hidden; cursor: pointer; }
+  .mock-card:hover { border-color: #89b4fa; }
+  .mock-card.owned { border-color: #cba6f766; }
+  .mock-card.missing .card-img { opacity: 0.3; }
+  .card-img { background: linear-gradient(135deg, #313244 60%, #45475a); height: 68px; display: flex; align-items: center; justify-content: center; font-size: 24px; position: relative; }
+  .owned-dot { position: absolute; bottom: 4px; right: 4px; width: 13px; height: 13px; background: #cba6f7; border-radius: 50%; font-size: 8px; font-weight: 700; color: #11111b; display: flex; align-items: center; justify-content: center; }
+  .card-body { padding: 6px 7px; }
+  .card-num { font-size: 9px; color: #45475a; }
+  .card-name { font-size: 10px; font-weight: 600; color: #cdd6f4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-price { font-size: 10px; font-weight: 700; color: #a6e3a1; margin-top: 2px; }
+</style>
+
+<div class="mockup-wrap">
+  <!-- Sidebar -->
+  <div class="mock-sidenav">
+    <div class="mock-logo">Poke<span>Vault</span></div>
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item" id="nav-dashboard" onclick="goTo('dashboard')" ><span class="nav-icon">📊</span> Dashboard</div>
+    <div class="nav-item" id="nav-series" onclick="goTo('series')"><span class="nav-icon">📺</span> Browse</div>
+    <div class="nav-section-label">My Collection</div>
+    <div class="nav-item"><span class="nav-icon">🗂️</span> My Cards</div>
+    <div class="nav-item"><span class="nav-icon">⭐</span> Wishlist</div>
+    <div class="nav-item"><span class="nav-icon">📉</span> Analytics</div>
+    <div class="mock-sidenav-footer">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="nav-avatar"></div>
+        <div>
+          <div class="nav-user-name">Don</div>
+          <div class="nav-plan">✦ Pro</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="mock-main">
+    <div class="mock-topbar">
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="mock-search">🔍 Search cards, sets, series…</div>
+      <div class="mock-lang">🇮🇹 IT · EUR</div>
+    </div>
+    <div class="breadcrumb" id="breadcrumb"></div>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Cards Owned</div>
+          <div class="stat-val">573</div>
+          <div class="stat-sub"><span class="up">+12</span> this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Collection Value</div>
+          <div class="stat-val">€1,842</div>
+          <div class="stat-sub"><span class="up">▲ €38</span> vs last week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sets Tracking</div>
+          <div class="stat-val">8</div>
+          <div class="stat-sub">2 complete</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Gain / Loss</div>
+          <div class="stat-val" style="color:#a6e3a1">+€124</div>
+          <div class="stat-sub">vs purchase price</div>
+        </div>
+      </div>
+
+      <div class="ad-banner">[ AdSense · free tier only ]</div>
+
+      <div class="section-title">Sets You're Collecting</div>
+      <div class="dash-sets">
+        <div class="dash-set" onclick="goTo('cards')">
+          <div class="ds-header"><div class="ds-icon">🔴</div><div><div class="ds-name">151</div><div class="ds-series">Scarlet &amp; Violet</div></div></div>
+          <div class="pbar-wrap"><div class="pbar full" style="width:100%"></div></div>
+          <div class="ds-stats"><span style="color:#a6e3a1">165/165</span><span style="color:#a6e3a1">✓ Complete</span></div>
+          <div class="ds-val">€610</div>
+        </div>
+        <div class="dash-set" onclick="goTo('cards')">
+          <div class="ds-header"><div class="ds-icon">🌋</div><div><div class="ds-name">Obsidian Flames</div><div class="ds-series">Scarlet &amp; Violet</div></div></div>
+          <div class="pbar-wrap"><div class="pbar" style="width:72%"></div></div>
+          <div class="ds-stats"><span style="color:#89b4fa">152/230</span><span>72%</span></div>
+          <div class="ds-val">€284</div>
+        </div>
+        <div class="dash-set" onclick="goTo('cards')">
+          <div class="ds-header"><div class="ds-icon">⚡</div><div><div class="ds-name">Paldea Evolved</div><div class="ds-series">Scarlet &amp; Violet</div></div></div>
+          <div class="pbar-wrap"><div class="pbar" style="width:38%"></div></div>
+          <div class="ds-stats"><span style="color:#89b4fa">93/279</span><span>38%</span></div>
+          <div class="ds-val">€312</div>
+        </div>
+        <div class="dash-set" onclick="goTo('cards')">
+          <div class="ds-header"><div class="ds-icon">💧</div><div><div class="ds-name">Vivid Voltage</div><div class="ds-series">Sword &amp; Shield</div></div></div>
+          <div class="pbar-wrap"><div class="pbar" style="width:55%"></div></div>
+          <div class="ds-stats"><span style="color:#89b4fa">111/203</span><span>55%</span></div>
+          <div class="ds-val">€198</div>
+        </div>
+        <div class="dash-set" onclick="goTo('cards')">
+          <div class="ds-header"><div class="ds-icon">🌿</div><div><div class="ds-name">Twilight Masquerade</div><div class="ds-series">Scarlet &amp; Violet</div></div></div>
+          <div class="pbar-wrap"><div class="pbar" style="width:15%"></div></div>
+          <div class="ds-stats"><span style="color:#89b4fa">27/167</span><span>15%</span></div>
+          <div class="ds-val">€87</div>
+        </div>
+        <div class="dash-set" style="border-style:dashed;align-items:center;justify-content:center;color:#45475a;font-size:11px;gap:6px;display:flex;">
+          ＋ Add a set
+        </div>
+      </div>
+    </div>
+
+    <!-- SERIES -->
+    <div class="page" id="page-series">
+      <div class="series-grid">
+        <div class="series-card" onclick="goTo('sets')">
+          <div class="series-icon">🟥</div>
+          <div class="series-info">
+            <div class="series-name">Scarlet &amp; Violet</div>
+            <div class="series-meta">2023–present · 12 sets</div>
+            <div class="series-owned">437 cards owned</div>
+          </div>
+          <div class="series-arrow">›</div>
+        </div>
+        <div class="series-card" onclick="goTo('sets')">
+          <div class="series-icon">⚔️</div>
+          <div class="series-info">
+            <div class="series-name">Sword &amp; Shield</div>
+            <div class="series-meta">2020–2023 · 15 sets</div>
+            <div class="series-owned">112 cards owned</div>
+          </div>
+          <div class="series-arrow">›</div>
+        </div>
+        <div class="series-card">
+          <div class="series-icon">🌙</div>
+          <div class="series-info">
+            <div class="series-name">Sun &amp; Moon</div>
+            <div class="series-meta">2017–2020 · 13 sets</div>
+            <div class="series-owned">24 cards owned</div>
+          </div>
+          <div class="series-arrow">›</div>
+        </div>
+        <div class="series-card">
+          <div class="series-icon">🔷</div>
+          <div class="series-info">
+            <div class="series-name">XY</div>
+            <div class="series-meta">2014–2017 · 13 sets</div>
+            <div class="series-owned" style="color:#45475a">0 cards owned</div>
+          </div>
+          <div class="series-arrow">›</div>
+        </div>
+        <div class="series-card">
+          <div class="series-icon">⚫</div>
+          <div class="series-info">
+            <div class="series-name">Black &amp; White</div>
+            <div class="series-meta">2011–2013 · 12 sets</div>
+            <div class="series-owned" style="color:#45475a">0 cards owned</div>
+          </div>
+          <div class="series-arrow">›</div>
+        </div>
+        <div class="series-card">
+          <div class="series-icon">❤️</div>
+          <div class="series-info">
+            <div class="series-name">HeartGold &amp; SoulSilver</div>
+            <div class="series-meta">2010–2011 · 5 sets</div>
+            <div class="series-owned" style="color:#45475a">0 cards owned</div>
+          </div>
+          <div class="series-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETS -->
+    <div class="page" id="page-sets">
+      <div class="sets-list">
+        <div class="set-row" onclick="goTo('cards')">
+          <div class="set-icon">🟥</div>
+          <div class="set-info"><div class="set-name">Scarlet &amp; Violet Base</div><div class="set-meta">Mar 2023 · 258 cards</div></div>
+          <div class="set-right">
+            <div class="pbar-wrap"><div class="pbar" style="width:88%"></div></div>
+            <div class="set-pct">227 / 258 · 88%</div>
+            <div class="set-val">€341</div>
+          </div>
+        </div>
+        <div class="set-row" onclick="goTo('cards')">
+          <div class="set-icon">🔴</div>
+          <div class="set-info"><div class="set-name">Scarlet &amp; Violet 151</div><div class="set-meta">Sep 2023 · 165 cards</div></div>
+          <div class="set-right">
+            <div class="pbar-wrap"><div class="pbar full" style="width:100%"></div></div>
+            <div class="set-pct" style="color:#a6e3a1">165 / 165 · ✓ Complete</div>
+            <div class="set-val">€610</div>
+          </div>
+        </div>
+        <div class="set-row" onclick="goTo('cards')">
+          <div class="set-icon">⚡</div>
+          <div class="set-info"><div class="set-name">Paldea Evolved</div><div class="set-meta">Jun 2023 · 279 cards</div></div>
+          <div class="set-right">
+            <div class="pbar-wrap"><div class="pbar" style="width:38%"></div></div>
+            <div class="set-pct">93 / 279 · 38%</div>
+            <div class="set-val">€312</div>
+          </div>
+        </div>
+        <div class="set-row" onclick="goTo('cards')">
+          <div class="set-icon">🌋</div>
+          <div class="set-info"><div class="set-name">Obsidian Flames</div><div class="set-meta">Aug 2023 · 230 cards</div></div>
+          <div class="set-right">
+            <div class="pbar-wrap"><div class="pbar" style="width:72%"></div></div>
+            <div class="set-pct">152 / 230 · 72%</div>
+            <div class="set-val">€284</div>
+          </div>
+        </div>
+        <div class="set-row" onclick="goTo('cards')">
+          <div class="set-icon">🌿</div>
+          <div class="set-info"><div class="set-name">Twilight Masquerade</div><div class="set-meta">May 2024 · 167 cards</div></div>
+          <div class="set-right">
+            <div class="pbar-wrap"><div class="pbar" style="width:15%"></div></div>
+            <div class="set-pct">27 / 167 · 15%</div>
+            <div class="set-val">€87</div>
+          </div>
+        </div>
+        <div class="set-row" onclick="goTo('cards')">
+          <div class="set-icon">🌊</div>
+          <div class="set-info"><div class="set-name">Paradox Rift</div><div class="set-meta">Nov 2023 · 266 cards</div></div>
+          <div class="set-right">
+            <div class="pbar-wrap"><div class="pbar" style="width:5%"></div></div>
+            <div class="set-pct">12 / 266 · 5%</div>
+            <div class="set-val">€44</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="page" id="page-cards">
+      <div class="set-header">
+        <div class="sh-icon">🔴</div>
+        <div class="sh-prog">
+          <div class="sh-name">Scarlet &amp; Violet 151</div>
+          <div class="sh-meta">165 cards · Sep 2023</div>
+          <div class="pbar-wrap" style="margin-top:6px"><div class="pbar full" style="width:100%"></div></div>
+        </div>
+        <div class="sh-val">€610<br><span style="font-size:9px;color:#a6e3a1;font-weight:400">✓ Complete</span></div>
+      </div>
+      <div class="filter-bar">
+        <div class="chip active">All</div>
+        <div class="chip">Owned</div>
+        <div class="chip">Missing</div>
+        <div class="chip">Holo</div>
+        <div class="chip">ex</div>
+        <div class="chip">Secret Rare</div>
+      </div>
+      <div class="card-grid">
+        <div class="mock-card owned"><div class="card-img">🌿<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">001/165</div><div class="card-name">Bulbasaur</div><div class="card-price">€0.18</div></div></div>
+        <div class="mock-card owned"><div class="card-img">🌿<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">002/165</div><div class="card-name">Ivysaur</div><div class="card-price">€0.22</div></div></div>
+        <div class="mock-card owned"><div class="card-img">🌿<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">003/165</div><div class="card-name">Venusaur ex</div><div class="card-price">€4.20</div></div></div>
+        <div class="mock-card owned"><div class="card-img">🔥<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">004/165</div><div class="card-name">Charmander</div><div class="card-price">€0.35</div></div></div>
+        <div class="mock-card owned"><div class="card-img">🔥<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">005/165</div><div class="card-name">Charmeleon</div><div class="card-price">€0.28</div></div></div>
+        <div class="mock-card owned"><div class="card-img">🔥<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">006/165</div><div class="card-name">Charizard ex</div><div class="card-price">€18.50</div></div></div>
+        <div class="mock-card owned"><div class="card-img">💧<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">007/165</div><div class="card-name">Squirtle</div><div class="card-price">€0.20</div></div></div>
+        <div class="mock-card owned"><div class="card-img">💧<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">008/165</div><div class="card-name">Wartortle</div><div class="card-price">€0.24</div></div></div>
+        <div class="mock-card owned"><div class="card-img">💧<div class="owned-dot">✓</div></div><div class="card-body"><div class="card-num">009/165</div><div class="card-name">Blastoise ex</div><div class="card-price">€3.80</div></div></div>
+        <div class="mock-card missing"><div class="card-img">🐛</div><div class="card-body"><div class="card-num">010/165</div><div class="card-name">Caterpie</div><div class="card-price">€0.10</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:12px;text-align:center;color:#6c7086;font-size:11px;">
+  Dashboard → Browse (Series) → click series → Sets → click set → Cards
+</p>
+
+<script>
+  const routes = {
+    dashboard: { title: 'Dashboard', nav: 'nav-dashboard', bc: '' },
+    series:    { title: 'Browse', nav: 'nav-series', bc: '<span class="bc-cur">Series</span>' },
+    sets:      { title: 'Scarlet & Violet', nav: 'nav-series', bc: '<span class="bc-link" onclick="goTo(\'series\')">Series</span><span class="bc-sep"> › </span><span class="bc-cur">Scarlet &amp; Violet</span>' },
+    cards:     { title: '151', nav: 'nav-series', bc: '<span class="bc-link" onclick="goTo(\'series\')">Series</span><span class="bc-sep"> › </span><span class="bc-link" onclick="goTo(\'sets\')">Scarlet &amp; Violet</span><span class="bc-sep"> › </span><span class="bc-cur">151</span>' }
+  };
+
+  function goTo(page) {
+    const r = routes[page];
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(r.nav).classList.add('active');
+    document.getElementById('topbar-title').textContent = r.title;
+    document.getElementById('breadcrumb').innerHTML = r.bc;
+  }
+
+  goTo('dashboard');
+</script>

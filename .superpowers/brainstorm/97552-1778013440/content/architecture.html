@@ -1,0 +1,157 @@
+<h2>System Architecture</h2>
+<p class="subtitle">Next.js + MongoDB + Auth.js + Railway scraper</p>
+
+<style>
+  .arch {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+    font-family: inherit;
+  }
+  .arch-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    align-items: stretch;
+  }
+  .arch-box {
+    background: #1e1e2e;
+    border: 1px solid #313244;
+    border-radius: 10px;
+    padding: 14px 18px;
+    min-width: 140px;
+    text-align: center;
+    position: relative;
+  }
+  .arch-box.highlight {
+    border-color: #89b4fa;
+    background: #1a2035;
+  }
+  .arch-box.green {
+    border-color: #a6e3a1;
+    background: #1a2a1e;
+  }
+  .arch-box.yellow {
+    border-color: #f9e2af;
+    background: #2a2418;
+  }
+  .arch-box.red {
+    border-color: #f38ba8;
+    background: #2a1820;
+  }
+  .arch-box .box-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #6c7086;
+    margin-bottom: 4px;
+  }
+  .arch-box h4 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: #cdd6f4;
+  }
+  .arch-box p {
+    margin: 0;
+    font-size: 11px;
+    color: #9399b2;
+    line-height: 1.4;
+  }
+  .arch-box .tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 10px;
+    background: #313244;
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: #89b4fa;
+  }
+  .arch-box.green .tag { color: #a6e3a1; }
+  .arch-box.yellow .tag { color: #f9e2af; }
+  .arch-box.red .tag { color: #f38ba8; }
+  .arrow {
+    text-align: center;
+    color: #6c7086;
+    font-size: 20px;
+    margin: -4px 0;
+  }
+  .arch-divider {
+    border: none;
+    border-top: 1px dashed #313244;
+    margin: 4px 0;
+  }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #6c7086;
+    text-align: center;
+    margin: 0;
+  }
+</style>
+
+<div class="arch">
+
+  <!-- Users -->
+  <div class="arch-row">
+    <div class="arch-box">
+      <div class="box-label">Clients</div>
+      <h4>🌐 Browser / Mobile Web</h4>
+      <p>Italian collectors, casual users, future community</p>
+    </div>
+  </div>
+
+  <div class="arrow">↕</div>
+
+  <!-- Frontend -->
+  <div class="arch-row">
+    <div class="arch-box highlight" style="min-width:400px">
+      <div class="box-label">Frontend + API Routes — Vercel</div>
+      <h4>Next.js App Router</h4>
+      <p>SSR for card pages (SEO) · Client components for collection · Auth.js sessions · API routes for data mutations</p>
+      <span class="tag">TypeScript</span>
+      <span class="tag">Tailwind</span>
+      <span class="tag">Auth.js v5</span>
+    </div>
+  </div>
+
+  <div class="arrow">↕</div>
+
+  <!-- Database -->
+  <div class="arch-row">
+    <div class="arch-box green" style="min-width:400px">
+      <div class="box-label">Database — MongoDB Atlas</div>
+      <h4>🍃 MongoDB</h4>
+      <p>cards · sets · price_history · users · collections · wishlists</p>
+      <span class="tag">Mongoose</span>
+      <span class="tag">Free tier → scale up</span>
+    </div>
+  </div>
+
+  <hr class="arch-divider" style="margin:4px 60px">
+
+  <!-- Scraper + Externals side by side -->
+  <div class="arch-row">
+    <div class="arch-box yellow">
+      <div class="box-label">Scraper — Railway</div>
+      <h4>⚙️ Price Worker</h4>
+      <p>Daily cron · Pulls from Cardmarket & eBay · Writes to MongoDB</p>
+      <span class="tag">Node.js</span>
+      <span class="tag">Playwright</span>
+    </div>
+    <div class="arch-box red">
+      <div class="box-label">External Data</div>
+      <h4>📦 Price Sources</h4>
+      <p>Cardmarket API/scrape · eBay Completed Listings · Future: TCGPlayer</p>
+      <span class="tag">Affiliate links</span>
+    </div>
+    <div class="arch-box">
+      <div class="box-label">Monetization</div>
+      <h4>💶 Revenue</h4>
+      <p>Stripe (subscriptions) · Google AdSense · Affiliate commissions</p>
+      <span class="tag">Freemium</span>
+    </div>
+  </div>
+
+</div>

@@ -1,6 +1,7 @@
 import { MongoClient, Db } from 'mongodb'
 
-const uri = process.env.MONGODB_URI!
+const uri = process.env.MONGODB_URI
+if (!uri) throw new Error('MONGODB_URI environment variable is not set')
 const dbName = process.env.MONGODB_DB ?? 'pokemon'
 
 declare global {

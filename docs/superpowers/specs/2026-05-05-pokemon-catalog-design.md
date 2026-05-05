@@ -75,13 +75,12 @@ purchasePrice, purchaseCurrency, purchaseDate, notes, addedAt
 - 7-day price chart
 - Track up to **500 cards** (condition, variant, language per card)
 - Total collection value (live)
-- Basic wishlist (save cards; no price alerts)
 - AdSense banners on catalog pages only — **no ads inside the collection tracker**
 
 ### Ad-Free — €0.99/month
 - Everything in Free
 - No ads anywhere
-- Same 500-card limit and basic wishlist
+- Same 500-card limit
 
 ### Pro — €4.99/month (or €39/year)
 - Full price history up to 1 year
@@ -93,7 +92,7 @@ purchasePrice, purchaseCurrency, purchaseDate, notes, addedAt
 - Collection value history chart
 - Export to CSV and PDF
 - Price drop/spike alerts (email)
-- Wishlist with **target price notifications** (email alert when card hits target)
+- Wishlist with target price notifications (email alert when card hits target)
 - Ad-free everywhere
 - Priority support
 
@@ -131,7 +130,7 @@ True drill-down navigation — each level is a real page, not a tab:
 - Dashboard (📊) — default landing page
 - Browse (📺) — series/sets/cards hierarchy
 - My Cards (🗂️)
-- Wishlist (⭐)
+- Wishlist (⭐) — Pro only
 - Analytics (📈) — Pro only
 - Footer: user avatar, name, tier badge
 

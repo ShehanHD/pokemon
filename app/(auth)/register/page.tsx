@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 
 export default function RegisterPage() {
-  const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -20,9 +18,9 @@ export default function RegisterPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: form.get('name'),
-        email: form.get('email'),
-        password: form.get('password'),
+        name: String(form.get('name') ?? ''),
+        email: String(form.get('email') ?? ''),
+        password: String(form.get('password') ?? ''),
       }),
     })
 
@@ -35,8 +33,8 @@ export default function RegisterPage() {
 
     // Auto sign-in after registration
     await signIn('credentials', {
-      email: form.get('email'),
-      password: form.get('password'),
+      email: String(form.get('email') ?? ''),
+      password: String(form.get('password') ?? ''),
       callbackUrl: '/dashboard',
     })
   }
@@ -53,8 +51,9 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs text-overlay0 mb-1">Name</label>
+          <label htmlFor="name" className="block text-xs text-overlay0 mb-1">Name</label>
           <input
+            id="name"
             name="name"
             type="text"
             required
@@ -62,8 +61,9 @@ export default function RegisterPage() {
           />
         </div>
         <div>
-          <label className="block text-xs text-overlay0 mb-1">Email</label>
+          <label htmlFor="email" className="block text-xs text-overlay0 mb-1">Email</label>
           <input
+            id="email"
             name="email"
             type="email"
             required
@@ -71,8 +71,9 @@ export default function RegisterPage() {
           />
         </div>
         <div>
-          <label className="block text-xs text-overlay0 mb-1">Password</label>
+          <label htmlFor="password" className="block text-xs text-overlay0 mb-1">Password</label>
           <input
+            id="password"
             name="password"
             type="password"
             required

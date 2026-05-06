@@ -1,11 +1,12 @@
 'use client'
 
+import { Suspense } from 'react'
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard'
@@ -19,8 +20,8 @@ export default function LoginPage() {
 
     const form = new FormData(e.currentTarget)
     const result = await signIn('credentials', {
-      email: form.get('email'),
-      password: form.get('password'),
+      email: String(form.get('email') ?? ''),
+      password: String(form.get('password') ?? ''),
       redirect: false,
     })
 
@@ -44,8 +45,9 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs text-overlay0 mb-1">Email</label>
+          <label htmlFor="email" className="block text-xs text-overlay0 mb-1">Email</label>
           <input
+            id="email"
             name="email"
             type="email"
             required
@@ -53,8 +55,9 @@ export default function LoginPage() {
           />
         </div>
         <div>
-          <label className="block text-xs text-overlay0 mb-1">Password</label>
+          <label htmlFor="password" className="block text-xs text-overlay0 mb-1">Password</label>
           <input
+            id="password"
             name="password"
             type="password"
             required
@@ -90,5 +93,13 @@ export default function LoginPage() {
         </Link>
       </p>
     </>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

@@ -58,3 +58,6 @@ export const PtcgCardResponseSchema = z.object({
 
 export type PtcgSet = z.infer<typeof PtcgSetSchema>
 export type PtcgCard = z.infer<typeof PtcgCardSchema>
+export type PtcgSetsResponse = z.infer<typeof PtcgSetsResponseSchema>
+export type PtcgCardsResponse = z.infer<typeof PtcgCardsResponseSchema>
+export type PtcgCardResponse = z.infer<typeof PtcgCardResponseSchema>

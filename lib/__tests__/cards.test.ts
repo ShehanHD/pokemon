@@ -3,8 +3,7 @@ import { getCardsBySet, getCardById } from '../cards'
 
 const mockToArray = vi.fn()
 const mockFindOne = vi.fn()
-const mockSort = vi.fn(() => ({ toArray: mockToArray }))
-const mockFind = vi.fn(() => ({ sort: mockSort }))
+const mockFind = vi.fn(() => ({ toArray: mockToArray }))
 const mockCollection = vi.fn(() => ({ find: mockFind, findOne: mockFindOne }))
 
 vi.mock('@/lib/db', () => ({
@@ -36,7 +35,6 @@ describe('getCardsBySet', () => {
     const result = await getCardsBySet('base1')
     expect(mockCollection).toHaveBeenCalledWith('cards')
     expect(mockFind).toHaveBeenCalledWith({ set_id: 'base1' })
-    expect(mockSort).toHaveBeenCalledWith({ number: 1 })
     expect(result).toEqual([sampleCard])
   })
 

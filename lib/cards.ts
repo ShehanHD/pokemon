@@ -3,7 +3,7 @@ import type { PokemonCard } from './types'
 
 function serializeCard(doc: Record<string, unknown>): PokemonCard {
   const { _id, ...rest } = doc
-  return { _id: String(_id), ...rest } as PokemonCard
+  return (_id !== undefined ? { _id: String(_id), ...rest } : rest) as unknown as PokemonCard
 }
 
 function parseCardNumber(num: string): number {

@@ -13,6 +13,7 @@ const validSet = {
   series: 'Base',
   releaseDate: '1999/01/09',
   total: 102,
+  printedTotal: 102,
   images: {
     symbol: 'https://images.pokemontcg.io/base1/symbol.png',
     logo: 'https://images.pokemontcg.io/base1/logo.png',

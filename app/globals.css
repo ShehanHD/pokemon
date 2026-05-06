@@ -1,27 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  /* Backgrounds — deep navy Pokémon dark */
-  --color-base: #111827;
-  --color-mantle: #0f172a;
-  --color-crust: #0a0f1e;
+  /* Backgrounds — light Pokémon theme */
+  --color-crust: #f1f5f9;
+  --color-mantle: #e8eef5;
+  --color-base: #ffffff;
 
   /* Surfaces / Borders */
-  --color-surface0: #1e2a3a;
-  --color-surface1: #263347;
-  --color-surface2: #334155;
+  --color-surface0: #dde4ed;
+  --color-surface1: #c8d4e3;
+  --color-surface2: #b0c0d4;
 
   /* Text hierarchy */
-  --color-overlay0: #64748b;
-  --color-overlay1: #94a3b8;
-  --color-overlay2: #cbd5e1;
-  --color-subtext0: #e2e8f0;
-  --color-subtext1: #f1f5f9;
-  --color-text: #f8fafc;
+  --color-overlay0: #94a3b8;
+  --color-overlay1: #64748b;
+  --color-overlay2: #475569;
+  --color-subtext0: #334155;
+  --color-subtext1: #1e293b;
+  --color-text: #0f172a;
 
   /* Semantic accents — Pokémon palette */
   --color-blue: #ee2626;        /* primary — Pokéball red */
-  --color-mauve: #f5c518;       /* accent — Pikachu yellow */
+  --color-mauve: #b45309;       /* accent — Pikachu amber (readable on light) */
   --color-green: #22c55e;       /* success — grass type */
   --color-red: #ef4444;         /* error */
   --color-peach: #f97316;       /* warning — fire type */
@@ -44,6 +44,7 @@ body {
   background-color: var(--color-crust);
   color: var(--color-text);
   font-family: var(--font-chakra);
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {

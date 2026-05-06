@@ -3,7 +3,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getCardById } from '@/lib/cards'
 import { getSetById } from '@/lib/sets'
+import { getUserCardsForCard } from '@/lib/userCards'
+import { auth } from '@/lib/auth'
 import Breadcrumb from '@/components/catalog/Breadcrumb'
+import OwnedCounter from '@/components/collection/OwnedCounter'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -16,6 +19,10 @@ export default async function CardDetailPage({ params }: Props) {
   if (!card) notFound()
 
   const set = await getSetById(card.set_id)
+
+  const session = await auth()
+  const userId = session?.user?.id
+  const copies = userId ? await getUserCardsForCard(userId, card.pokemontcg_id) : []
 
   const rows: { label: string; value: string | null }[] = [
     { label: 'Set', value: card.setName },
@@ -67,6 +74,8 @@ export default async function CardDetailPage({ params }: Props) {
           {card.cardmarketPrice !== null && (
             <p className="text-2xl font-russo text-mauve mb-4">€{card.cardmarketPrice.toFixed(2)}</p>
           )}
+
+          {userId && <OwnedCounter cardId={card.pokemontcg_id} copies={copies} />}
 
           <div className="bg-base border border-surface0 rounded-xl overflow-hidden">
             {rows

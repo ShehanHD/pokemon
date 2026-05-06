@@ -27,7 +27,7 @@ export default async function BrowsePage() {
             >
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-7 h-7 rounded-full bg-blue/10 border border-blue/20 flex items-center justify-center flex-shrink-0">
-                  <Layers size={13} className="text-blue" />
+                  <Layers size={13} className="text-blue" aria-hidden="true" />
                 </div>
                 <span className="text-[10px] text-overlay0 tabular-nums">{s.releaseRange}</span>
               </div>

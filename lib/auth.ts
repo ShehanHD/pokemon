@@ -13,8 +13,8 @@ const credentialsSchema = z.object({
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
     }),
     Credentials({
       credentials: {
@@ -25,22 +25,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(credentials)
         if (!parsed.success) return null
 
-        const db = await getDb()
-        const user = await db.collection('users').findOne({
-          email: parsed.data.email,
-          provider: 'credentials',
-        })
-        if (!user || !user.passwordHash) return null
+        try {
+          const db = await getDb()
+          const user = await db.collection('users').findOne({
+            email: parsed.data.email,
+            provider: 'credentials',
+          })
+          if (!user || !user.passwordHash) return null
 
-        const valid = await bcrypt.compare(parsed.data.password, user.passwordHash as string)
-        if (!valid) return null
+          const valid = await bcrypt.compare(parsed.data.password, user.passwordHash as string)
+          if (!valid) return null
 
-        return {
-          id: user._id.toString(),
-          email: user.email as string,
-          name: user.name as string,
-          image: (user.image as string | undefined) ?? null,
-          tier: user.tier as string,
+          return {
+            id: user._id.toString(),
+            email: user.email as string,
+            name: user.name as string,
+            image: (user.image as string | undefined) ?? null,
+            tier: user.tier as string,
+          }
+        } catch (err) {
+          console.error('[auth] authorize error:', err)
+          return null
         }
       },
     }),
@@ -52,33 +57,39 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
-        token.tier = (user as { tier?: string }).tier ?? 'free'
+        token.tier = user.tier ?? 'free'
         token.id = user.id
       }
       if (account?.provider === 'google') {
-        const db = await getDb()
-        const existing = await db.collection('users').findOne({ email: token.email })
-        if (!existing) {
-          await db.collection('users').insertOne({
-            email: token.email,
-            name: token.name,
-            image: token.picture,
-            provider: 'google',
-            tier: 'free',
-            createdAt: new Date(),
-          })
-          token.tier = 'free'
-        } else {
-          token.tier = existing.tier as string
-          token.id = existing._id.toString()
+        try {
+          const db = await getDb()
+          const existing = await db.collection('users').findOne({ email: token.email })
+          if (!existing) {
+            const result = await db.collection('users').insertOne({
+              email: token.email,
+              name: token.name,
+              image: token.picture,
+              provider: 'google',
+              tier: 'free',
+              createdAt: new Date(),
+            })
+            token.id = result.insertedId.toString()
+            token.tier = 'free'
+          } else {
+            token.tier = existing.tier as string
+            token.id = existing._id.toString()
+          }
+        } catch (err) {
+          console.error('[auth] jwt google callback error:', err)
+          throw err
         }
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string
-        session.user.tier = token.tier as string
+        session.user.id = (token.id as string | undefined) ?? ''
+        session.user.tier = (token.tier as string | undefined) ?? 'free'
       }
       return session
     },

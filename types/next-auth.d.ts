@@ -1,12 +1,15 @@
 import 'next-auth'
+import type { DefaultSession } from 'next-auth'
 
 declare module 'next-auth' {
+  interface User {
+    id?: string
+    tier?: string
+  }
+
   interface Session {
-    user: {
+    user: DefaultSession['user'] & {
       id: string
-      email: string
-      name: string
-      image?: string
       tier: string
     }
   }

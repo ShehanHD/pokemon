@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Info, X } from 'lucide-react'
 import type { PokemonSet } from '@/lib/types'
+import { setCodeFor } from '@/lib/taxonomy/setCode'
 
 function formatDate(dateStr: string): string {
   const [y, m, d] = dateStr.split('/')
@@ -16,11 +17,15 @@ function formatDate(dateStr: string): string {
 interface Props {
   set: PokemonSet
   seriesSlug: string
+  ownedCount?: number
+  totalCards?: number
 }
 
-export default function SetCard({ set, seriesSlug }: Props) {
+export default function SetCard({ set, seriesSlug, ownedCount, totalCards }: Props) {
   const [showInfo, setShowInfo] = useState(false)
   const isPromo = set.name.toLowerCase().includes('promo')
+  const code = setCodeFor(set)
+  const denom = totalCards ?? set.totalCards
 
   return (
     <>
@@ -28,6 +33,9 @@ export default function SetCard({ set, seriesSlug }: Props) {
         href={`/browse/${seriesSlug}/${set.pokemontcg_id}`}
         className="relative bg-base border border-surface0 rounded-xl px-4 py-8 hover:border-blue/50 hover:bg-surface0/30 transition-colors group flex flex-col"
       >
+        <span className="absolute top-1 left-1 text-[9px] font-bold px-1.5 py-0.5 rounded bg-base/80 text-mauve border border-surface0">
+          {code}
+        </span>
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowInfo(true) }}
           className="absolute top-2 right-2 text-overlay0 hover:text-blue transition-colors p-0.5"
@@ -35,6 +43,11 @@ export default function SetCard({ set, seriesSlug }: Props) {
         >
           <Info size={14} />
         </button>
+        {ownedCount !== undefined && (
+          <span className="absolute bottom-1 right-1 text-[9px] font-medium px-1.5 py-0.5 rounded bg-blue/80 text-white">
+            {ownedCount} / {denom} owned
+          </span>
+        )}
 
         {set.logoUrl && (
           <div className={`flex items-center justify-center w-full overflow-hidden mb-3 ${isPromo ? 'h-8' : 'h-14'}`}>

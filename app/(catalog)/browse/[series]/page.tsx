@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
+import { auth } from '@/lib/auth'
 import { getSetsBySeries } from '@/lib/sets'
+import { getOwnedCountsBySet } from '@/lib/userCards'
+import { seriesToEra } from '@/lib/taxonomy/era'
 import Breadcrumb from '@/components/catalog/Breadcrumb'
+import SetCard from '@/components/catalog/SetCard'
 
 interface Props {
   params: Promise<{ series: string }>
@@ -10,11 +12,18 @@ interface Props {
 
 export default async function SeriesPage({ params }: Props) {
   const { series: seriesSlug } = await params
-  const sets = await getSetsBySeries(seriesSlug)
+  const session = await auth()
+  const userId = session?.user?.id
+
+  const [sets, counts] = await Promise.all([
+    getSetsBySeries(seriesSlug),
+    userId ? getOwnedCountsBySet(userId) : Promise.resolve(new Map<string, number>()),
+  ])
 
   if (sets.length === 0) notFound()
 
   const seriesName = sets[0].series
+  const era = seriesToEra(seriesName)
 
   return (
     <div>
@@ -25,44 +34,21 @@ export default async function SeriesPage({ params }: Props) {
         ]}
       />
 
-      <div className="space-y-2">
+      <header className="mb-4">
+        <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mauve/20 text-mauve mb-2">
+          {era} era
+        </span>
+        <h1 className="text-2xl font-russo text-text">{seriesName}</h1>
+      </header>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
         {sets.map((set) => (
-          <Link
+          <SetCard
             key={set.pokemontcg_id}
-            href={`/browse/${seriesSlug}/${set.pokemontcg_id}`}
-            className="flex items-center gap-4 bg-base border border-surface0 rounded-xl px-4 py-3 hover:border-blue/50 hover:bg-surface0/30 transition-colors group"
-          >
-            {set.symbolUrl && (
-              <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center">
-                <Image
-                  src={set.symbolUrl}
-                  alt={`${set.name} symbol`}
-                  width={32}
-                  height={32}
-                  className="object-contain"
-                />
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <h2 className="text-sm font-russo text-text group-hover:text-blue transition-colors truncate">
-                {set.name}
-              </h2>
-              <p className="text-[10px] text-overlay0 mt-0.5">
-                {set.releaseDate.slice(0, 4)} · {set.totalCards} cards
-              </p>
-            </div>
-            {set.logoUrl && (
-              <div className="hidden sm:flex w-24 h-10 items-center justify-end flex-shrink-0">
-                <Image
-                  src={set.logoUrl}
-                  alt={set.name}
-                  width={96}
-                  height={40}
-                  className="object-contain opacity-60 group-hover:opacity-100 transition-opacity"
-                />
-              </div>
-            )}
-          </Link>
+            set={set}
+            seriesSlug={seriesSlug}
+            ownedCount={userId ? (counts.get(set.pokemontcg_id) ?? 0) : undefined}
+          />
         ))}
       </div>
     </div>

@@ -30,10 +30,11 @@ export default async function SetPage({ params }: Props) {
         {set.logoUrl && (
           <Image
             src={set.logoUrl}
-            alt={set.name}
+            alt=""
             width={160}
             height={60}
             className="object-contain"
+            priority
           />
         )}
         <div>

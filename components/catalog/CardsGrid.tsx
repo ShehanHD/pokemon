@@ -43,6 +43,7 @@ export default function CardsGrid({ cards }: { cards: PokemonCard[] }) {
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
+            aria-pressed={filter === f.key}
             className={[
               'px-3 py-1 rounded-full text-[11px] font-medium transition-colors',
               filter === f.key

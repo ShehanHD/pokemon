@@ -4,14 +4,15 @@ import { useState } from 'react'
 import { Plus, Minus } from 'lucide-react'
 import AddCopyDialog from './AddCopyDialog'
 import RemoveCopyDialog from './RemoveCopyDialog'
-import type { UserCard } from '@/lib/types'
+import type { UserCard, PokemonSet } from '@/lib/types'
 
 interface Props {
   cardId: string
   copies: UserCard[]
+  set: PokemonSet | null
 }
 
-export default function OwnedCounter({ cardId, copies }: Props) {
+export default function OwnedCounter({ cardId, copies, set }: Props) {
   const [adding, setAdding] = useState(false)
   const [removing, setRemoving] = useState(false)
 
@@ -51,7 +52,7 @@ export default function OwnedCounter({ cardId, copies }: Props) {
         </p>
       )}
 
-      <AddCopyDialog cardId={cardId} open={adding} onClose={() => setAdding(false)} />
+      <AddCopyDialog cardId={cardId} open={adding} onClose={() => setAdding(false)} set={set} />
       <RemoveCopyDialog
         cardId={cardId}
         copies={copies}

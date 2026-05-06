@@ -7,6 +7,9 @@ import { getUserCardsForCard } from '@/lib/userCards'
 import { auth } from '@/lib/auth'
 import Breadcrumb from '@/components/catalog/Breadcrumb'
 import OwnedCounter from '@/components/collection/OwnedCounter'
+import { seriesToEra } from '@/lib/taxonomy/era'
+import { setCodeFor } from '@/lib/taxonomy/setCode'
+import { normaliseRarity } from '@/lib/taxonomy/rarity'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -24,6 +27,12 @@ export default async function CardDetailPage({ params }: Props) {
   const userId = session?.user?.id
   const copies = userId ? await getUserCardsForCard(userId, card.pokemontcg_id) : []
 
+  const era = seriesToEra(card.series)
+  const code = set ? setCodeFor(set) : null
+  const normalised = normaliseRarity(card.rarity)
+
+  const rarityValue = card.rarity ? `${normalised} (${card.rarity})` : normalised
+
   const rows: { label: string; value: string | null }[] = [
     { label: 'Set', value: card.setName },
     { label: 'Series', value: card.series },
@@ -31,7 +40,7 @@ export default async function CardDetailPage({ params }: Props) {
     { label: 'Supertype', value: card.supertype },
     { label: 'Subtypes', value: card.subtypes.length ? card.subtypes.join(', ') : null },
     { label: 'Types', value: card.types.length ? card.types.join(', ') : null },
-    { label: 'Rarity', value: card.rarity },
+    { label: 'Rarity', value: rarityValue },
     {
       label: 'Cardmarket Price',
       value: card.cardmarketPrice !== null ? `€${card.cardmarketPrice.toFixed(2)}` : null,
@@ -75,7 +84,13 @@ export default async function CardDetailPage({ params }: Props) {
             <p className="text-2xl font-russo text-mauve mb-4">€{card.cardmarketPrice.toFixed(2)}</p>
           )}
 
-          {userId && <OwnedCounter cardId={card.pokemontcg_id} copies={copies} />}
+          <div className="flex flex-wrap items-center gap-2 mb-3">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mauve/20 text-mauve">{era} era</span>
+            {code && <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-base border border-surface0 text-mauve">{code}</span>}
+            <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-blue/20 text-blue">{normalised}</span>
+          </div>
+
+          {userId && <OwnedCounter cardId={card.pokemontcg_id} copies={copies} set={set} />}
 
           <div className="bg-base border border-surface0 rounded-xl overflow-hidden">
             {rows

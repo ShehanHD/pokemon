@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { addUserCard } from '@/app/(catalog)/cards/[id]/actions'
-import type { CardVariant, CardCondition, GradingCompany } from '@/lib/types'
+import type { CardVariant, CardCondition, GradingCompany, PokemonSet } from '@/lib/types'
 
 interface Props {
   cardId: string
   open: boolean
   onClose: () => void
+  set: PokemonSet | null
 }
 
 const VARIANTS: CardVariant[] = [
@@ -18,7 +19,7 @@ const VARIANTS: CardVariant[] = [
 const CONDITIONS: CardCondition[] = ['NM', 'LP', 'MP', 'HP', 'DMG']
 const COMPANIES: GradingCompany[] = ['PSA', 'BGS', 'CGC', 'SGC', 'TAG', 'Other']
 
-export default function AddCopyDialog({ cardId, open, onClose }: Props) {
+export default function AddCopyDialog({ cardId, open, onClose, set: _set }: Props) {
   const [type, setType] = useState<'raw' | 'graded'>('raw')
   const [variant, setVariant] = useState<CardVariant>('normal')
   const [cost, setCost] = useState('')

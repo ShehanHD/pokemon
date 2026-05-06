@@ -21,6 +21,8 @@ export interface PokemonSet {
   seriesSlug: string
   releaseDate: string       // "YYYY/MM/DD"
   totalCards: number
+  printedTotal: number
+  totalValue: number | null
   logoUrl: string
   symbolUrl: string
 }
@@ -42,3 +44,44 @@ export interface PokemonCard {
   imageUrlHiRes: string
   cardmarketPrice: number | null
 }
+
+export type CardVariant =
+  | 'normal'
+  | 'holo'
+  | 'reverse-holo'
+  | '1st-edition'
+  | 'shadowless'
+  | 'promo'
+  | 'full-art'
+  | 'alt-art'
+
+export type CardCondition = 'NM' | 'LP' | 'MP' | 'HP' | 'DMG'
+
+export type GradingCompany = 'PSA' | 'BGS' | 'CGC' | 'SGC' | 'TAG' | 'Other'
+
+interface UserCardBase {
+  _id?: string
+  userId: string
+  cardId: string
+  variant: CardVariant
+  acquiredAt: Date
+  cost: number
+  notes?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type UserCardRaw = UserCardBase & {
+  type: 'raw'
+  condition: CardCondition
+  centering?: string
+}
+
+export type UserCardGraded = UserCardBase & {
+  type: 'graded'
+  gradingCompany: GradingCompany
+  grade: number
+  gradedValue: number
+}
+
+export type UserCard = UserCardRaw | UserCardGraded

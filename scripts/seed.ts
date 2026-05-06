@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb'
 import { fetchAllSets, fetchCardsBySet } from '../lib/pokemontcg'
 import { toSeriesSlug } from '../lib/sets'
 
-const MONGODB_URI = process.env.MONGODB_URI!
+const MONGODB_URI = process.env.MONGODB_URI
 const DB_NAME = process.env.MONGODB_DB ?? 'pokevault'
 
 async function seed() {
@@ -11,13 +11,22 @@ async function seed() {
 
   const client = new MongoClient(MONGODB_URI)
   await client.connect()
-  const db = client.db(DB_NAME)
 
-  console.log('Fetching all sets from pokemontcg.io…')
-  const sets = await fetchAllSets()
-  console.log(`  Found ${sets.length} sets`)
+  try {
+    const db = client.db(DB_NAME)
 
-  for (const ptcgSet of sets) {
+    // Ensure indexes before writing
+    await db.collection('sets').createIndex({ pokemontcg_id: 1 }, { unique: true })
+    await db.collection('sets').createIndex({ seriesSlug: 1 })
+    await db.collection('cards').createIndex({ pokemontcg_id: 1 }, { unique: true })
+    await db.collection('cards').createIndex({ set_id: 1 })
+    console.log('Indexes ensured.')
+
+    console.log('Fetching all sets from pokemontcg.io…')
+    const sets = await fetchAllSets()
+    console.log(`  Found ${sets.length} sets`)
+
+    for (const ptcgSet of sets) {
     const seriesSlug = toSeriesSlug(ptcgSet.series)
     const setDoc = {
       pokemontcg_id: ptcgSet.id,
@@ -67,20 +76,15 @@ async function seed() {
     }
 
     console.log(`    Upserted ${cards.length} cards for ${ptcgSet.id}`)
+    }
+
+    console.log('Seed complete.')
+  } finally {
+    await client.close()
   }
-
-  // Create indexes
-  await db.collection('sets').createIndex({ pokemontcg_id: 1 }, { unique: true })
-  await db.collection('sets').createIndex({ seriesSlug: 1 })
-  await db.collection('cards').createIndex({ pokemontcg_id: 1 }, { unique: true })
-  await db.collection('cards').createIndex({ set_id: 1 })
-  console.log('Indexes ensured.')
-
-  await client.close()
-  console.log('Seed complete.')
 }
 
 seed().catch((err) => {
-  console.error(err)
+  console.error(err instanceof Error ? err.stack : err)
   process.exit(1)
 })

@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { LayoutDashboard, Search, BookOpen, Star, BarChart2, Lock } from 'lucide-react'
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: '📊', section: 'main' },
-  { href: '/browse', label: 'Browse', icon: '📦', section: 'main' },
-  { href: '/collection', label: 'My Cards', icon: '🗂️', section: 'collection' },
-  { href: '/wishlist', label: 'Wishlist', icon: '⭐', section: 'collection', pro: true },
-  { href: '/analytics', label: 'Analytics', icon: '📈', section: 'collection', pro: true },
+  { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, section: 'main' },
+  { href: '/browse', label: 'Browse', Icon: Search, section: 'main' },
+  { href: '/collection', label: 'My Cards', Icon: BookOpen, section: 'collection' },
+  { href: '/wishlist', label: 'Wishlist', Icon: Star, section: 'collection', pro: true },
+  { href: '/analytics', label: 'Analytics', Icon: BarChart2, section: 'collection', pro: true },
 ]
 
 export default function Sidebar() {
@@ -22,37 +23,44 @@ export default function Sidebar() {
   const collectionItems = navItems.filter((i) => i.section === 'collection')
 
   return (
-    <aside className="w-40 flex-shrink-0 bg-mantle border-r border-surface0 flex flex-col">
+    <aside className="w-44 flex-shrink-0 bg-mantle border-r border-surface0 flex flex-col">
+      {/* Brand */}
       <div className="px-4 py-4 border-b border-surface0">
-        <span className="font-black text-sm text-text">Poke</span>
-        <span className="font-black text-sm text-red">Vault</span>
+        <div className="flex items-center gap-1.5">
+          <PokeballIcon className="w-5 h-5 flex-shrink-0" />
+          <div>
+            <span className="font-russo text-sm text-text tracking-wide">Poke</span>
+            <span className="font-russo text-sm text-blue tracking-wide">Vault</span>
+          </div>
+        </div>
       </div>
 
       <nav className="flex-1 py-2">
-        <div className="px-4 py-2 text-[9px] uppercase tracking-widest text-surface1 font-semibold">
+        <div className="px-4 py-2 text-[9px] uppercase tracking-widest text-overlay0 font-semibold">
           Main
         </div>
         {mainItems.map((item) => (
-          <NavItem key={item.href} item={item} active={pathname === item.href} isPro={isPro} />
+          <NavItem key={item.href} item={item} active={item.href === '/browse' ? pathname.startsWith('/browse') : pathname === item.href} isPro={isPro} />
         ))}
 
-        <div className="px-4 py-2 mt-2 text-[9px] uppercase tracking-widest text-surface1 font-semibold">
-          My Collection
+        <div className="px-4 py-2 mt-2 text-[9px] uppercase tracking-widest text-overlay0 font-semibold">
+          Collection
         </div>
         {collectionItems.map((item) => (
-          <NavItem key={item.href} item={item} active={pathname === item.href} isPro={isPro} />
+          <NavItem key={item.href} item={item} active={item.href === '/browse' ? pathname.startsWith('/browse') : pathname === item.href} isPro={isPro} />
         ))}
       </nav>
 
+      {/* User footer */}
       <div className="border-t border-surface0 px-4 py-3">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-mauve flex-shrink-0" />
-          <div>
-            <div className="text-[10px] text-overlay2 leading-none">
+          <div className="w-6 h-6 rounded-full bg-blue/20 border border-blue/40 flex-shrink-0" />
+          <div className="min-w-0">
+            <div className="text-[10px] text-overlay2 leading-none truncate">
               {session?.user?.name ?? '—'}
             </div>
             <div className="text-[9px] text-mauve mt-0.5">
-              {tier === 'pro' ? '✦ Pro' : tier === 'adfree' ? '◆ Ad-Free' : 'Free'}
+              {tier === 'pro' ? '★ Pro' : tier === 'adfree' ? '◆ Ad-Free' : 'Free'}
             </div>
           </div>
         </div>
@@ -71,25 +79,34 @@ function NavItem({
   isPro: boolean
 }) {
   const locked = item.pro && !isPro
+  const { Icon } = item
   return (
     <Link
       href={locked ? '#' : item.href}
       className={[
-        'flex items-center gap-2 px-4 py-2 text-[11px]',
+        'flex items-center gap-2.5 px-4 py-2.5 text-[11px] transition-colors',
         active
-          ? 'bg-blue/10 text-text border-r-2 border-blue'
+          ? 'bg-blue/15 text-text border-r-2 border-blue'
           : locked
-            ? 'text-overlay0 cursor-not-allowed'
-            : 'text-overlay0 hover:text-text',
+            ? 'text-overlay0 cursor-not-allowed opacity-60'
+            : 'text-overlay1 hover:text-text hover:bg-surface0/50',
       ].join(' ')}
     >
-      <span className="w-4 text-center">{item.icon}</span>
+      <Icon size={13} className="flex-shrink-0" />
       <span className="flex-1">{item.label}</span>
-      {locked && (
-        <span className="text-[8px] bg-mauve/20 text-mauve px-1.5 py-0.5 rounded-full">
-          Pro
-        </span>
-      )}
+      {locked && <Lock size={10} className="flex-shrink-0 text-overlay0" />}
     </Link>
+  )
+}
+
+function PokeballIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" className="text-overlay0" />
+      <path d="M2 12h20" stroke="currentColor" strokeWidth="1.5" className="text-overlay0" />
+      <path d="M2 12a10 10 0 0 1 20 0" fill="currentColor" className="text-blue opacity-30" />
+      <circle cx="12" cy="12" r="3" fill="currentColor" className="text-surface1" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" className="text-text" />
+    </svg>
   )
 }

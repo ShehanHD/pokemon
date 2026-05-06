@@ -1,7 +1,10 @@
-import { auth } from '@/lib/auth'
+import NextAuth from 'next-auth'
+import { authConfig } from '@/lib/auth.config'
 import { NextResponse } from 'next/server'
 
-const protectedPrefixes = ['/dashboard', '/browse', '/collection', '/wishlist', '/analytics', '/settings']
+const { auth } = NextAuth(authConfig)
+
+const protectedPrefixes = ['/dashboard', '/collection', '/wishlist', '/analytics', '/settings']
 
 export default auth((req) => {
   const { pathname } = req.nextUrl

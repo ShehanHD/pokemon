@@ -54,10 +54,17 @@ export type CardVariant =
   | 'promo'
   | 'full-art'
   | 'alt-art'
+  | 'holofoil'
+  | 'reverse-holofoil'
+  | 'pokeball-pattern'
+  | 'masterball-pattern'
+  | 'cosmos-holo'
+  | 'crosshatch-holo'
+  | 'galaxy-holo'
 
 export type CardCondition = 'NM' | 'LP' | 'MP' | 'HP' | 'DMG'
 
-export type GradingCompany = 'PSA' | 'BGS' | 'CGC' | 'SGC' | 'TAG' | 'Other'
+export type GradingCompany = 'PSA' | 'BGS' | 'CGC' | 'SGC' | 'TAG' | 'Ace' | 'GMA' | 'Other'
 
 interface UserCardBase {
   _id?: string

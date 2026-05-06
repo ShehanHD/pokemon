@@ -6,11 +6,11 @@ import { useSession } from 'next-auth/react'
 import { LayoutDashboard, Search, BookOpen, Star, BarChart2, Lock } from 'lucide-react'
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, section: 'main' },
-  { href: '/browse', label: 'Browse', Icon: Search, section: 'main' },
-  { href: '/collection', label: 'My Cards', Icon: BookOpen, section: 'collection' },
-  { href: '/wishlist', label: 'Wishlist', Icon: Star, section: 'collection', pro: true },
-  { href: '/analytics', label: 'Analytics', Icon: BarChart2, section: 'collection', pro: true },
+  { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, section: 'main', matchPrefix: false },
+  { href: '/browse', label: 'Browse', Icon: Search, section: 'main', matchPrefix: true },
+  { href: '/collection', label: 'My Cards', Icon: BookOpen, section: 'collection', matchPrefix: false },
+  { href: '/wishlist', label: 'Wishlist', Icon: Star, section: 'collection', pro: true, matchPrefix: false },
+  { href: '/analytics', label: 'Analytics', Icon: BarChart2, section: 'collection', pro: true, matchPrefix: false },
 ]
 
 export default function Sidebar() {
@@ -40,14 +40,24 @@ export default function Sidebar() {
           Main
         </div>
         {mainItems.map((item) => (
-          <NavItem key={item.href} item={item} active={item.href === '/browse' ? pathname.startsWith('/browse') : pathname === item.href} isPro={isPro} />
+          <NavItem
+            key={item.href}
+            item={item}
+            active={item.matchPrefix ? pathname.startsWith(item.href) : pathname === item.href}
+            isPro={isPro}
+          />
         ))}
 
         <div className="px-4 py-2 mt-2 text-[9px] uppercase tracking-widest text-overlay0 font-semibold">
           Collection
         </div>
         {collectionItems.map((item) => (
-          <NavItem key={item.href} item={item} active={item.href === '/browse' ? pathname.startsWith('/browse') : pathname === item.href} isPro={isPro} />
+          <NavItem
+            key={item.href}
+            item={item}
+            active={item.matchPrefix ? pathname.startsWith(item.href) : pathname === item.href}
+            isPro={isPro}
+          />
         ))}
       </nav>
 
@@ -80,21 +90,29 @@ function NavItem({
 }) {
   const locked = item.pro && !isPro
   const { Icon } = item
+  const className = [
+    'flex items-center gap-2.5 px-4 py-2.5 text-[11px] transition-colors',
+    active
+      ? 'bg-blue/15 text-text border-r-2 border-blue'
+      : locked
+        ? 'text-overlay0 cursor-not-allowed opacity-60'
+        : 'text-overlay1 hover:text-text hover:bg-surface0/50',
+  ].join(' ')
+
+  if (locked) {
+    return (
+      <span className={className} aria-disabled="true">
+        <Icon size={13} className="flex-shrink-0" />
+        <span className="flex-1">{item.label}</span>
+        <Lock size={10} className="flex-shrink-0 text-overlay0" />
+      </span>
+    )
+  }
+
   return (
-    <Link
-      href={locked ? '#' : item.href}
-      className={[
-        'flex items-center gap-2.5 px-4 py-2.5 text-[11px] transition-colors',
-        active
-          ? 'bg-blue/15 text-text border-r-2 border-blue'
-          : locked
-            ? 'text-overlay0 cursor-not-allowed opacity-60'
-            : 'text-overlay1 hover:text-text hover:bg-surface0/50',
-      ].join(' ')}
-    >
+    <Link href={item.href} className={className}>
       <Icon size={13} className="flex-shrink-0" />
       <span className="flex-1">{item.label}</span>
-      {locked && <Lock size={10} className="flex-shrink-0 text-overlay0" />}
     </Link>
   )
 }

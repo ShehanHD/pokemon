@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react'
+import type { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { auth } from '@/lib/auth'
 import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
 
 export default async function CatalogLayout({ children }: { children: ReactNode }) {
-  const session = await auth()
+  const session: Session | null = await auth()
   // Intentionally no redirect — catalog routes are public
 
   return (

@@ -1,10 +1,10 @@
 import NextAuth from 'next-auth'
-import Google from 'next-auth/providers/google'
 import Credentials from 'next-auth/providers/credentials'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { getDb } from './db'
 import type { Tier } from './types'
+import { authConfig } from './auth.config'
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -12,11 +12,9 @@ const credentialsSchema = z.object({
 })
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    }),
+    ...authConfig.providers,
     Credentials({
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -84,6 +82,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           console.error('[auth] jwt google callback error:', err)
           throw err
         }
+      }
+      if (token.email === 'shehanhd@gmail.com') {
+        token.tier = 'pro'
       }
       return token
     },

@@ -55,7 +55,7 @@ export default async function CardDetailPage({ params }: Props) {
               alt={card.name}
               fill
               sizes="245px"
-              className="object-cover"
+              className="object-contain"
               priority
             />
           </div>
@@ -92,7 +92,7 @@ export default async function CardDetailPage({ params }: Props) {
               href={`/browse/${set.seriesSlug}/${set.pokemontcg_id}`}
               className="inline-flex items-center gap-2 mt-4 text-[11px] text-blue hover:underline"
             >
-              ← Back to {set.name}
+              {'\u2190'} Back to {set.name}
             </Link>
           )}
         </div>

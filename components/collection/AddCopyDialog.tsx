@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { addUserCard } from '@/app/(catalog)/cards/[id]/actions'
+import { applicableVariantsForSet, variantLabel } from '@/lib/taxonomy/variant'
 import type { CardVariant, CardCondition, GradingCompany, PokemonSet } from '@/lib/types'
 
 interface Props {
@@ -12,16 +13,14 @@ interface Props {
   set: PokemonSet | null
 }
 
-const VARIANTS: CardVariant[] = [
-  'normal', 'holo', 'reverse-holo', '1st-edition',
-  'shadowless', 'promo', 'full-art', 'alt-art',
-]
+const VARIANT_FALLBACK: CardVariant[] = ['normal', 'holofoil', 'reverse-holofoil', 'promo']
 const CONDITIONS: CardCondition[] = ['NM', 'LP', 'MP', 'HP', 'DMG']
-const COMPANIES: GradingCompany[] = ['PSA', 'BGS', 'CGC', 'SGC', 'TAG', 'Other']
+const COMPANIES: GradingCompany[] = ['PSA', 'BGS', 'CGC', 'SGC', 'TAG', 'Ace', 'GMA', 'Other']
 
-export default function AddCopyDialog({ cardId, open, onClose, set: _set }: Props) {
+export default function AddCopyDialog({ cardId, open, onClose, set }: Props) {
+  const variants = set ? applicableVariantsForSet(set) : VARIANT_FALLBACK
   const [type, setType] = useState<'raw' | 'graded'>('raw')
-  const [variant, setVariant] = useState<CardVariant>('normal')
+  const [variant, setVariant] = useState<CardVariant>(variants[0] ?? 'normal')
   const [cost, setCost] = useState('')
   const [acquiredAt, setAcquiredAt] = useState(() => new Date().toISOString().slice(0, 10))
   const [condition, setCondition] = useState<CardCondition>('NM')
@@ -110,7 +109,7 @@ export default function AddCopyDialog({ cardId, open, onClose, set: _set }: Prop
               onChange={(e) => setVariant(e.target.value as CardVariant)}
               className="w-full bg-base border border-surface0 rounded px-2 py-1.5 text-sm text-text"
             >
-              {VARIANTS.map((v) => <option key={v} value={v}>{v}</option>)}
+              {variants.map((v) => <option key={v} value={v}>{variantLabel(v)}</option>)}
             </select>
           </Field>
 

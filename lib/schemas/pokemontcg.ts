@@ -6,12 +6,25 @@ const PtcgCardPricesSchema = z.object({
   trendPrice: z.number().nullable().optional(),
 }).optional()
 
+const PtcgTcgPlayerVariantSchema = z.object({
+  market: z.number().nullable().optional(),
+}).passthrough()
+
+const PtcgTcgPlayerPricesSchema = z.object({
+  normal:             PtcgTcgPlayerVariantSchema.optional(),
+  holofoil:           PtcgTcgPlayerVariantSchema.optional(),
+  reverseHolofoil:    PtcgTcgPlayerVariantSchema.optional(),
+  '1stEditionNormal': PtcgTcgPlayerVariantSchema.optional(),
+  '1stEditionHolofoil': PtcgTcgPlayerVariantSchema.optional(),
+}).passthrough()
+
 export const PtcgSetSchema = z.object({
   id: z.string(),
   name: z.string(),
   series: z.string(),
   releaseDate: z.string(),
   total: z.number(),
+  printedTotal: z.number(),
   images: z.object({
     symbol: z.string().url(),
     logo: z.string().url(),
@@ -37,6 +50,9 @@ export const PtcgCardSchema = z.object({
   }),
   cardmarket: z.object({
     prices: PtcgCardPricesSchema,
+  }).optional(),
+  tcgplayer: z.object({
+    prices: PtcgTcgPlayerPricesSchema.optional(),
   }).optional(),
 })
 

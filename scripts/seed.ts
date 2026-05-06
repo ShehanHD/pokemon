@@ -2,6 +2,22 @@ import 'dotenv/config'
 import { MongoClient } from 'mongodb'
 import { fetchAllSets, fetchCardsBySet } from '../lib/pokemontcg'
 import { toSeriesSlug } from '../lib/sets'
+import type { PtcgCard } from '../lib/schemas/pokemontcg'
+
+function resolvePrice(card: PtcgCard): number | null {
+  const cm = card.cardmarket?.prices?.averageSellPrice
+  if (cm != null) return cm
+  const tp = card.tcgplayer?.prices
+  if (!tp) return null
+  return (
+    tp.holofoil?.market ??
+    tp.reverseHolofoil?.market ??
+    tp.normal?.market ??
+    tp['1stEditionHolofoil']?.market ??
+    tp['1stEditionNormal']?.market ??
+    null
+  )
+}
 
 const MONGODB_URI = process.env.MONGODB_URI
 const DB_NAME = process.env.MONGODB_DB ?? 'pokevault'
@@ -35,6 +51,7 @@ async function seed() {
       seriesSlug,
       releaseDate: ptcgSet.releaseDate,
       totalCards: ptcgSet.total,
+      printedTotal: ptcgSet.printedTotal,
       logoUrl: ptcgSet.images.logo,
       symbolUrl: ptcgSet.images.symbol,
     }
@@ -65,7 +82,7 @@ async function seed() {
         supertype: card.supertype,
         imageUrl: card.images.small,
         imageUrlHiRes: card.images.large,
-        cardmarketPrice: card.cardmarket?.prices?.averageSellPrice ?? null,
+        cardmarketPrice: resolvePrice(card),
       }
 
       await db.collection('cards').updateOne(
@@ -76,6 +93,15 @@ async function seed() {
     }
 
     console.log(`    Upserted ${cards.length} cards for ${ptcgSet.id}`)
+
+    const prices = cards
+      .map((c) => resolvePrice(c))
+      .filter((p): p is number => p !== null)
+    const totalValue = prices.length > 0 ? prices.reduce((sum, p) => sum + p, 0) : null
+    await db.collection('sets').updateOne(
+      { pokemontcg_id: ptcgSet.id },
+      { $set: { totalValue } }
+    )
     }
 
     console.log('Seed complete.')

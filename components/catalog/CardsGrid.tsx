@@ -7,10 +7,52 @@ import type { PokemonCard } from '@/lib/types'
 
 type Filter = 'all' | 'holo' | 'ex' | 'secret'
 
+const RARITY_ABBR: Record<string, string> = {
+  'Common':                    'Common',
+  'Uncommon':                  'Uncommon',
+  'Rare':                      'Rare',
+  'Rare Holo':                 'Holo',
+  'Rare Holo EX':              'Holo EX',
+  'Rare Holo GX':              'Holo GX',
+  'Rare Holo V':               'Holo V',
+  'Rare Holo VMAX':            'Holo VMAX',
+  'Rare Holo VSTAR':           'Holo VSTAR',
+  'Double Rare':               'Double',
+  'Ultra Rare':                'Ultra',
+  'Illustration Rare':         'IR',
+  'Special Illustration Rare': 'SIR',
+  'Hyper Rare':                'Hyper',
+  'Secret Rare':               'Secret',
+  'Rare Secret':               'Secret',
+  'Gold Rare':                 'Gold',
+  'ACE SPEC Rare':             'ACE SPEC',
+  'Shiny Rare':                'Shiny',
+  'Promo':                     'Promo',
+}
+
+type VariantLabel = { text: string; className: string }
+
+const LBL_RH: VariantLabel = { text: 'RH',   className: 'bg-surface2 text-subtext0' }
+const LBL_H:  VariantLabel = { text: 'H',    className: 'bg-yellow/80 text-subtext1' }
+const LBL_G:  VariantLabel = { text: 'G',    className: 'bg-mauve text-base' }
+
+const SPECIAL_KEYWORDS = ['secret', 'hyper', 'ultra', 'illustration', 'gold', 'shiny', 'radiant', 'double']
+
+function getVariantLabels(rarity: string | null): VariantLabel[] {
+  const r = (rarity ?? '').toLowerCase()
+  const text = rarity ? (RARITY_ABBR[rarity] ?? rarity) : '?'
+  const rLabel: VariantLabel = { text, className: 'border border-surface2 text-overlay1 bg-transparent' }
+
+  if (SPECIAL_KEYWORDS.some((k) => r.includes(k))) return [rLabel, LBL_G]
+  if (r.includes('rare')) return [rLabel, LBL_RH, LBL_H, LBL_G]
+  if (r === 'common' || r === 'uncommon') return [rLabel, LBL_RH, LBL_G]
+  return [rLabel, LBL_G]
+}
+
 const FILTERS: { key: Filter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'holo', label: 'Holo' },
-  { key: 'ex', label: 'EX / GX / V' },
+  { key: 'all',    label: 'All' },
+  { key: 'holo',   label: 'Holo' },
+  { key: 'ex',     label: 'EX / GX / V' },
   { key: 'secret', label: 'Secret Rare' },
 ]
 
@@ -30,7 +72,7 @@ function matchFilter(card: PokemonCard, filter: Filter): boolean {
   return true
 }
 
-export default function CardsGrid({ cards }: { cards: PokemonCard[] }) {
+export default function CardsGrid({ cards, totalCards, printedTotal }: { cards: PokemonCard[]; totalCards: number; printedTotal: number }) {
   const [filter, setFilter] = useState<Filter>('all')
 
   const visible = cards.filter((c) => matchFilter(c, filter))
@@ -81,11 +123,19 @@ export default function CardsGrid({ cards }: { cards: PokemonCard[] }) {
               </div>
               <div className="mt-1 px-0.5">
                 <p className="text-[10px] text-overlay2 truncate leading-tight">{card.name}</p>
-                {card.cardmarketPrice !== null && (
-                  <p className="text-[10px] text-mauve tabular-nums">
-                    €{card.cardmarketPrice.toFixed(2)}
-                  </p>
-                )}
+                <p className="text-[10px] text-overlay0 tabular-nums">
+                  {card.number}/{printedTotal}
+                  {card.cardmarketPrice !== null && (
+                    <span className="text-mauve"> · €{card.cardmarketPrice.toFixed(2)}</span>
+                  )}
+                </p>
+                <div className="flex gap-0.5 mt-0.5 flex-wrap">
+                  {getVariantLabels(card.rarity).map((label) => (
+                    <span key={label.text} className={`text-[8px] font-bold px-1 py-0.5 rounded ${label.className}`}>
+                      {label.text}
+                    </span>
+                  ))}
+                </div>
               </div>
             </Link>
           ))}

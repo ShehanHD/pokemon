@@ -5,6 +5,11 @@ import { getCardsBySet } from '@/lib/cards'
 import Breadcrumb from '@/components/catalog/Breadcrumb'
 import CardsGrid from '@/components/catalog/CardsGrid'
 
+function formatDate(dateStr: string): string {
+  const [y, m, d] = dateStr.split('/')
+  return new Date(+y, +m - 1, +d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+}
+
 interface Props {
   params: Promise<{ series: string; set: string }>
 }
@@ -40,12 +45,15 @@ export default async function SetPage({ params }: Props) {
         <div>
           <h1 className="font-russo text-lg text-text">{set.name}</h1>
           <p className="text-[11px] text-overlay0 mt-0.5">
-            {set.releaseDate.slice(0, 4)} · {set.totalCards} cards
+            {formatDate(set.releaseDate)} · {set.totalCards} cards
+            {set.totalValue != null && (
+              <span className="text-mauve tabular-nums"> · €{set.totalValue.toFixed(2)}</span>
+            )}
           </p>
         </div>
       </div>
 
-      <CardsGrid cards={cards} />
+      <CardsGrid cards={cards} totalCards={set.totalCards} printedTotal={set.printedTotal} />
     </div>
   )
 }

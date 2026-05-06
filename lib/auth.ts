@@ -4,6 +4,7 @@ import Credentials from 'next-auth/providers/credentials'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { getDb } from './db'
+import type { Tier } from './types'
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -41,7 +42,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             email: user.email as string,
             name: user.name as string,
             image: (user.image as string | undefined) ?? null,
-            tier: user.tier as string,
+            tier: (typeof user.tier === 'string' ? user.tier : 'free') as Tier,
           }
         } catch (err) {
           console.error('[auth] authorize error:', err)
@@ -76,7 +77,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.id = result.insertedId.toString()
             token.tier = 'free'
           } else {
-            token.tier = existing.tier as string
+            token.tier = typeof existing.tier === 'string' ? existing.tier : 'free'
             token.id = existing._id.toString()
           }
         } catch (err) {
@@ -89,7 +90,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = (token.id as string | undefined) ?? ''
-        session.user.tier = (token.tier as string | undefined) ?? 'free'
+        session.user.tier = (token.tier as Tier | undefined) ?? 'free'
       }
       return session
     },

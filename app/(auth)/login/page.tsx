@@ -9,7 +9,8 @@ import Link from 'next/link'
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard'
+  const raw = searchParams.get('callbackUrl') ?? '/dashboard'
+  const callbackUrl = raw.startsWith('/') ? raw : '/dashboard'
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 

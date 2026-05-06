@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import type { Db } from 'mongodb'
 
 // Mock db and bcryptjs
 vi.mock('@/lib/db', () => ({
@@ -11,17 +12,19 @@ vi.mock('bcryptjs', () => ({
 import { POST } from '../route'
 import { getDb } from '@/lib/db'
 
+const mockCollection = {
+  findOne: vi.fn(),
+  insertOne: vi.fn().mockResolvedValue({ insertedId: 'new-id' }),
+}
+
 const mockDb = {
-  collection: vi.fn().mockReturnValue({
-    findOne: vi.fn(),
-    insertOne: vi.fn().mockResolvedValue({ insertedId: 'new-id' }),
-  }),
+  collection: vi.fn().mockReturnValue(mockCollection),
 }
 
 describe('POST /api/auth/register', () => {
   beforeEach(() => {
-    vi.mocked(getDb).mockResolvedValue(mockDb as never)
-    mockDb.collection().findOne.mockResolvedValue(null)
+    vi.mocked(getDb).mockResolvedValue(mockDb as unknown as Db)
+    mockCollection.findOne.mockResolvedValue(null)
   })
 
   it('returns 400 for invalid payload', async () => {
@@ -33,8 +36,18 @@ describe('POST /api/auth/register', () => {
     expect(res.status).toBe(400)
   })
 
+  it('returns 400 for malformed JSON body', async () => {
+    const req = new Request('http://localhost/api/auth/register', {
+      method: 'POST',
+      body: 'not-json',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    const res = await POST(req)
+    expect(res.status).toBe(400)
+  })
+
   it('returns 409 when email already registered', async () => {
-    mockDb.collection().findOne.mockResolvedValue({ email: 'a@b.com' })
+    mockCollection.findOne.mockResolvedValue({ email: 'a@b.com' })
     const req = new Request('http://localhost/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email: 'a@b.com', password: 'password123', name: 'Test' }),

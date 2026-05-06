@@ -10,29 +10,37 @@ const registerSchema = z.object({
 })
 
 export async function POST(req: Request) {
-  const body = await req.json()
+  let body: unknown
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
+  }
+
   const parsed = registerSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid input' }, { status: 400 })
   }
 
   const { email, password, name } = parsed.data
-  const db = await getDb()
 
-  const existing = await db.collection('users').findOne({ email })
-  if (existing) {
-    return NextResponse.json({ error: 'Email already registered' }, { status: 409 })
+  try {
+    const db = await getDb()
+    const existing = await db.collection('users').findOne({ email })
+    if (existing) {
+      return NextResponse.json({ error: 'Email already registered' }, { status: 409 })
+    }
+    const passwordHash = await bcrypt.hash(password, 12)
+    await db.collection('users').insertOne({
+      email,
+      name,
+      passwordHash,
+      provider: 'credentials',
+      tier: 'free',
+      createdAt: new Date(),
+    })
+    return NextResponse.json({ success: true }, { status: 201 })
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-
-  const passwordHash = await bcrypt.hash(password, 12)
-  await db.collection('users').insertOne({
-    email,
-    name,
-    passwordHash,
-    provider: 'credentials',
-    tier: 'free',
-    createdAt: new Date(),
-  })
-
-  return NextResponse.json({ success: true }, { status: 201 })
 }

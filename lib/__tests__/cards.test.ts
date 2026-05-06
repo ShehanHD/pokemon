@@ -63,4 +63,13 @@ describe('getCardById', () => {
     const result = await getCardById('nonexistent')
     expect(result).toBeNull()
   })
+
+  it('returns card with null optional fields', async () => {
+    const nullableCard = { ...sampleCard, rarity: null, cardmarketPrice: null }
+    mockFindOne.mockResolvedValue(nullableCard)
+    const result = await getCardById('base1-1')
+    expect(result).toEqual(nullableCard)
+    expect(result?.rarity).toBeNull()
+    expect(result?.cardmarketPrice).toBeNull()
+  })
 })

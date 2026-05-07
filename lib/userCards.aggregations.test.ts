@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { getDb } from './db'
-import { getOwnedCardsGrouped } from './userCards'
+import { getOwnedCardsGrouped, getCollectionStats } from './userCards'
 
 const userId = 'user-test-aggs'
 
@@ -45,5 +45,23 @@ describe('getOwnedCardsGrouped', () => {
   it('returns empty array for unknown user', async () => {
     const groups = await getOwnedCardsGrouped('no-such-user', { sort: 'recent' })
     expect(groups).toEqual([])
+  })
+})
+
+describe('getCollectionStats', () => {
+  beforeEach(seed)
+
+  it('returns totals over all owned copies', async () => {
+    const stats = await getCollectionStats(userId)
+    expect(stats.totalCopies).toBe(3)
+    expect(stats.uniqueCards).toBe(2)
+    expect(stats.totalSpend).toBe(165)
+    expect(stats.estValue).toBe(215)
+  })
+
+  it('returns zeros for empty user', async () => {
+    expect(await getCollectionStats('nobody')).toEqual({
+      totalCopies: 0, uniqueCards: 0, totalSpend: 0, estValue: 0,
+    })
   })
 })

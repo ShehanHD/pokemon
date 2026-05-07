@@ -1,5 +1,5 @@
 import { getDb } from './db'
-import type { OwnedCardGroup, OwnedCardsQuery, PokemonCard, UserCard } from './types'
+import type { CollectionStats, OwnedCardGroup, OwnedCardsQuery, PokemonCard, UserCard } from './types'
 import { normaliseRarity } from './taxonomy/rarity'
 
 function serialize(doc: Record<string, unknown>): UserCard {
@@ -337,4 +337,43 @@ export async function getOwnedCardsGrouped(
       variants: r.variants as OwnedCardGroup['variants'],
     }
   })
+}
+
+export async function getCollectionStats(userId: string): Promise<CollectionStats> {
+  const db = await getDb()
+  const rows = await db.collection('userCards').aggregate<{
+    totalCopies: number
+    uniqueCards: number
+    totalSpend: number
+    estValue: number
+  }>([
+    { $match: { userId } },
+    {
+      $group: {
+        _id: null,
+        totalCopies: { $sum: 1 },
+        uniqueCards: { $addToSet: '$cardId' },
+        totalSpend: { $sum: { $ifNull: ['$cost', 0] } },
+        estValue: {
+          $sum: {
+            $cond: [
+              { $eq: ['$type', 'graded'] },
+              { $ifNull: ['$gradedValue', 0] },
+              { $ifNull: ['$cost', 0] },
+            ],
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        totalCopies: 1,
+        uniqueCards: { $size: '$uniqueCards' },
+        totalSpend: 1,
+        estValue: 1,
+      },
+    },
+  ]).toArray()
+  return rows[0] ?? { totalCopies: 0, uniqueCards: 0, totalSpend: 0, estValue: 0 }
 }

@@ -93,3 +93,40 @@ export type UserCardGraded = UserCardBase & {
 }
 
 export type UserCard = UserCardRaw | UserCardGraded
+
+export interface OwnedCardGroup {
+  cardId: string
+  card: PokemonCard
+  copyCount: number
+  rawCount: number
+  gradedCount: number
+  totalCost: number
+  estValue: number
+  lastAcquiredAt: Date
+  variants: CardVariant[]
+}
+
+export type OwnedCardsSort =
+  | 'recent'
+  | 'name'
+  | 'release'
+  | 'count'
+  | 'cost'
+
+export interface OwnedCardsQuery {
+  series?: string
+  set?: string
+  rarity?: string
+  variant?: CardVariant
+  type?: 'raw' | 'graded'
+  condition?: CardCondition
+  q?: string
+  sort: OwnedCardsSort
+}
+
+export interface CollectionStats {
+  totalCopies: number
+  uniqueCards: number
+  totalSpend: number
+  estValue: number
+}

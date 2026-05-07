@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { Search, Globe } from 'lucide-react'
+import { Search, Globe, User } from 'lucide-react'
 
 const routeTitles: [string, string][] = [
   ['/dashboard', 'Dashboard'],
@@ -13,7 +13,12 @@ const routeTitles: [string, string][] = [
   ['/settings', 'Settings'],
 ]
 
-export default function Topbar() {
+interface TopbarProps {
+  themePokemonId: number | null
+  themeName: string | null
+}
+
+export default function Topbar({ themePokemonId, themeName }: TopbarProps) {
   const pathname = usePathname()
   const title =
     routeTitles.find(([prefix]) => pathname.startsWith(prefix))?.[1] ?? 'PokeVault'
@@ -28,6 +33,17 @@ export default function Topbar() {
       <div aria-hidden="true" className="bg-base border border-surface0 rounded px-2 py-1 text-[10px] text-overlay2 flex items-center gap-1.5">
         <Globe size={10} className="flex-shrink-0" />
         <span>IT · EUR</span>
+      </div>
+      <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-blue flex items-center justify-center bg-base">
+        {themePokemonId ? (
+          <img
+            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${themePokemonId}.png`}
+            alt={themeName ?? 'Theme avatar'}
+            className="w-full h-full object-contain"
+          />
+        ) : (
+          <User size={16} className="text-overlay1" />
+        )}
       </div>
     </header>
   )

@@ -20,7 +20,7 @@ describe('wishlist server actions', () => {
     expect(r.ok).toBe(true)
   })
   it('addWishlistAction rejects when not signed in', async () => {
-    vi.mocked(auth).mockResolvedValue(null)
+    vi.mocked(auth).mockResolvedValue(null as never)
     const r = await addWishlistAction({ cardId: 'c1' })
     expect(r.ok).toBe(false)
   })

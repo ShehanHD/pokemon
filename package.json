@@ -8,7 +8,8 @@
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "build:themes": "tsx scripts/build-themes.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -33,6 +34,7 @@
     "dotenv": "^17.4.2",
     "jsdom": "^29.1.1",
     "mongodb-memory-server": "^11.1.0",
+    "node-vibrant": "^4.0.3",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",

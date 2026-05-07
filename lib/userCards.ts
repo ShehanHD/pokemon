@@ -377,3 +377,78 @@ export async function getCollectionStats(userId: string): Promise<CollectionStat
   ]).toArray()
   return rows[0] ?? { totalCopies: 0, uniqueCards: 0, totalSpend: 0, estValue: 0 }
 }
+
+export async function getRawVsGradedSplit(userId: string): Promise<{ raw: { copies: number; spend: number }; graded: { copies: number; spend: number } }> {
+  const db = await getDb()
+  const rows = await db.collection('userCards').aggregate<{ _id: 'raw' | 'graded'; copies: number; spend: number }>([
+    { $match: { userId } },
+    { $group: { _id: '$type', copies: { $sum: 1 }, spend: { $sum: { $ifNull: ['$cost', 0] } } } },
+  ]).toArray()
+  const raw = rows.find((r) => r._id === 'raw') ?? { copies: 0, spend: 0 }
+  const graded = rows.find((r) => r._id === 'graded') ?? { copies: 0, spend: 0 }
+  return {
+    raw: { copies: raw.copies ?? 0, spend: raw.spend ?? 0 },
+    graded: { copies: graded.copies ?? 0, spend: graded.spend ?? 0 },
+  }
+}
+
+export async function getBySeriesBreakdown(userId: string): Promise<Array<{ series: string; copies: number; spend: number }>> {
+  const db = await getDb()
+  const rows = await db.collection('userCards').aggregate<{ _id: string; copies: number; spend: number }>([
+    { $match: { userId } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $unwind: '$card' },
+    { $group: { _id: '$card.series', copies: { $sum: 1 }, spend: { $sum: { $ifNull: ['$cost', 0] } } } },
+    { $sort: { copies: -1 } },
+  ]).toArray()
+  return rows.map((r) => ({ series: r._id, copies: r.copies, spend: r.spend }))
+}
+
+export async function getBySetBreakdown(userId: string, limit = 10): Promise<Array<{ setCode: string; setName: string; copies: number; spend: number }>> {
+  const db = await getDb()
+  const rows = await db.collection('userCards').aggregate<{ _id: string; setName: string; copies: number; spend: number }>([
+    { $match: { userId } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $unwind: '$card' },
+    { $group: { _id: '$card.set_id', setName: { $first: '$card.setName' }, copies: { $sum: 1 }, spend: { $sum: { $ifNull: ['$cost', 0] } } } },
+    { $sort: { copies: -1 } },
+    { $limit: limit },
+  ]).toArray()
+  return rows.map((r) => ({ setCode: r._id, setName: r.setName, copies: r.copies, spend: r.spend }))
+}
+
+export async function getRarityBreakdown(userId: string): Promise<Array<{ rarity: string; copies: number }>> {
+  const db = await getDb()
+  const rows = await db.collection('userCards').aggregate<{ _id: string | null; copies: number }>([
+    { $match: { userId } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $unwind: '$card' },
+    { $group: { _id: '$card.rarity', copies: { $sum: 1 } } },
+    { $sort: { copies: -1 } },
+  ]).toArray()
+  return rows.map((r) => ({ rarity: r._id ?? 'Unknown', copies: r.copies }))
+}
+
+export async function getCollectionTimeseries(userId: string): Promise<Array<{ month: string; copiesAdded: number; cumulativeCopies: number; cumulativeSpend: number }>> {
+  const db = await getDb()
+  const rows = await db.collection('userCards').aggregate<{ _id: string; copies: number; spend: number }>([
+    { $match: { userId } },
+    {
+      $group: {
+        _id: {
+          $dateToString: { format: '%Y-%m', date: '$acquiredAt' },
+        },
+        copies: { $sum: 1 },
+        spend: { $sum: { $ifNull: ['$cost', 0] } },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]).toArray()
+  let cumCopies = 0
+  let cumSpend = 0
+  return rows.map((r) => {
+    cumCopies += r.copies
+    cumSpend += r.spend
+    return { month: r._id, copiesAdded: r.copies, cumulativeCopies: cumCopies, cumulativeSpend: cumSpend }
+  })
+}

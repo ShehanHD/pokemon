@@ -1,6 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { getDb } from './db'
-import { getOwnedCardsGrouped, getCollectionStats } from './userCards'
+import {
+  getOwnedCardsGrouped,
+  getCollectionStats,
+  getRawVsGradedSplit,
+  getBySeriesBreakdown,
+  getBySetBreakdown,
+  getRarityBreakdown,
+  getCollectionTimeseries,
+} from './userCards'
 
 const userId = 'user-test-aggs'
 
@@ -63,5 +71,51 @@ describe('getCollectionStats', () => {
     expect(await getCollectionStats('nobody')).toEqual({
       totalCopies: 0, uniqueCards: 0, totalSpend: 0, estValue: 0,
     })
+  })
+})
+
+describe('getRawVsGradedSplit', () => {
+  beforeEach(seed)
+  it('splits copies and spend by raw/graded', async () => {
+    const r = await getRawVsGradedSplit(userId)
+    expect(r.raw).toEqual({ copies: 2, spend: 15 })
+    expect(r.graded).toEqual({ copies: 1, spend: 150 })
+  })
+})
+
+describe('getBySeriesBreakdown', () => {
+  beforeEach(seed)
+  it('aggregates copies and spend per series', async () => {
+    const rows = await getBySeriesBreakdown(userId)
+    expect(rows).toEqual([{ series: 'Original', copies: 3, spend: 165 }])
+  })
+})
+
+describe('getBySetBreakdown', () => {
+  beforeEach(seed)
+  it('aggregates per set with name', async () => {
+    const rows = await getBySetBreakdown(userId)
+    expect(rows[0]).toMatchObject({ setCode: 'base1', setName: 'Base', copies: 3, spend: 165 })
+  })
+})
+
+describe('getRarityBreakdown', () => {
+  beforeEach(seed)
+  it('aggregates copies per rarity', async () => {
+    const rows = await getRarityBreakdown(userId)
+    expect(rows.find((r) => r.rarity === 'Common')?.copies).toBe(2)
+    expect(rows.find((r) => r.rarity === 'Rare Holo')?.copies).toBe(1)
+  })
+})
+
+describe('getCollectionTimeseries', () => {
+  beforeEach(seed)
+  it('returns monthly cumulative copies and spend', async () => {
+    const rows = await getCollectionTimeseries(userId)
+    expect(rows).toEqual([
+      { month: '2026-01', copiesAdded: 1, cumulativeCopies: 1, cumulativeSpend: 5 },
+      { month: '2026-02', copiesAdded: 1, cumulativeCopies: 2, cumulativeSpend: 15 },
+      { month: '2026-03', copiesAdded: 1, cumulativeCopies: 3, cumulativeSpend: 165 },
+    ])
   })
 })

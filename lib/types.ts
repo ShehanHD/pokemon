@@ -9,6 +9,7 @@ export interface User {
   tier: Tier
   stripeCustomerId?: string
   stripeSubscriptionId?: string
+  themePokemonId?: number
   createdAt: Date
   passwordHash?: string
 }

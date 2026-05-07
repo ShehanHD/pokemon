@@ -41,6 +41,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             name: user.name as string,
             image: (user.image as string | undefined) ?? null,
             tier: (typeof user.tier === 'string' ? user.tier : 'free') as Tier,
+            themePokemonId:
+              typeof user.themePokemonId === 'number' ? user.themePokemonId : undefined,
           }
         } catch (err) {
           console.error('[auth] authorize error:', err)
@@ -58,6 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.tier = user.tier ?? 'free'
         token.id = user.id
+        token.themePokemonId = user.themePokemonId
       }
       if (account?.provider === 'google') {
         try {
@@ -74,9 +77,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             })
             token.id = result.insertedId.toString()
             token.tier = 'free'
+            token.themePokemonId = undefined
           } else {
             token.tier = typeof existing.tier === 'string' ? existing.tier : 'free'
             token.id = existing._id.toString()
+            token.themePokemonId =
+              typeof existing.themePokemonId === 'number' ? existing.themePokemonId : undefined
           }
         } catch (err) {
           console.error('[auth] jwt google callback error:', err)
@@ -92,6 +98,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = (token.id as string | undefined) ?? ''
         session.user.tier = (token.tier as Tier | undefined) ?? 'free'
+        session.user.themePokemonId =
+          typeof token.themePokemonId === 'number' ? token.themePokemonId : undefined
       }
       return session
     },

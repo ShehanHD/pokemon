@@ -22,7 +22,7 @@ const navItems = [
   { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, section: 'main', matchPrefix: false },
   { href: '/browse', label: 'Browse', Icon: Search, section: 'main', matchPrefix: true },
   { href: '/collection', label: 'My Cards', Icon: BookOpen, section: 'collection', matchPrefix: false },
-  { href: '/wishlist', label: 'Wishlist', Icon: Star, section: 'collection', pro: true, matchPrefix: false },
+  { href: '/wishlist', label: 'Wishlist', Icon: Star, section: 'collection', pro: false, matchPrefix: false },
   { href: '/analytics', label: 'Analytics', Icon: BarChart2, section: 'collection', pro: true, matchPrefix: false },
 ]
 

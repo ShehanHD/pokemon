@@ -1,5 +1,5 @@
 import { getDb } from './db'
-import type { UserCard } from './types'
+import type { OwnedCardGroup, OwnedCardsQuery, PokemonCard, UserCard } from './types'
 import { normaliseRarity } from './taxonomy/rarity'
 
 function serialize(doc: Record<string, unknown>): UserCard {
@@ -237,4 +237,104 @@ export async function getOwnedCountsBySeries(userId: string): Promise<Map<string
   const map = new Map<string, number>()
   for (const r of rows) map.set(r._id, r.count)
   return map
+}
+
+export async function getOwnedCardsGrouped(
+  userId: string,
+  query: OwnedCardsQuery,
+): Promise<OwnedCardGroup[]> {
+  const db = await getDb()
+
+  const sortStage: Record<string, 1 | -1> =
+    query.sort === 'name' ? { 'card.name': 1 }
+    : query.sort === 'release' ? { 'set.releaseDate': -1 }
+    : query.sort === 'count' ? { copyCount: -1 }
+    : query.sort === 'cost' ? { totalCost: -1 }
+    : { lastAcquiredAt: -1 }
+
+  const pipeline: Record<string, unknown>[] = [
+    { $match: { userId } },
+  ]
+
+  if (query.type) pipeline.push({ $match: { type: query.type } })
+  if (query.condition) pipeline.push({ $match: { type: 'raw', condition: query.condition } })
+  if (query.variant) pipeline.push({ $match: { variant: query.variant } })
+
+  pipeline.push(
+    {
+      $group: {
+        _id: '$cardId',
+        copyCount: { $sum: 1 },
+        rawCount: { $sum: { $cond: [{ $eq: ['$type', 'raw'] }, 1, 0] } },
+        gradedCount: { $sum: { $cond: [{ $eq: ['$type', 'graded'] }, 1, 0] } },
+        totalCost: { $sum: { $ifNull: ['$cost', 0] } },
+        estValue: {
+          $sum: {
+            $cond: [
+              { $eq: ['$type', 'graded'] },
+              { $ifNull: ['$gradedValue', 0] },
+              { $ifNull: ['$cost', 0] },
+            ],
+          },
+        },
+        lastAcquiredAt: { $max: '$acquiredAt' },
+        variants: { $addToSet: '$variant' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'cards',
+        localField: '_id',
+        foreignField: 'pokemontcg_id',
+        as: 'card',
+      },
+    },
+    { $unwind: '$card' },
+    {
+      $lookup: {
+        from: 'sets',
+        localField: 'card.set_id',
+        foreignField: 'pokemontcg_id',
+        as: 'set',
+      },
+    },
+    { $unwind: { path: '$set', preserveNullAndEmptyArrays: true } },
+  )
+
+  if (query.series) pipeline.push({ $match: { 'card.seriesSlug': query.series } })
+  if (query.set) pipeline.push({ $match: { 'card.set_id': query.set } })
+  if (query.rarity) pipeline.push({ $match: { 'card.rarity': query.rarity } })
+  if (query.q) {
+    const re = new RegExp(query.q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+    pipeline.push({ $match: { $or: [{ 'card.name': re }, { 'card.number': re }] } })
+  }
+
+  pipeline.push({ $sort: sortStage })
+
+  const rows = await db.collection('userCards').aggregate<{
+    _id: string
+    copyCount: number
+    rawCount: number
+    gradedCount: number
+    totalCost: number
+    estValue: number
+    lastAcquiredAt: Date
+    variants: string[]
+    card: Record<string, unknown> & { _id: unknown }
+  }>(pipeline).toArray()
+
+  return rows.map((r) => {
+    const { _id: cardDocId, ...cardRest } = r.card
+    return {
+      cardId: r._id,
+      card: { _id: String(cardDocId), ...cardRest } as unknown as PokemonCard,
+      copyCount: r.copyCount,
+      rawCount: r.rawCount,
+      gradedCount: r.gradedCount,
+      totalCost: r.totalCost,
+      estValue: r.estValue,
+      lastAcquiredAt: r.lastAcquiredAt,
+      variants: r.variants as OwnedCardGroup['variants'],
+    }
+  })
 }

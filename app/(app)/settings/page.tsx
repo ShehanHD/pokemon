@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers'
 import { auth } from '@/lib/auth'
 import manifest from '@/lib/themes/manifest.json'
 import type { ThemeManifest } from '@/lib/schemas/theme'
@@ -6,8 +7,11 @@ import { setThemePokemon } from './actions'
 
 export default async function SettingsPage() {
   const session = await auth()
+  const cookieStore = await cookies()
   const userTier = session?.user?.tier ?? 'free'
-  const currentPokemonId = session?.user?.themePokemonId ?? null
+  const cookieValue = cookieStore.get('theme-pokemon')?.value
+  const currentPokemonId =
+    cookieValue && /^\d+$/.test(cookieValue) ? Number(cookieValue) : null
 
   async function handleSelect(id: number | null) {
     'use server'

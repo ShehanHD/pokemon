@@ -12,6 +12,14 @@ export const themeEntrySchema = z.object({
   primary: hexColorSchema,
   accent: hexColorSchema,
   mantle: hexColorSchema,
+  crust: hexColorSchema,
+  base: hexColorSchema,
+  text: hexColorSchema,
+  subtext1: hexColorSchema,
+  subtext0: hexColorSchema,
+  overlay2: hexColorSchema,
+  overlay1: hexColorSchema,
+  overlay0: hexColorSchema,
 })
 
 export const themeManifestSchema = z.record(

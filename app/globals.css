@@ -44,6 +44,7 @@ body {
   background-color: var(--color-crust);
   color: var(--color-text);
   font-family: var(--font-chakra);
+  font-weight: 700;
   -webkit-font-smoothing: antialiased;
 }
 

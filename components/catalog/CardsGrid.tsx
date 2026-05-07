@@ -34,7 +34,7 @@ export default function CardsGrid({ cards, set, variantCounts }: { cards: Pokemo
                 <div className="flex items-baseline gap-1.5">
                   <p className="text-[10px] text-overlay2 truncate leading-tight flex-1 min-w-0">{card.name}</p>
                   {card.cardmarketPrice !== null && (
-                    <span className="text-[10px] text-mauve tabular-nums shrink-0">€{card.cardmarketPrice.toFixed(2)}</span>
+                    <span className="text-[10px] font-semibold text-blue tabular-nums shrink-0">€{card.cardmarketPrice.toFixed(2)}</span>
                   )}
                 </div>
                 <p className="text-[10px] text-overlay0 tabular-nums">{card.number}/{set.printedTotal}</p>

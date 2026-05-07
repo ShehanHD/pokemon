@@ -37,6 +37,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ['--color-blue' as string]: theme.primary,
         ['--color-mauve' as string]: theme.accent,
         ['--color-mantle' as string]: theme.mantle,
+        ['--color-crust' as string]: theme.crust,
+        ['--color-base' as string]: theme.base,
+        ['--color-text' as string]: theme.text,
+        ['--color-subtext1' as string]: theme.subtext1,
+        ['--color-subtext0' as string]: theme.subtext0,
+        ['--color-overlay2' as string]: theme.overlay2,
+        ['--color-overlay1' as string]: theme.overlay1,
+        ['--color-overlay0' as string]: theme.overlay0,
       } as React.CSSProperties)
     : undefined
 

@@ -50,5 +50,5 @@ export async function setThemePokemon(input: unknown): Promise<void> {
     }
   }
 
-  revalidatePath('/')
+  revalidatePath('/', 'layout')
 }

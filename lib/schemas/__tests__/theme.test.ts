@@ -12,6 +12,14 @@ describe('themeEntrySchema', () => {
     primary: '#e8b22a',
     accent: '#fff3b0',
     mantle: '#e8eef5',
+    crust: '#f1f5f9',
+    base: '#ffffff',
+    text: '#0f172a',
+    subtext1: '#1e293b',
+    subtext0: '#334155',
+    overlay2: '#475569',
+    overlay1: '#64748b',
+    overlay0: '#94a3b8',
   }
 
   it('accepts a valid entry', () => {
@@ -34,14 +42,14 @@ describe('themeEntrySchema', () => {
 describe('themeManifestSchema', () => {
   it('accepts a record keyed by numeric strings', () => {
     const r = themeManifestSchema.safeParse({
-      '25': { name: 'Pikachu', tier: 'free', primary: '#e8b22a', accent: '#fff3b0', mantle: '#e8eef5' },
+      '25': { name: 'Pikachu', tier: 'free', primary: '#e8b22a', accent: '#fff3b0', mantle: '#e8eef5', crust: '#f1f5f9', base: '#ffffff', text: '#0f172a', subtext1: '#1e293b', subtext0: '#334155', overlay2: '#475569', overlay1: '#64748b', overlay0: '#94a3b8' },
     })
     expect(r.success).toBe(true)
   })
 
   it('rejects a non-numeric key', () => {
     const r = themeManifestSchema.safeParse({
-      pikachu: { name: 'Pikachu', tier: 'free', primary: '#e8b22a', accent: '#fff3b0', mantle: '#e8eef5' },
+      pikachu: { name: 'Pikachu', tier: 'free', primary: '#e8b22a', accent: '#fff3b0', mantle: '#e8eef5', crust: '#f1f5f9', base: '#ffffff', text: '#0f172a', subtext1: '#1e293b', subtext0: '#334155', overlay2: '#475569', overlay1: '#64748b', overlay0: '#94a3b8' },
     })
     expect(r.success).toBe(false)
   })

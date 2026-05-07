@@ -3,9 +3,9 @@ import { resolveTheme, tierAllows } from '../resolve'
 import type { ThemeManifest } from '@/lib/schemas/theme'
 
 const manifest: ThemeManifest = {
-  '25': { name: 'Pikachu', tier: 'free', primary: '#e8b22a', accent: '#fff3b0', mantle: '#e8eef5' },
-  '6':  { name: 'Charizard', tier: 'adfree', primary: '#d35400', accent: '#ffd1a8', mantle: '#e8eef5' },
-  '150':{ name: 'Mewtwo', tier: 'free', primary: '#9b59b6', accent: '#d2b4de', mantle: '#e8eef5' },
+  '25': { name: 'Pikachu', tier: 'free', primary: '#e8b22a', accent: '#fff3b0', mantle: '#e8eef5', crust: '#f1f5f9', base: '#ffffff', text: '#0f172a', subtext1: '#1e293b', subtext0: '#334155', overlay2: '#475569', overlay1: '#64748b', overlay0: '#94a3b8' },
+  '6':  { name: 'Charizard', tier: 'adfree', primary: '#d35400', accent: '#ffd1a8', mantle: '#e8eef5', crust: '#f1f5f9', base: '#ffffff', text: '#0f172a', subtext1: '#1e293b', subtext0: '#334155', overlay2: '#475569', overlay1: '#64748b', overlay0: '#94a3b8' },
+  '150':{ name: 'Mewtwo', tier: 'free', primary: '#9b59b6', accent: '#d2b4de', mantle: '#e8eef5', crust: '#f1f5f9', base: '#ffffff', text: '#0f172a', subtext1: '#1e293b', subtext0: '#334155', overlay2: '#475569', overlay1: '#64748b', overlay0: '#94a3b8' },
 }
 
 describe('tierAllows', () => {

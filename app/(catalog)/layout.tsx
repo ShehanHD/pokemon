@@ -26,7 +26,7 @@ export default async function CatalogLayout({ children }: { children: ReactNode 
 
   return (
     <SessionProvider session={session}>
-      <div className="flex h-screen overflow-hidden bg-crust">
+      <div className="flex h-screen overflow-hidden bg-[ghostwhite]">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Topbar themePokemonId={theme ? themePokemonId : null} themeName={theme?.name ?? null} />

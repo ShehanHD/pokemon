@@ -77,7 +77,7 @@ export default async function CardDetailPage({ params }: Props) {
         <div className="flex-1 min-w-0">
           <h1 className="font-russo text-xl text-text mb-1">{card.name}</h1>
           {card.cardmarketPrice !== null && (
-            <p className="text-2xl font-russo text-mauve mb-4">€{card.cardmarketPrice.toFixed(2)}</p>
+            <p className="text-2xl font-russo text-blue mb-4">€{card.cardmarketPrice.toFixed(2)}</p>
           )}
 
           <div className="flex flex-wrap items-center gap-2 mb-3">

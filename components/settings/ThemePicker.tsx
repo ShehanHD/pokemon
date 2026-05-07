@@ -18,9 +18,13 @@ interface LockedTarget { id: number; entry: ThemeEntry }
 export default function ThemePicker({ manifest, userTier, currentPokemonId, onSelect }: ThemePickerProps) {
   const [locked, setLocked] = useState<LockedTarget | null>(null)
 
+  const TIER_ORDER: Record<Tier, number> = { free: 0, adfree: 1, pro: 2 }
   const entries = Object.entries(manifest)
     .map(([id, entry]) => ({ id: Number(id), entry }))
-    .sort((a, b) => a.id - b.id)
+    .sort((a, b) => {
+      const t = TIER_ORDER[a.entry.tier] - TIER_ORDER[b.entry.tier]
+      return t !== 0 ? t : a.id - b.id
+    })
 
   const handleClick = (id: number, entry: ThemeEntry) => {
     if (!tierAllows(userTier, entry.tier)) {

@@ -130,3 +130,14 @@ export interface CollectionStats {
   totalSpend: number
   estValue: number
 }
+
+export type WishlistPriority = 'low' | 'med' | 'high'
+
+export interface WishlistItem {
+  _id?: string
+  userId: string
+  cardId: string
+  addedAt: Date
+  note?: string
+  priority?: WishlistPriority
+}

@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { getSetById } from '@/lib/sets'
 import { getCardsBySet } from '@/lib/cards'
 import { getOwnedCountsByCardVariant, getCollectionValueForSet, getCollectionCostForSet } from '@/lib/userCards'
+import { getWishlistContext } from '@/lib/wishlist'
 import { setCodeFor } from '@/lib/taxonomy/setCode'
 import { normaliseRarity } from '@/lib/taxonomy/rarity'
 import { applicableVariantsForSet, variantLabel, chipsForCard } from '@/lib/taxonomy/variant'
@@ -36,11 +37,12 @@ export default async function SetPage({
   const set = await getSetById(setId)
   if (!set) return <main className="p-6"><p>Set not found.</p></main>
 
-  const [cards, variantCounts, collectionValue, collectionCost] = await Promise.all([
+  const [cards, variantCounts, collectionValue, collectionCost, wishlistCtx] = await Promise.all([
     getCardsBySet(setId),
     userId ? getOwnedCountsByCardVariant(userId, setId) : Promise.resolve(new Map<string, number>()),
     userId ? getCollectionValueForSet(userId, setId) : Promise.resolve(undefined as number | undefined),
     userId ? getCollectionCostForSet(userId, setId) : Promise.resolve(undefined as number | undefined),
+    getWishlistContext(userId, session?.user?.tier),
   ])
   const code = setCodeFor(set)
   const isPromo = set.name.toLowerCase().includes('promo')
@@ -163,7 +165,13 @@ export default async function SetPage({
         </div>
       )}
 
-      <CardsGrid cards={visible} set={set} variantCounts={userId ? variantCounts : undefined} />
+      <CardsGrid
+        cards={visible}
+        set={set}
+        variantCounts={userId ? variantCounts : undefined}
+        wishlistedIds={wishlistCtx.wishlistedIds}
+        userState={wishlistCtx.userState}
+      />
     </main>
   )
 }

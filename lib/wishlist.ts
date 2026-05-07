@@ -57,6 +57,18 @@ export async function getWishlistedIdsForUser(userId: string): Promise<Set<strin
   return new Set(docs.map((d) => d.cardId as string))
 }
 
+export type WishlistUserState = 'logged-out' | 'free-below-cap' | 'free-capped' | 'pro'
+
+export async function getWishlistContext(userId: string | undefined, tier: Tier | undefined): Promise<{
+  wishlistedIds: Set<string>
+  userState: WishlistUserState
+}> {
+  if (!userId) return { wishlistedIds: new Set(), userState: 'logged-out' }
+  const wishlistedIds = await getWishlistedIdsForUser(userId)
+  if (tier === 'pro' || tier === 'adfree') return { wishlistedIds, userState: 'pro' }
+  return { wishlistedIds, userState: wishlistedIds.size >= FREE_TIER_WISHLIST_CAP ? 'free-capped' : 'free-below-cap' }
+}
+
 export async function getWishlistForUser(userId: string): Promise<Array<WishlistItem & { card: PokemonCard }>> {
   const db = await getDb()
   const rows = await db.collection('wishlist').aggregate<Record<string, unknown>>([

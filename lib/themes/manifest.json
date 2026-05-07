@@ -1,0 +1,373 @@
+{
+  "1": {
+    "name": "Bulbasaur",
+    "tier": "free",
+    "primary": "#b34850",
+    "accent": "#678e78",
+    "mantle": "#e8eef5"
+  },
+  "3": {
+    "name": "Venusaur",
+    "tier": "adfree",
+    "primary": "#a4525a",
+    "accent": "#c37179",
+    "mantle": "#e8eef5"
+  },
+  "4": {
+    "name": "Charmander",
+    "tier": "free",
+    "primary": "#a9502e",
+    "accent": "#ad7e5a",
+    "mantle": "#e8eef5"
+  },
+  "6": {
+    "name": "Charizard",
+    "tier": "adfree",
+    "primary": "#8d623b",
+    "accent": "#a87c54",
+    "mantle": "#e8eef5"
+  },
+  "7": {
+    "name": "Squirtle",
+    "tier": "free",
+    "primary": "#466d7d",
+    "accent": "#668e9a",
+    "mantle": "#e8eef5"
+  },
+  "9": {
+    "name": "Blastoise",
+    "tier": "adfree",
+    "primary": "#546c91",
+    "accent": "#71859e",
+    "mantle": "#e8eef5"
+  },
+  "17": {
+    "name": "Pidgeotto",
+    "tier": "pro",
+    "primary": "#a94857",
+    "accent": "#aa7860",
+    "mantle": "#e8eef5"
+  },
+  "25": {
+    "name": "Pikachu",
+    "tier": "free",
+    "primary": "#a84f41",
+    "accent": "#9a864e",
+    "mantle": "#e8eef5"
+  },
+  "26": {
+    "name": "Raichu",
+    "tier": "pro",
+    "primary": "#806534",
+    "accent": "#93824b",
+    "mantle": "#e8eef5"
+  },
+  "35": {
+    "name": "Clefairy",
+    "tier": "pro",
+    "primary": "#d70e0e",
+    "accent": "#977f7f",
+    "mantle": "#e8eef5"
+  },
+  "39": {
+    "name": "Jigglypuff",
+    "tier": "pro",
+    "primary": "#147585",
+    "accent": "#977e83",
+    "mantle": "#e8eef5"
+  },
+  "40": {
+    "name": "Wigglytuff",
+    "tier": "pro",
+    "primary": "#1c7380",
+    "accent": "#977f84",
+    "mantle": "#e8eef5"
+  },
+  "42": {
+    "name": "Golbat",
+    "tier": "pro",
+    "primary": "#2e7391",
+    "accent": "#6c8b9c",
+    "mantle": "#e8eef5"
+  },
+  "44": {
+    "name": "Gloom",
+    "tier": "pro",
+    "primary": "#a0563a",
+    "accent": "#ab7a68",
+    "mantle": "#e8eef5"
+  },
+  "51": {
+    "name": "Dugtrio",
+    "tier": "pro",
+    "primary": "#875d77",
+    "accent": "#9e7d91",
+    "mantle": "#e8eef5"
+  },
+  "56": {
+    "name": "Mankey",
+    "tier": "pro",
+    "primary": "#ae510c",
+    "accent": "#8f837a",
+    "mantle": "#e8eef5"
+  },
+  "65": {
+    "name": "Alakazam",
+    "tier": "adfree",
+    "primary": "#746729",
+    "accent": "#8e8652",
+    "mantle": "#e8eef5"
+  },
+  "68": {
+    "name": "Machamp",
+    "tier": "adfree",
+    "primary": "#776832",
+    "accent": "#8b856e",
+    "mantle": "#e8eef5"
+  },
+  "70": {
+    "name": "Weepinbell",
+    "tier": "pro",
+    "primary": "#6c6c35",
+    "accent": "#898758",
+    "mantle": "#e8eef5"
+  },
+  "75": {
+    "name": "Graveler",
+    "tier": "pro",
+    "primary": "#a25063",
+    "accent": "#9b7a81",
+    "mantle": "#e8eef5"
+  },
+  "78": {
+    "name": "Rapidash",
+    "tier": "pro",
+    "primary": "#786629",
+    "accent": "#d1664b",
+    "mantle": "#e8eef5"
+  },
+  "80": {
+    "name": "Slowbro",
+    "tier": "adfree",
+    "primary": "#ba3757",
+    "accent": "#a87984",
+    "mantle": "#e8eef5"
+  },
+  "82": {
+    "name": "Magneton",
+    "tier": "pro",
+    "primary": "#297190",
+    "accent": "#5d8da2",
+    "mantle": "#e8eef5"
+  },
+  "83": {
+    "name": "Farfetch’d",
+    "tier": "pro",
+    "primary": "#82682b",
+    "accent": "#908467",
+    "mantle": "#e8eef5"
+  },
+  "86": {
+    "name": "Seel",
+    "tier": "pro",
+    "primary": "#806931",
+    "accent": "#92876d",
+    "mantle": "#e8eef5"
+  },
+  "92": {
+    "name": "Gastly",
+    "tier": "pro",
+    "primary": "#7b5f6c",
+    "accent": "#91848a",
+    "mantle": "#e8eef5"
+  },
+  "93": {
+    "name": "Haunter",
+    "tier": "pro",
+    "primary": "#8a5b79",
+    "accent": "#94818d",
+    "mantle": "#e8eef5"
+  },
+  "94": {
+    "name": "Gengar",
+    "tier": "adfree",
+    "primary": "#955c61",
+    "accent": "#967f81",
+    "mantle": "#e8eef5"
+  },
+  "100": {
+    "name": "Voltorb",
+    "tier": "pro",
+    "primary": "#915c58",
+    "accent": "#ba726f",
+    "mantle": "#e8eef5"
+  },
+  "102": {
+    "name": "Exeggcute",
+    "tier": "pro",
+    "primary": "#776a34",
+    "accent": "#978489",
+    "mantle": "#e8eef5"
+  },
+  "104": {
+    "name": "Cubone",
+    "tier": "pro",
+    "primary": "#7a674e",
+    "accent": "#968461",
+    "mantle": "#e8eef5"
+  },
+  "106": {
+    "name": "Hitmonlee",
+    "tier": "pro",
+    "primary": "#736a4c",
+    "accent": "#8e885f",
+    "mantle": "#e8eef5"
+  },
+  "107": {
+    "name": "Hitmonchan",
+    "tier": "pro",
+    "primary": "#9c524c",
+    "accent": "#ad7c76",
+    "mantle": "#e8eef5"
+  },
+  "113": {
+    "name": "Chansey",
+    "tier": "pro",
+    "primary": "#875d62",
+    "accent": "#a67a7e",
+    "mantle": "#e8eef5"
+  },
+  "115": {
+    "name": "Kangaskhan",
+    "tier": "pro",
+    "primary": "#7d6923",
+    "accent": "#8c8469",
+    "mantle": "#e8eef5"
+  },
+  "123": {
+    "name": "Scyther",
+    "tier": "pro",
+    "primary": "#546f4c",
+    "accent": "#768b63",
+    "mantle": "#e8eef5"
+  },
+  "125": {
+    "name": "Electabuzz",
+    "tier": "pro",
+    "primary": "#786841",
+    "accent": "#968454",
+    "mantle": "#e8eef5"
+  },
+  "129": {
+    "name": "Magikarp",
+    "tier": "adfree",
+    "primary": "#a25242",
+    "accent": "#9c825d",
+    "mantle": "#e8eef5"
+  },
+  "130": {
+    "name": "Gyarados",
+    "tier": "adfree",
+    "primary": "#2e738d",
+    "accent": "#5e8d9e",
+    "mantle": "#e8eef5"
+  },
+  "131": {
+    "name": "Lapras",
+    "tier": "adfree",
+    "primary": "#356f8a",
+    "accent": "#5e8ea5",
+    "mantle": "#e8eef5"
+  },
+  "133": {
+    "name": "Eevee",
+    "tier": "adfree",
+    "primary": "#82623d",
+    "accent": "#8e836c",
+    "mantle": "#e8eef5"
+  },
+  "134": {
+    "name": "Vaporeon",
+    "tier": "adfree",
+    "primary": "#426e7b",
+    "accent": "#5d8b90",
+    "mantle": "#e8eef5"
+  },
+  "135": {
+    "name": "Jolteon",
+    "tier": "adfree",
+    "primary": "#776635",
+    "accent": "#9f8649",
+    "mantle": "#e8eef5"
+  },
+  "136": {
+    "name": "Flareon",
+    "tier": "adfree",
+    "primary": "#9c5432",
+    "accent": "#91885f",
+    "mantle": "#e8eef5"
+  },
+  "142": {
+    "name": "Aerodactyl",
+    "tier": "pro",
+    "primary": "#a44d4f",
+    "accent": "#a08081",
+    "mantle": "#e8eef5"
+  },
+  "143": {
+    "name": "Snorlax",
+    "tier": "adfree",
+    "primary": "#2e6e87",
+    "accent": "#8b827d",
+    "mantle": "#e8eef5"
+  },
+  "144": {
+    "name": "Articuno",
+    "tier": "adfree",
+    "primary": "#2b7391",
+    "accent": "#5989a8",
+    "mantle": "#e8eef5"
+  },
+  "145": {
+    "name": "Zapdos",
+    "tier": "adfree",
+    "primary": "#7b6740",
+    "accent": "#9e864e",
+    "mantle": "#e8eef5"
+  },
+  "146": {
+    "name": "Moltres",
+    "tier": "adfree",
+    "primary": "#995b44",
+    "accent": "#b07857",
+    "mantle": "#e8eef5"
+  },
+  "147": {
+    "name": "Dratini",
+    "tier": "pro",
+    "primary": "#5c678e",
+    "accent": "#7284a2",
+    "mantle": "#e8eef5"
+  },
+  "149": {
+    "name": "Dragonite",
+    "tier": "adfree",
+    "primary": "#84613a",
+    "accent": "#a28256",
+    "mantle": "#e8eef5"
+  },
+  "150": {
+    "name": "Mewtwo",
+    "tier": "free",
+    "primary": "#6f6971",
+    "accent": "#858185",
+    "mantle": "#e8eef5"
+  },
+  "151": {
+    "name": "Mew",
+    "tier": "adfree",
+    "primary": "#c8294b",
+    "accent": "#9a7f85",
+    "mantle": "#e8eef5"
+  }
+}

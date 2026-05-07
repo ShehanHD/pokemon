@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getSetsBySeries } from '@/lib/sets'
-import { getOwnedCountsBySet } from '@/lib/userCards'
-import { seriesToEra } from '@/lib/taxonomy/era'
+import { getOwnedVariantCountsBySet, getOwnedUniqueCardCountsBySet, getOwnedRarityCountsBySet, getCollectionValueBySet, getCollectionCostBySet } from '@/lib/userCards'
+import { getRarityTotalsBySet } from '@/lib/cards'
 import Breadcrumb from '@/components/catalog/Breadcrumb'
 import SetCard from '@/components/catalog/SetCard'
 
@@ -15,15 +15,19 @@ export default async function SeriesPage({ params }: Props) {
   const session = await auth()
   const userId = session?.user?.id
 
-  const [sets, counts] = await Promise.all([
+  const [sets, variantCountsBySet, uniqueCountsBySet, rarityTotalsBySet, rarityOwnedBySet, collectionValueBySet, collectionCostBySet] = await Promise.all([
     getSetsBySeries(seriesSlug),
-    userId ? getOwnedCountsBySet(userId) : Promise.resolve(new Map<string, number>()),
+    userId ? getOwnedVariantCountsBySet(userId) : Promise.resolve(new Map<string, Map<string, number>>()),
+    userId ? getOwnedUniqueCardCountsBySet(userId) : Promise.resolve(new Map<string, number>()),
+    getRarityTotalsBySet(),
+    userId ? getOwnedRarityCountsBySet(userId) : Promise.resolve(new Map<string, Map<string, number>>()),
+    userId ? getCollectionValueBySet(userId) : Promise.resolve(new Map<string, number>()),
+    userId ? getCollectionCostBySet(userId) : Promise.resolve(new Map<string, number>()),
   ])
 
   if (sets.length === 0) notFound()
 
   const seriesName = sets[0].series
-  const era = seriesToEra(seriesName)
 
   return (
     <div>
@@ -35,9 +39,6 @@ export default async function SeriesPage({ params }: Props) {
       />
 
       <header className="mb-4">
-        <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-mauve/20 text-mauve mb-2">
-          {era} era
-        </span>
         <h1 className="text-2xl font-russo text-text">{seriesName}</h1>
       </header>
 
@@ -47,7 +48,12 @@ export default async function SeriesPage({ params }: Props) {
             key={set.pokemontcg_id}
             set={set}
             seriesSlug={seriesSlug}
-            ownedCount={userId ? (counts.get(set.pokemontcg_id) ?? 0) : undefined}
+            variantCounts={userId ? (variantCountsBySet.get(set.pokemontcg_id) ?? new Map()) : undefined}
+            ownedUniqueCount={userId ? (uniqueCountsBySet.get(set.pokemontcg_id) ?? 0) : undefined}
+            rarityTotals={rarityTotalsBySet.get(set.pokemontcg_id)}
+            rarityOwnedCounts={userId ? rarityOwnedBySet.get(set.pokemontcg_id) : undefined}
+            collectionValue={userId ? collectionValueBySet.get(set.pokemontcg_id) : undefined}
+            collectionCost={userId ? collectionCostBySet.get(set.pokemontcg_id) : undefined}
           />
         ))}
       </div>

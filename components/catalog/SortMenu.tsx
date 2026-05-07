@@ -9,6 +9,8 @@ export const SORT_OPTIONS = [
   { value: 'number-asc',  label: 'Number asc' },
   { value: 'number-desc', label: 'Number desc' },
   { value: 'rarity',      label: 'Rarity' },
+  { value: 'price-desc',  label: 'Price (high → low)' },
+  { value: 'price-asc',   label: 'Price (low → high)' },
 ] as const
 
 export type SortValue = typeof SORT_OPTIONS[number]['value']

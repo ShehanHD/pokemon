@@ -1,64 +1,72 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Minus } from 'lucide-react'
-import AddCopyDialog from './AddCopyDialog'
-import RemoveCopyDialog from './RemoveCopyDialog'
-import type { UserCard, PokemonSet } from '@/lib/types'
+import CopiesDialog from './CopiesDialog'
+import type { CardVariant, UserCard, PokemonCard, PokemonSet } from '@/lib/types'
+import { chipsForCard } from '@/lib/taxonomy/variant'
 
 interface Props {
   cardId: string
+  card: PokemonCard
   copies: UserCard[]
   set: PokemonSet | null
 }
 
-export default function OwnedCounter({ cardId, copies, set }: Props) {
-  const [adding, setAdding] = useState(false)
-  const [removing, setRemoving] = useState(false)
+export default function OwnedCounter({ cardId, card, copies, set }: Props) {
+  const [activeVariant, setActiveVariant] = useState<CardVariant | null>(null)
 
-  const count = copies.length
+  const chips = set ? chipsForCard(card, set) : []
+
+  const countByVariant = new Map<string, number>()
+  for (const c of copies) {
+    countByVariant.set(c.variant, (countByVariant.get(c.variant) ?? 0) + 1)
+  }
+
+  const totalCount = copies.length
   const totalCost = copies.reduce((sum, c) => sum + (c.cost ?? 0), 0)
   const rawCount = copies.filter((c) => c.type === 'raw').length
-  const gradedCount = count - rawCount
+  const gradedCount = totalCount - rawCount
 
   return (
     <div className="bg-base border border-surface0 rounded-xl px-4 py-3 mb-4">
-      <div className="flex items-center gap-3">
-        <span className="text-[11px] text-overlay0 uppercase tracking-wider">Owned</span>
-        <button
-          type="button"
-          onClick={() => setRemoving(true)}
-          disabled={count === 0}
-          className="w-7 h-7 flex items-center justify-center bg-base border border-surface0 rounded hover:border-blue/50 disabled:opacity-40 disabled:hover:border-surface0"
-          aria-label="Remove a copy"
-        >
-          <Minus size={14} />
-        </button>
-        <span className="font-russo text-2xl text-text tabular-nums min-w-[2ch] text-center">
-          {count}
-        </span>
-        <button
-          type="button"
-          onClick={() => setAdding(true)}
-          className="w-7 h-7 flex items-center justify-center bg-base border border-surface0 rounded hover:border-blue/50"
-          aria-label="Add a copy"
-        >
-          <Plus size={14} />
-        </button>
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-[11px] text-overlay0 uppercase tracking-wider mr-1">Owned</span>
+        {chips.map((chip) => {
+          const count = countByVariant.get(chip.variant) ?? 0
+          return (
+            <button
+              key={chip.variant}
+              type="button"
+              onClick={() => setActiveVariant(chip.variant)}
+              className={[
+                'px-2 py-0.5 rounded text-[11px] font-medium border transition-colors',
+                count > 0
+                  ? 'bg-blue/20 text-blue border-blue/30 hover:bg-blue/30'
+                  : 'bg-mantle text-overlay1 border-surface0 hover:text-text',
+              ].join(' ')}
+            >
+              {chip.label}{count > 0 ? ` ×${count}` : ''}
+            </button>
+          )
+        })}
       </div>
-      {count > 0 && (
+
+      {totalCount > 0 && (
         <p className="text-xs text-overlay0 mt-2">
           €{totalCost.toFixed(2)} cost · {rawCount} raw · {gradedCount} graded
         </p>
       )}
 
-      <AddCopyDialog cardId={cardId} open={adding} onClose={() => setAdding(false)} set={set} />
-      <RemoveCopyDialog
-        cardId={cardId}
-        copies={copies}
-        open={removing}
-        onClose={() => setRemoving(false)}
-      />
+      {activeVariant && (
+        <CopiesDialog
+          cardId={cardId}
+          variant={activeVariant}
+          open={true}
+          onClose={() => setActiveVariant(null)}
+          set={set}
+          rarity={card.rarity}
+        />
+      )}
     </div>
   )
 }

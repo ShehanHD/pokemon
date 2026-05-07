@@ -29,12 +29,21 @@ export async function getSeries(): Promise<{
     { $sort: { maxRelease: -1 } },
   ]).toArray()
 
-  return result.map((r) => ({
-    name: r._id as string,
-    slug: toSeriesSlug(r._id as string),
-    setCount: r.setCount as number,
-    releaseRange: `${(r.minRelease as string).slice(0, 4)} – ${(r.maxRelease as string).slice(0, 4)}`,
-  }))
+  const BOTTOM_SERIES = ['other', 'pop series']
+
+  return result
+    .map((r) => ({
+      name: r._id as string,
+      slug: toSeriesSlug(r._id as string),
+      setCount: r.setCount as number,
+      releaseRange: `${(r.minRelease as string).slice(0, 4)} – ${(r.maxRelease as string).slice(0, 4)}`,
+    }))
+    .sort((a, b) => {
+      const aBottom = BOTTOM_SERIES.some((s) => a.name.toLowerCase().includes(s))
+      const bBottom = BOTTOM_SERIES.some((s) => b.name.toLowerCase().includes(s))
+      if (aBottom !== bBottom) return aBottom ? 1 : -1
+      return 0
+    })
 }
 
 export async function getSeriesWithSets(): Promise<{
@@ -61,8 +70,15 @@ export async function getSeriesWithSets(): Promise<{
     if (set.releaseDate > entry.maxRelease) entry.maxRelease = set.releaseDate
   }
 
+  const BOTTOM_SERIES = ['other', 'pop series']
+
   return Array.from(map.values())
-    .sort((a, b) => b.maxRelease.localeCompare(a.maxRelease))
+    .sort((a, b) => {
+      const aBottom = BOTTOM_SERIES.some((s) => a.name.toLowerCase().includes(s))
+      const bBottom = BOTTOM_SERIES.some((s) => b.name.toLowerCase().includes(s))
+      if (aBottom !== bBottom) return aBottom ? 1 : -1
+      return b.maxRelease.localeCompare(a.maxRelease)
+    })
     .map(({ name, slug, minRelease, maxRelease, sets }) => ({
       name,
       slug,
@@ -85,4 +101,14 @@ export async function getSetById(pokemontcg_id: string): Promise<PokemonSet | nu
   const db = await getDb()
   const doc = await db.collection('sets').findOne({ pokemontcg_id })
   return doc ? serializeSet(doc as Record<string, unknown>) : null
+}
+
+export async function getSetsByIds(ids: string[]): Promise<PokemonSet[]> {
+  if (ids.length === 0) return []
+  const db = await getDb()
+  const docs = await db
+    .collection('sets')
+    .find({ pokemontcg_id: { $in: ids } })
+    .toArray()
+  return docs.map((d) => serializeSet(d as Record<string, unknown>))
 }

@@ -1,6 +1,6 @@
 # Plan 2: Card Catalog Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build a public SSR card catalog with pokemontcg.io data — a local seed script, series → sets → cards browse hierarchy, and a card detail page.
 
@@ -48,7 +48,7 @@
 **Files:**
 - Modify: `lib/types.ts`
 
-- [ ] **Step 1: Append PokemonSet and PokemonCard to `lib/types.ts`**
+- [x] **Step 1: Append PokemonSet and PokemonCard to `lib/types.ts`**
 
 Open `lib/types.ts` and append after the existing `User` interface:
 
@@ -84,7 +84,7 @@ export interface PokemonCard {
 }
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -92,7 +92,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add lib/types.ts
@@ -107,7 +107,7 @@ git commit -m "feat: add PokemonSet and PokemonCard types"
 - Create: `lib/schemas/pokemontcg.ts`
 - Create: `lib/schemas/__tests__/pokemontcg.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `lib/schemas/__tests__/pokemontcg.test.ts`:
 
@@ -218,7 +218,7 @@ describe('PtcgCardResponseSchema', () => {
 })
 ```
 
-- [ ] **Step 2: Run test — expect failure**
+- [x] **Step 2: Run test — expect failure**
 
 ```bash
 npm test lib/schemas/__tests__/pokemontcg.test.ts
@@ -226,7 +226,7 @@ npm test lib/schemas/__tests__/pokemontcg.test.ts
 
 Expected: FAIL — "Cannot find module '../pokemontcg'"
 
-- [ ] **Step 3: Create `lib/schemas/pokemontcg.ts`**
+- [x] **Step 3: Create `lib/schemas/pokemontcg.ts`**
 
 ```typescript
 import { z } from 'zod'
@@ -291,7 +291,7 @@ export type PtcgSet = z.infer<typeof PtcgSetSchema>
 export type PtcgCard = z.infer<typeof PtcgCardSchema>
 ```
 
-- [ ] **Step 4: Run test — expect pass**
+- [x] **Step 4: Run test — expect pass**
 
 ```bash
 npm test lib/schemas/__tests__/pokemontcg.test.ts
@@ -299,7 +299,7 @@ npm test lib/schemas/__tests__/pokemontcg.test.ts
 
 Expected: PASS — 9 tests passing
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/schemas/pokemontcg.ts lib/schemas/__tests__/pokemontcg.test.ts
@@ -314,7 +314,7 @@ git commit -m "feat: add Zod schemas for pokemontcg.io API"
 - Create: `lib/pokemontcg.ts`
 - Create: `lib/__tests__/pokemontcg.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `lib/__tests__/pokemontcg.test.ts`:
 
@@ -441,7 +441,7 @@ describe('fetchCard', () => {
 })
 ```
 
-- [ ] **Step 2: Run test — expect failure**
+- [x] **Step 2: Run test — expect failure**
 
 ```bash
 npm test lib/__tests__/pokemontcg.test.ts
@@ -449,7 +449,7 @@ npm test lib/__tests__/pokemontcg.test.ts
 
 Expected: FAIL — "Cannot find module '../pokemontcg'"
 
-- [ ] **Step 3: Create `lib/pokemontcg.ts`**
+- [x] **Step 3: Create `lib/pokemontcg.ts`**
 
 ```typescript
 import {
@@ -500,7 +500,7 @@ export async function fetchCard(id: string): Promise<PtcgCard> {
 }
 ```
 
-- [ ] **Step 4: Run test — expect pass**
+- [x] **Step 4: Run test — expect pass**
 
 ```bash
 npm test lib/__tests__/pokemontcg.test.ts
@@ -508,7 +508,7 @@ npm test lib/__tests__/pokemontcg.test.ts
 
 Expected: PASS — 8 tests passing
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/pokemontcg.ts lib/__tests__/pokemontcg.test.ts
@@ -523,7 +523,7 @@ git commit -m "feat: add pokemontcg.io API client with pagination"
 - Create: `lib/sets.ts`
 - Create: `lib/__tests__/sets.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `lib/__tests__/sets.test.ts`:
 
@@ -630,7 +630,7 @@ describe('getSetById', () => {
 })
 ```
 
-- [ ] **Step 2: Run test — expect failure**
+- [x] **Step 2: Run test — expect failure**
 
 ```bash
 npm test lib/__tests__/sets.test.ts
@@ -638,7 +638,7 @@ npm test lib/__tests__/sets.test.ts
 
 Expected: FAIL — "Cannot find module '../sets'"
 
-- [ ] **Step 3: Create `lib/sets.ts`**
+- [x] **Step 3: Create `lib/sets.ts`**
 
 ```typescript
 import { getDb } from '@/lib/db'
@@ -698,7 +698,7 @@ export async function getSetById(pokemontcg_id: string): Promise<PokemonSet | nu
 }
 ```
 
-- [ ] **Step 4: Run test — expect pass**
+- [x] **Step 4: Run test — expect pass**
 
 ```bash
 npm test lib/__tests__/sets.test.ts
@@ -706,7 +706,7 @@ npm test lib/__tests__/sets.test.ts
 
 Expected: PASS — 7 tests passing
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/sets.ts lib/__tests__/sets.test.ts
@@ -721,7 +721,7 @@ git commit -m "feat: add MongoDB sets queries (getSeries, getSetsBySeries, getSe
 - Create: `lib/cards.ts`
 - Create: `lib/__tests__/cards.test.ts`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `lib/__tests__/cards.test.ts`:
 
@@ -793,7 +793,7 @@ describe('getCardById', () => {
 })
 ```
 
-- [ ] **Step 2: Run test — expect failure**
+- [x] **Step 2: Run test — expect failure**
 
 ```bash
 npm test lib/__tests__/cards.test.ts
@@ -801,7 +801,7 @@ npm test lib/__tests__/cards.test.ts
 
 Expected: FAIL — "Cannot find module '../cards'"
 
-- [ ] **Step 3: Create `lib/cards.ts`**
+- [x] **Step 3: Create `lib/cards.ts`**
 
 ```typescript
 import { getDb } from '@/lib/db'
@@ -822,7 +822,7 @@ export async function getCardById(pokemontcg_id: string): Promise<PokemonCard | 
 }
 ```
 
-- [ ] **Step 4: Run test — expect pass**
+- [x] **Step 4: Run test — expect pass**
 
 ```bash
 npm test lib/__tests__/cards.test.ts
@@ -830,7 +830,7 @@ npm test lib/__tests__/cards.test.ts
 
 Expected: PASS — 4 tests passing
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/cards.ts lib/__tests__/cards.test.ts
@@ -845,7 +845,7 @@ git commit -m "feat: add MongoDB cards queries (getCardsBySet, getCardById)"
 - Modify: `package.json`
 - Create: `scripts/seed.ts`
 
-- [ ] **Step 1: Install tsx and dotenv**
+- [x] **Step 1: Install tsx and dotenv**
 
 ```bash
 npm install --save-dev tsx dotenv
@@ -853,7 +853,7 @@ npm install --save-dev tsx dotenv
 
 Expected: tsx and dotenv added to devDependencies in package.json.
 
-- [ ] **Step 2: Add seed script to `package.json`**
+- [x] **Step 2: Add seed script to `package.json`**
 
 In `package.json`, add to the `scripts` object:
 
@@ -873,7 +873,7 @@ Final scripts block:
 }
 ```
 
-- [ ] **Step 3: Create `scripts/seed.ts`**
+- [x] **Step 3: Create `scripts/seed.ts`**
 
 ```typescript
 import 'dotenv/config'
@@ -964,7 +964,7 @@ seed().catch((err) => {
 })
 ```
 
-- [ ] **Step 4: Verify the script compiles**
+- [x] **Step 4: Verify the script compiles**
 
 ```bash
 npx tsc --noEmit
@@ -972,7 +972,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 5: Add POKEMONTCG_API_KEY to .env (if not already present)**
+- [x] **Step 5: Add POKEMONTCG_API_KEY to .env (if not already present)**
 
 Open `.env` and add (get key from https://dev.pokemontcg.io):
 ```
@@ -981,7 +981,7 @@ POKEMONTCG_API_KEY=your_api_key_here
 
 The seed script works without a key (unauthenticated, rate-limited to 1000 req/day). With a key, rate limit is 20,000/day.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add scripts/seed.ts package.json package-lock.json
@@ -1000,7 +1000,7 @@ git commit -m "feat: add seed script to populate sets and cards from pokemontcg.
 - Create: `app/(catalog)/layout.tsx`
 - Delete: `app/(app)/browse/page.tsx`
 
-- [ ] **Step 1: Remove `/browse` from middleware protectedPrefixes**
+- [x] **Step 1: Remove `/browse` from middleware protectedPrefixes**
 
 Open `middleware.ts`. Change line 7 from:
 
@@ -1014,7 +1014,7 @@ to:
 const protectedPrefixes = ['/dashboard', '/collection', '/wishlist', '/analytics', '/settings']
 ```
 
-- [ ] **Step 2: Add image domain to `next.config.ts`**
+- [x] **Step 2: Add image domain to `next.config.ts`**
 
 Replace the contents of `next.config.ts` with:
 
@@ -1035,7 +1035,7 @@ const nextConfig: NextConfig = {
 export default nextConfig
 ```
 
-- [ ] **Step 3: Fix Topbar to use prefix matching**
+- [x] **Step 3: Fix Topbar to use prefix matching**
 
 Replace the full contents of `components/layout/Topbar.tsx` with:
 
@@ -1076,7 +1076,7 @@ export default function Topbar() {
 }
 ```
 
-- [ ] **Step 4: Fix Sidebar active check to use startsWith for browse/cards**
+- [x] **Step 4: Fix Sidebar active check to use startsWith for browse/cards**
 
 In `components/layout/Sidebar.tsx`, find the `NavItem` component and change the `active` prop usage. The parent currently passes `active={pathname === item.href}`. Change it to:
 
@@ -1110,7 +1110,7 @@ Both `mainItems.map` and `collectionItems.map` calls pass `active` — update bo
 ))}
 ```
 
-- [ ] **Step 5: Create `app/(catalog)/layout.tsx`**
+- [x] **Step 5: Create `app/(catalog)/layout.tsx`**
 
 ```typescript
 import type { ReactNode } from 'react'
@@ -1137,13 +1137,13 @@ export default async function CatalogLayout({ children }: { children: ReactNode 
 }
 ```
 
-- [ ] **Step 6: Delete the old browse stub**
+- [x] **Step 6: Delete the old browse stub**
 
 ```bash
 rm app/\(app\)/browse/page.tsx
 ```
 
-- [ ] **Step 7: Verify TypeScript and run all tests**
+- [x] **Step 7: Verify TypeScript and run all tests**
 
 ```bash
 npx tsc --noEmit && npm test
@@ -1151,7 +1151,7 @@ npx tsc --noEmit && npm test
 
 Expected: no type errors, all tests pass.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add middleware.ts next.config.ts components/layout/Topbar.tsx components/layout/Sidebar.tsx app/\(catalog\)/layout.tsx
@@ -1166,7 +1166,7 @@ git commit -m "feat: move browse to public (catalog) route group, fix prefix mat
 **Files:**
 - Create: `components/catalog/Breadcrumb.tsx`
 
-- [ ] **Step 1: Create `components/catalog/Breadcrumb.tsx`**
+- [x] **Step 1: Create `components/catalog/Breadcrumb.tsx`**
 
 ```typescript
 import Link from 'next/link'
@@ -1197,7 +1197,7 @@ export default function Breadcrumb({ segments }: { segments: BreadcrumbSegment[]
 }
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -1205,7 +1205,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add components/catalog/Breadcrumb.tsx
@@ -1219,7 +1219,7 @@ git commit -m "feat: add Breadcrumb component for catalog navigation"
 **Files:**
 - Create: `app/(catalog)/browse/page.tsx`
 
-- [ ] **Step 1: Create `app/(catalog)/browse/page.tsx`**
+- [x] **Step 1: Create `app/(catalog)/browse/page.tsx`**
 
 ```typescript
 import Link from 'next/link'
@@ -1270,7 +1270,7 @@ export default async function BrowsePage() {
 }
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -1278,7 +1278,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add app/\(catalog\)/browse/page.tsx
@@ -1292,7 +1292,7 @@ git commit -m "feat: add series list browse page (SSR)"
 **Files:**
 - Create: `app/(catalog)/browse/[series]/page.tsx`
 
-- [ ] **Step 1: Create `app/(catalog)/browse/[series]/page.tsx`**
+- [x] **Step 1: Create `app/(catalog)/browse/[series]/page.tsx`**
 
 ```typescript
 import { notFound } from 'next/navigation'
@@ -1367,7 +1367,7 @@ export default async function SeriesPage({ params }: Props) {
 }
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -1375,7 +1375,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add app/\(catalog\)/browse/\[series\]/page.tsx
@@ -1390,7 +1390,7 @@ git commit -m "feat: add sets list page per series (SSR)"
 - Create: `app/(catalog)/browse/[series]/[set]/page.tsx`
 - Create: `components/catalog/CardsGrid.tsx`
 
-- [ ] **Step 1: Create `components/catalog/CardsGrid.tsx`**
+- [x] **Step 1: Create `components/catalog/CardsGrid.tsx`**
 
 ```typescript
 'use client'
@@ -1490,7 +1490,7 @@ export default function CardsGrid({ cards }: { cards: PokemonCard[] }) {
 }
 ```
 
-- [ ] **Step 2: Create `app/(catalog)/browse/[series]/[set]/page.tsx`**
+- [x] **Step 2: Create `app/(catalog)/browse/[series]/[set]/page.tsx`**
 
 ```typescript
 import { notFound } from 'next/navigation'
@@ -1545,7 +1545,7 @@ export default async function SetPage({ params }: Props) {
 }
 ```
 
-- [ ] **Step 3: Verify TypeScript compiles**
+- [x] **Step 3: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -1553,7 +1553,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add components/catalog/CardsGrid.tsx app/\(catalog\)/browse/\[series\]/\[set\]/page.tsx
@@ -1567,7 +1567,7 @@ git commit -m "feat: add cards grid page with client-side filter chips"
 **Files:**
 - Create: `app/(catalog)/cards/[id]/page.tsx`
 
-- [ ] **Step 1: Create `app/(catalog)/cards/[id]/page.tsx`**
+- [x] **Step 1: Create `app/(catalog)/cards/[id]/page.tsx`**
 
 ```typescript
 import { notFound } from 'next/navigation'
@@ -1671,7 +1671,7 @@ export default async function CardDetailPage({ params }: Props) {
 }
 ```
 
-- [ ] **Step 2: Verify TypeScript compiles**
+- [x] **Step 2: Verify TypeScript compiles**
 
 ```bash
 npx tsc --noEmit
@@ -1679,7 +1679,7 @@ npx tsc --noEmit
 
 Expected: no errors.
 
-- [ ] **Step 3: Run all tests**
+- [x] **Step 3: Run all tests**
 
 ```bash
 npm test
@@ -1687,7 +1687,7 @@ npm test
 
 Expected: all tests pass.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add app/\(catalog\)/cards/\[id\]/page.tsx

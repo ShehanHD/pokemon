@@ -17,12 +17,12 @@ describe('userCardInputSchema — raw', () => {
   })
 
   it('accepts raw card with valid centering', () => {
-    const r = userCardInputSchema.safeParse({ ...validRaw, centering: '55/45' })
+    const r = userCardInputSchema.safeParse({ ...validRaw, centering: 'Perfect' })
     expect(r.success).toBe(true)
   })
 
   it('rejects raw card with malformed centering', () => {
-    const r = userCardInputSchema.safeParse({ ...validRaw, centering: 'fifty-fifty' })
+    const r = userCardInputSchema.safeParse({ ...validRaw, centering: '55/45' })
     expect(r.success).toBe(false)
   })
 

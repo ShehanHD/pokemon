@@ -1,5 +1,6 @@
 import { getDb } from './db'
 import type { PokemonCard } from './types'
+import { normaliseRarity } from './taxonomy/rarity'
 
 function serializeCard(doc: Record<string, unknown>): PokemonCard {
   const { _id, ...rest } = doc
@@ -23,4 +24,24 @@ export async function getCardById(pokemontcg_id: string): Promise<PokemonCard | 
   const db = await getDb()
   const doc = await db.collection('cards').findOne({ pokemontcg_id })
   return doc ? serializeCard(doc as Record<string, unknown>) : null
+}
+
+export async function getRarityTotalsBySet(): Promise<Map<string, Map<string, number>>> {
+  const db = await getDb()
+  const rows = await db
+    .collection('cards')
+    .aggregate<{ _id: { setId: string; rarity: string | null }; count: number }>([
+      { $group: { _id: { setId: '$set_id', rarity: '$rarity' }, count: { $sum: 1 } } },
+    ])
+    .toArray()
+
+  const map = new Map<string, Map<string, number>>()
+  for (const r of rows) {
+    const setId = r._id.setId
+    const rarity = normaliseRarity(r._id.rarity)
+    if (!map.has(setId)) map.set(setId, new Map())
+    const inner = map.get(setId)!
+    inner.set(rarity, (inner.get(rarity) ?? 0) + r.count)
+  }
+  return map
 }

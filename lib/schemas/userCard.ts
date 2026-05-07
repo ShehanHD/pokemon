@@ -3,12 +3,14 @@ import { z } from 'zod'
 export const cardVariantSchema = z.enum([
   'normal', 'holo', 'reverse-holo', '1st-edition',
   'shadowless', 'promo', 'full-art', 'alt-art',
+  'holofoil', 'reverse-holofoil', 'pokeball-pattern',
+  'masterball-pattern', 'cosmos-holo', 'crosshatch-holo', 'galaxy-holo',
 ])
 
 export const cardConditionSchema = z.enum(['NM', 'LP', 'MP', 'HP', 'DMG'])
 
 export const gradingCompanySchema = z.enum([
-  'PSA', 'BGS', 'CGC', 'SGC', 'TAG', 'Other',
+  'PSA', 'GRAAD', 'BGS', 'CGC', 'SGC', 'TAG', 'Ace', 'GMA', 'Other',
 ])
 
 const gradeSchema = z
@@ -17,16 +19,13 @@ const gradeSchema = z
   .max(10)
   .refine((g) => (g * 2) % 1 === 0, { message: 'Grade must be in half-point steps' })
 
-const centeringSchema = z
-  .string()
-  .regex(/^\d{1,2}\/\d{1,2}$/, { message: 'Centering must look like "55/45"' })
-  .optional()
+export const centeringSchema = z.enum(['Perfect', 'Good', 'Poor', 'Error Print']).optional()
 
 const baseFields = {
   cardId: z.string().min(1),
   variant: cardVariantSchema,
   acquiredAt: z.coerce.date(),
-  cost: z.number().min(0),
+  cost: z.number().min(0).optional(),
   notes: z.string().max(500).optional(),
 }
 

@@ -11,16 +11,26 @@ interface Props {
   open: boolean
   onClose: () => void
   set: PokemonSet | null
+  initialVariant?: CardVariant
+  rarity?: string | null
 }
 
 const VARIANT_FALLBACK: CardVariant[] = ['normal', 'holofoil', 'reverse-holofoil', 'promo']
 const CONDITIONS: CardCondition[] = ['NM', 'LP', 'MP', 'HP', 'DMG']
-const COMPANIES: GradingCompany[] = ['PSA', 'BGS', 'CGC', 'SGC', 'TAG', 'Ace', 'GMA', 'Other']
+const CONDITION_LABEL: Record<CardCondition, string> = {
+  NM: 'Near Mint',
+  LP: 'Lightly Played',
+  MP: 'Moderately Played',
+  HP: 'Heavily Played',
+  DMG: 'Damaged',
+}
+const COMPANIES: GradingCompany[] = ['PSA', 'GRAAD', 'BGS', 'CGC', 'SGC', 'TAG', 'Ace', 'GMA', 'Other']
+const CENTERINGS = ['Perfect', 'Good', 'Poor', 'Error Print'] as const
 
-export default function AddCopyDialog({ cardId, open, onClose, set }: Props) {
+export default function AddCopyDialog({ cardId, open, onClose, set, initialVariant, rarity }: Props) {
   const variants = set ? applicableVariantsForSet(set) : VARIANT_FALLBACK
   const [type, setType] = useState<'raw' | 'graded'>('raw')
-  const [variant, setVariant] = useState<CardVariant>(variants[0] ?? 'normal')
+  const [variant, setVariant] = useState<CardVariant>(initialVariant ?? variants[0] ?? 'normal')
   const [cost, setCost] = useState('')
   const [acquiredAt, setAcquiredAt] = useState(() => new Date().toISOString().slice(0, 10))
   const [condition, setCondition] = useState<CardCondition>('NM')
@@ -43,7 +53,7 @@ export default function AddCopyDialog({ cardId, open, onClose, set }: Props) {
         cardId,
         variant,
         acquiredAt,
-        cost: Number(cost),
+        cost: cost !== '' ? Number(cost) : undefined,
         notes: notes.trim() ? notes.trim() : undefined,
       }
       const input =
@@ -103,6 +113,12 @@ export default function AddCopyDialog({ cardId, open, onClose, set }: Props) {
             ))}
           </div>
 
+          {rarity && (
+            <Field label="Rarity">
+              <p className="px-2 py-1.5 text-sm text-text bg-mantle border border-surface0 rounded">{rarity}</p>
+            </Field>
+          )}
+
           <Field label="Variant">
             <select
               value={variant}
@@ -116,7 +132,6 @@ export default function AddCopyDialog({ cardId, open, onClose, set }: Props) {
           <Field label="Cost (€)">
             <input
               type="number"
-              required
               min={0}
               step="0.01"
               value={cost}
@@ -143,17 +158,18 @@ export default function AddCopyDialog({ cardId, open, onClose, set }: Props) {
                   onChange={(e) => setCondition(e.target.value as CardCondition)}
                   className="w-full bg-base border border-surface0 rounded px-2 py-1.5 text-sm text-text"
                 >
-                  {CONDITIONS.map((c) => <option key={c} value={c}>{c}</option>)}
+                  {CONDITIONS.map((c) => <option key={c} value={c}>{CONDITION_LABEL[c]}</option>)}
                 </select>
               </Field>
               <Field label="Centering (optional)">
-                <input
-                  type="text"
-                  placeholder="55/45"
+                <select
                   value={centering}
                   onChange={(e) => setCentering(e.target.value)}
                   className="w-full bg-base border border-surface0 rounded px-2 py-1.5 text-sm text-text"
-                />
+                >
+                  <option value="">—</option>
+                  {CENTERINGS.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
               </Field>
             </>
           ) : (

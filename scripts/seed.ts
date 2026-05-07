@@ -4,6 +4,17 @@ import { fetchAllSets, fetchCardsBySet } from '../lib/pokemontcg'
 import { toSeriesSlug } from '../lib/sets'
 import type { PtcgCard } from '../lib/schemas/pokemontcg'
 
+// Sets whose API series is wrong — keyed by set ID prefix or exact ID
+const SERIES_OVERRIDES: Record<string, string> = {
+  'dv1': 'Black & White',
+}
+
+function resolveSeries(setId: string, apiSeries: string): string {
+  if (SERIES_OVERRIDES[setId]) return SERIES_OVERRIDES[setId]
+  // Fall back to name-based detection for any set the API lumps into "Other"
+  return apiSeries
+}
+
 function resolvePrice(card: PtcgCard): number | null {
   const cm = card.cardmarket?.prices?.averageSellPrice
   if (cm != null) return cm
@@ -43,11 +54,12 @@ async function seed() {
     console.log(`  Found ${sets.length} sets`)
 
     for (const ptcgSet of sets) {
-    const seriesSlug = toSeriesSlug(ptcgSet.series)
+    const series = resolveSeries(ptcgSet.id, ptcgSet.series)
+    const seriesSlug = toSeriesSlug(series)
     const setDoc = {
       pokemontcg_id: ptcgSet.id,
       name: ptcgSet.name,
-      series: ptcgSet.series,
+      series,
       seriesSlug,
       releaseDate: ptcgSet.releaseDate,
       totalCards: ptcgSet.total,
@@ -74,7 +86,7 @@ async function seed() {
         number: card.number,
         set_id: ptcgSet.id,
         setName: ptcgSet.name,
-        series: ptcgSet.series,
+        series,
         seriesSlug,
         rarity: card.rarity ?? null,
         types: card.types ?? [],

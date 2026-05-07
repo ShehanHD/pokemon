@@ -19,7 +19,7 @@ describe('SortMenu', () => {
 
   it('exposes the documented sort options', () => {
     expect(SORT_OPTIONS.map((o) => o.value)).toEqual([
-      'set-order', 'name-asc', 'name-desc', 'number-asc', 'number-desc', 'rarity',
+      'set-order', 'name-asc', 'name-desc', 'number-asc', 'number-desc', 'rarity', 'price-desc', 'price-asc',
     ])
   })
 })

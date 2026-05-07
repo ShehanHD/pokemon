@@ -64,7 +64,7 @@ export type CardVariant =
 
 export type CardCondition = 'NM' | 'LP' | 'MP' | 'HP' | 'DMG'
 
-export type GradingCompany = 'PSA' | 'BGS' | 'CGC' | 'SGC' | 'TAG' | 'Ace' | 'GMA' | 'Other'
+export type GradingCompany = 'PSA' | 'GRAAD' | 'BGS' | 'CGC' | 'SGC' | 'TAG' | 'Ace' | 'GMA' | 'Other'
 
 interface UserCardBase {
   _id?: string
@@ -72,7 +72,7 @@ interface UserCardBase {
   cardId: string
   variant: CardVariant
   acquiredAt: Date
-  cost: number
+  cost?: number
   notes?: string
   createdAt: Date
   updatedAt: Date

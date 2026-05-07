@@ -77,7 +77,7 @@ export default function RemoveCopyDialog({ cardId, copies, open, onClose }: Prop
                     {c.type}
                   </span>
                   <span className="flex-1 text-sm text-text truncate">{describeCopy(c)}</span>
-                  <span className="text-xs text-overlay0">€{c.cost.toFixed(2)}</span>
+                  {c.cost != null && <span className="text-xs text-overlay0">€{c.cost.toFixed(2)}</span>}
                   {isConfirming ? (
                     <span className="flex gap-1">
                       <button

@@ -37,7 +37,7 @@ describe('applicableVariantsForSet', () => {
     expect(variants).toEqual(expect.arrayContaining(['normal', 'holofoil', 'reverse-holofoil']))
   })
 
-  it('returns 1st Edition + Shadowless variants for Original era Base', () => {
+  it('returns 1st Edition + Shadowless variants for Base series', () => {
     const variants = applicableVariantsForSet(fakeSet('base1', 'Base'))
     expect(variants).toContain('1st-edition')
     expect(variants).toContain('shadowless')

@@ -16,7 +16,7 @@ const ONE_YEAR = 60 * 60 * 24 * 365
 export async function setThemePokemon(input: unknown): Promise<void> {
   const { pokemonId } = setThemePokemonInputSchema.parse(input)
   const session = await auth()
-  const userTier = session?.tier ?? 'free'
+  const userTier = session?.user?.tier ?? 'free'
 
   if (pokemonId !== null) {
     const entry = (manifest as ThemeManifest)[String(pokemonId)]

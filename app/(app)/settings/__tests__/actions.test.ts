@@ -6,7 +6,7 @@ const cookieStore = {
 }
 const usersUpdateOne = vi.fn(async () => ({ acknowledged: true }))
 const revalidatePath = vi.fn()
-let session: { user: { id: string }; tier: 'free' | 'adfree' | 'pro' } | null = null
+let session: { user: { id: string; tier: 'free' | 'adfree' | 'pro' } } | null = null
 
 vi.mock('next/headers', () => ({
   cookies: async () => cookieStore,
@@ -42,7 +42,7 @@ beforeEach(() => {
 
 describe('setThemePokemon', () => {
   it('free user → free Pokémon: writes cookie, DB, and revalidates', async () => {
-    session = { user: { id: 'u1' }, tier: 'free' }
+    session = { user: { id: 'u1', tier: 'free' } }
     await setThemePokemon({ pokemonId: 25 })
     expect(cookieStore.set).toHaveBeenCalledWith(
       'theme-pokemon',
@@ -54,14 +54,14 @@ describe('setThemePokemon', () => {
   })
 
   it('free user → adfree Pokémon: rejected, no writes', async () => {
-    session = { user: { id: 'u1' }, tier: 'free' }
+    session = { user: { id: 'u1', tier: 'free' } }
     await expect(setThemePokemon({ pokemonId: 6 })).rejects.toThrow(/tier/i)
     expect(cookieStore.set).not.toHaveBeenCalled()
     expect(usersUpdateOne).not.toHaveBeenCalled()
   })
 
   it('null clears cookie and unsets DB field', async () => {
-    session = { user: { id: 'u1' }, tier: 'pro' }
+    session = { user: { id: 'u1', tier: 'pro' } }
     await setThemePokemon({ pokemonId: null })
     expect(cookieStore.delete).toHaveBeenCalledWith('theme-pokemon')
     expect(usersUpdateOne).toHaveBeenCalledWith({ _id: 'u1' }, { $unset: { themePokemonId: '' } })
@@ -80,13 +80,12 @@ describe('setThemePokemon', () => {
   })
 
   it('rejects unknown Pokémon id', async () => {
-    session = { user: { id: 'u1' }, tier: 'pro' }
+    session = { user: { id: 'u1', tier: 'pro' } }
     await expect(setThemePokemon({ pokemonId: 9999 })).rejects.toThrow(/unknown/i)
   })
 
   it('rejects malformed input', async () => {
-    session = { user: { id: 'u1' }, tier: 'pro' }
-    // @ts-expect-error — testing runtime validation
+    session = { user: { id: 'u1', tier: 'pro' } }
     await expect(setThemePokemon({ pokemonId: 'pikachu' })).rejects.toThrow()
   })
 })

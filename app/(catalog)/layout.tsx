@@ -15,6 +15,7 @@ export default async function CatalogLayout({ children }: { children: ReactNode 
 
   const cookieStore = await cookies()
   const cookieValue = cookieStore.get('theme-pokemon')?.value ?? null
+  const sidebarCollapsed = cookieStore.get('sidebar-collapsed')?.value === '1'
   const theme = resolveTheme(manifest as ThemeManifest, {
     cookie: cookieValue,
     userTier: session?.user?.tier,
@@ -27,7 +28,7 @@ export default async function CatalogLayout({ children }: { children: ReactNode 
   return (
     <SessionProvider session={session}>
       <div className="flex h-screen overflow-hidden bg-[ghostwhite]">
-        <Sidebar />
+        <Sidebar initialCollapsed={sidebarCollapsed} />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Topbar themePokemonId={theme ? themePokemonId : null} themeName={theme?.name ?? null} />
           <main className="flex-1 overflow-y-auto p-4">{children}</main>

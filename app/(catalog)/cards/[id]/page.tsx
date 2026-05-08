@@ -4,9 +4,11 @@ import Link from 'next/link'
 import { getCardById } from '@/lib/cards'
 import { getSetById } from '@/lib/sets'
 import { getUserCardsForCard } from '@/lib/userCards'
+import { getWishlistContext } from '@/lib/wishlist'
 import { auth } from '@/lib/auth'
 import Breadcrumb from '@/components/catalog/Breadcrumb'
 import OwnedCounter from '@/components/collection/OwnedCounter'
+import WishlistStar from '@/components/wishlist/WishlistStar'
 import { normaliseRarity } from '@/lib/taxonomy/rarity'
 
 interface Props {
@@ -23,7 +25,15 @@ export default async function CardDetailPage({ params }: Props) {
 
   const session = await auth()
   const userId = session?.user?.id
-  const copies = userId ? await getUserCardsForCard(userId, card.pokemontcg_id) : []
+  const [copies, wishlistCtx] = await Promise.all([
+    userId ? getUserCardsForCard(userId, card.pokemontcg_id) : Promise.resolve([]),
+    getWishlistContext(userId, session?.user?.tier),
+  ])
+  const wishlistInitialState =
+    wishlistCtx.userState === 'logged-out' ? 'logged-out'
+    : wishlistCtx.wishlistedIds.has(card.pokemontcg_id) ? 'filled'
+    : wishlistCtx.userState === 'free-capped' ? 'capped'
+    : 'unfilled'
 
   const normalised = normaliseRarity(card.rarity)
 
@@ -75,7 +85,10 @@ export default async function CardDetailPage({ params }: Props) {
 
         {/* Card details */}
         <div className="flex-1 min-w-0">
-          <h1 className="font-russo text-xl text-text mb-1">{card.name}</h1>
+          <div className="flex items-start gap-2 mb-1">
+            <h1 className="font-russo text-xl text-text flex-1">{card.name}</h1>
+            <WishlistStar cardId={card.pokemontcg_id} initialState={wishlistInitialState} />
+          </div>
           {card.cardmarketPrice !== null && (
             <p className="text-2xl font-russo text-blue mb-4">€{card.cardmarketPrice.toFixed(2)}</p>
           )}

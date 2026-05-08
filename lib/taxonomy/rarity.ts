@@ -62,3 +62,24 @@ export function normaliseRarity(raw: string | null): NormalisedRarity {
   console.warn(`[taxonomy/rarity] unknown rarity "${raw}" — falling back to "Unknown"`)
   return 'Unknown'
 }
+
+const RARITY_SYMBOLS: Record<NormalisedRarity, string> = {
+  'Common': '●',
+  'Uncommon': '◆',
+  'Rare': '★',
+  'Rare Holo': '★',
+  'Double Rare': '★★',
+  'Ultra Rare': '★★',
+  'Illustration Rare': '★',
+  'Special Illustration Rare': '★★',
+  'Hyper Rare': '★★★',
+  'Mega Hyper Rare': '★★★',
+  'Trainer Gallery': 'TG',
+  'ACE SPEC Rare': 'ACE',
+  'Promo': 'PR',
+  'Unknown': '?',
+}
+
+export function raritySymbol(raw: string | null): string {
+  return RARITY_SYMBOLS[normaliseRarity(raw)]
+}

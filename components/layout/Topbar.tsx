@@ -1,7 +1,8 @@
 'use client'
 
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Search, Globe, User } from 'lucide-react'
+import { Search, Globe, Palette } from 'lucide-react'
 
 const routeTitles: [string, string][] = [
   ['/dashboard', 'Dashboard'],
@@ -34,17 +35,26 @@ export default function Topbar({ themePokemonId, themeName }: TopbarProps) {
         <Globe size={10} className="flex-shrink-0" />
         <span>IT · EUR</span>
       </div>
-      <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-blue flex items-center justify-center bg-base">
-        {themePokemonId ? (
-          <img
-            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${themePokemonId}.png`}
-            alt={themeName ?? 'Theme avatar'}
-            className="w-full h-full object-contain"
-          />
-        ) : (
-          <User size={16} className="text-overlay1" />
-        )}
-      </div>
+      <Link
+        href="/settings"
+        title={themeName ? `Theme: ${themeName}` : 'Pick a theme'}
+        className="bg-base border border-surface0 rounded-full pl-1 pr-3 py-0.5 flex items-center gap-1.5 hover:border-blue/50 transition-colors"
+      >
+        <span className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-mantle flex-shrink-0">
+          {themePokemonId ? (
+            <img
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${themePokemonId}.png`}
+              alt=""
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <Palette size={12} className="text-overlay1" />
+          )}
+        </span>
+        <span className="text-[10px] text-overlay2 truncate max-w-[7rem]">
+          {themeName ?? 'No theme'}
+        </span>
+      </Link>
     </header>
   )
 }

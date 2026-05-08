@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
+import LogoutButton from '@/components/layout/LogoutButton'
 import type { Tier } from '@/lib/types'
 
 const tierLabel: Record<Tier, string> = {
@@ -83,6 +84,7 @@ export default async function ProfilePage() {
             Upgrade plan
           </Link>
         )}
+        <LogoutButton />
       </div>
     </main>
   )

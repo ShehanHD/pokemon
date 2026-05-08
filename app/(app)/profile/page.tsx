@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { auth } from '@/lib/auth'
-import LogoutButton from '@/components/layout/LogoutButton'
 import type { Tier } from '@/lib/types'
 
 const tierLabel: Record<Tier, string> = {
@@ -69,23 +68,16 @@ export default async function ProfilePage() {
         ))}
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href="/settings"
-          className="text-[11px] px-3 py-1.5 rounded border border-surface0 text-text hover:border-blue/40 hover:text-blue transition-colors"
-        >
-          Settings
-        </Link>
-        {tier === 'free' && (
+      {tier === 'free' && (
+        <div className="flex flex-wrap gap-2">
           <Link
             href="/upgrade"
             className="text-[11px] px-3 py-1.5 rounded bg-blue/15 border border-blue/40 text-blue hover:bg-blue/25 transition-colors"
           >
             Upgrade plan
           </Link>
-        )}
-        <LogoutButton />
-      </div>
+        </div>
+      )}
     </main>
   )
 }

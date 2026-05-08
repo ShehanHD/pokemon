@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
+import UserMenu from './UserMenu'
 
 const COOKIE_KEY = 'sidebar-collapsed'
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
@@ -107,25 +108,7 @@ export default function Sidebar({ initialCollapsed = false }: { initialCollapsed
         {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
       </button>
 
-      {/* User footer */}
-      <div className="border-t border-surface0 px-4 py-3">
-        <div className={`flex items-center gap-2 ${collapsed ? 'justify-center' : ''}`}>
-          <div
-            className="w-6 h-6 rounded-full bg-blue/20 border border-blue/40 flex-shrink-0"
-            title={collapsed ? (session?.user?.name ?? undefined) : undefined}
-          />
-          {!collapsed && (
-            <div className="min-w-0">
-              <div className="text-[10px] text-overlay2 leading-none truncate">
-                {session?.user?.name ?? '—'}
-              </div>
-              <div className="text-[9px] text-mauve mt-0.5">
-                {tier === 'pro' ? '★ Pro' : tier === 'adfree' ? '◆ Ad-Free' : 'Free'}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      <UserMenu collapsed={collapsed} />
     </aside>
   )
 }

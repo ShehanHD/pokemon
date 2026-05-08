@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
 import { LogOut } from 'lucide-react'
+import { useState } from 'react'
 
 const tierLabel = (tier: string | undefined): string => {
   if (tier === 'pro') return '★ Pro'
@@ -15,6 +16,13 @@ export default function UserMenu({ collapsed }: { collapsed: boolean }) {
   const name = session?.user?.name ?? '—'
   const tier = session?.user?.tier
   const initial = (session?.user?.name ?? session?.user?.email ?? '?').slice(0, 1).toUpperCase()
+  const [confirming, setConfirming] = useState(false)
+  const [pending, setPending] = useState(false)
+
+  const onConfirm = () => {
+    setPending(true)
+    void signOut({ callbackUrl: '/login' })
+  }
 
   return (
     <div className="border-t border-surface0">
@@ -37,7 +45,7 @@ export default function UserMenu({ collapsed }: { collapsed: boolean }) {
       </Link>
       <button
         type="button"
-        onClick={() => void signOut({ callbackUrl: '/login' })}
+        onClick={() => setConfirming(true)}
         title="Log out"
         className={`w-full px-4 py-2 flex items-center gap-2 text-[10px] text-overlay1 hover:text-red hover:bg-surface0/50 transition-colors ${
           collapsed ? 'justify-center' : ''
@@ -46,6 +54,47 @@ export default function UserMenu({ collapsed }: { collapsed: boolean }) {
         <LogOut size={12} className="flex-shrink-0" />
         {!collapsed && <span>Log out</span>}
       </button>
+
+      {confirming && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-text/20 backdrop-blur-sm"
+          onClick={() => !pending && setConfirming(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="logout-title"
+            className="bg-base border border-surface0 rounded-2xl p-6 w-[400px] max-w-[92vw] shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 id="logout-title" className="font-russo text-base text-text mb-2">
+              Log out?
+            </h2>
+            <p className="text-sm text-overlay1 mb-5">
+              You&apos;ll need to sign in again to access your collection.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                disabled={pending}
+                onClick={() => setConfirming(false)}
+                className="px-4 py-1.5 text-sm bg-mantle border border-surface0 rounded text-text hover:border-overlay0 disabled:opacity-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={pending}
+                onClick={onConfirm}
+                className="px-4 py-1.5 text-sm bg-red/15 border border-red/40 rounded text-red hover:bg-red/25 disabled:opacity-50 inline-flex items-center gap-1.5 transition-colors"
+              >
+                <LogOut size={12} />
+                {pending ? 'Logging out…' : 'Log out'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

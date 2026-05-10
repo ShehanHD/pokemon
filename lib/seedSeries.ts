@@ -124,7 +124,7 @@ async function seedOneSet(ptcgSet: PtcgSet): Promise<SeedSetResult> {
   }
 }
 
-export async function seedSetIds(setIds: string[]): Promise<SeedReport> {
+async function seedSetIdsLegacy(setIds: string[]): Promise<SeedReport> {
   if (setIds.length === 0) {
     return { results: [], errors: [], setsTouched: 0, cardsUpserted: 0, pricedCards: 0 }
   }
@@ -167,4 +167,13 @@ export async function seedSetIds(setIds: string[]): Promise<SeedReport> {
     cardsUpserted: results.reduce((s, r) => s + r.cardsUpserted, 0),
     pricedCards: results.reduce((s, r) => s + r.pricedCards, 0),
   }
+}
+
+export async function seedSetIds(setIds: string[]): Promise<SeedReport> {
+  const source = (process.env.SEED_SOURCE ?? 'pokemontcg').toLowerCase()
+  if (source === 'tcgdex') {
+    const { seedSetIdsTcgdex } = await import('./seedSeriesTcgdex')
+    return seedSetIdsTcgdex(setIds)
+  }
+  return seedSetIdsLegacy(setIds)
 }

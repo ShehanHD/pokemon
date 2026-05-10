@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import CopiesDialog from './CopiesDialog'
 import type { CardVariant, UserCard, PokemonCard, PokemonSet } from '@/lib/types'
-import { chipsForCard } from '@/lib/taxonomy/variant'
+import { chipsForCard, variantLabel, variantShortLabel } from '@/lib/taxonomy/variant'
 
 interface Props {
   cardId: string
@@ -15,7 +15,13 @@ interface Props {
 export default function OwnedCounter({ cardId, card, copies, set }: Props) {
   const [activeVariant, setActiveVariant] = useState<CardVariant | null>(null)
 
-  const chips = set ? chipsForCard(card, set) : []
+  const baseChips = set ? chipsForCard(card, set) : []
+  const baseVariants = new Set(baseChips.map((c) => c.variant))
+  const ownedVariants = new Set(copies.map((c) => c.variant))
+  const extraChips = [...ownedVariants]
+    .filter((v) => !baseVariants.has(v))
+    .map((v) => ({ variant: v, short: variantShortLabel(v), label: variantLabel(v) }))
+  const chips = [...baseChips, ...extraChips]
 
   const countByVariant = new Map<string, number>()
   for (const c of copies) {
@@ -65,6 +71,7 @@ export default function OwnedCounter({ cardId, card, copies, set }: Props) {
           onClose={() => setActiveVariant(null)}
           set={set}
           rarity={card.rarity}
+          mode="add"
         />
       )}
     </div>

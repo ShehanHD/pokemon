@@ -1,4 +1,4 @@
-import { fetchAllSets } from '@/lib/pokemontcg'
+import { fetchAllSets, buildAssetUrl } from '@/lib/tcgdex'
 import { toSeriesSlug } from '@/lib/sets'
 import { getDb } from '@/lib/db'
 import { resolveSeries } from '@/lib/seedSeries'
@@ -6,13 +6,19 @@ import SeedClient, { type SeriesGroup, type SetRow } from './SeedClient'
 
 export const metadata = { title: 'Admin · Seed' }
 
-type DbSetMeta = { pokemontcg_id: string; cardCount: number; totalValue: number | null; updatedAt?: Date | null }
+type DbSetMeta = {
+  tcgdex_id: string
+  cardCount: number
+  totalValueEUR?: number | null
+  totalValue?: number | null
+  series?: string
+}
 
 async function getDbSetsMeta(): Promise<Map<string, DbSetMeta>> {
   const db = await getDb()
   const sets = await db
     .collection('sets')
-    .find({}, { projection: { pokemontcg_id: 1, totalValue: 1 } })
+    .find({}, { projection: { tcgdex_id: 1, totalValueEUR: 1, totalValue: 1, series: 1 } })
     .toArray()
   const counts = await db
     .collection('cards')
@@ -23,11 +29,14 @@ async function getDbSetsMeta(): Promise<Map<string, DbSetMeta>> {
   const countMap = new Map(counts.map((c) => [c._id, c.count]))
   const map = new Map<string, DbSetMeta>()
   for (const s of sets) {
-    const id = s.pokemontcg_id as string
+    const id = s.tcgdex_id as string
+    if (!id) continue
     map.set(id, {
-      pokemontcg_id: id,
+      tcgdex_id: id,
       cardCount: countMap.get(id) ?? 0,
+      totalValueEUR: (s.totalValueEUR as number | null | undefined) ?? null,
       totalValue: (s.totalValue as number | null | undefined) ?? null,
+      series: (s.series as string | undefined) ?? undefined,
     })
   }
   return map
@@ -38,19 +47,28 @@ export default async function AdminSeedPage() {
 
   const groups = new Map<string, SeriesGroup>()
   for (const s of apiSets) {
-    const series = resolveSeries(s.id, s.series)
-    const slug = toSeriesSlug(series)
     const meta = dbMeta.get(s.id)
+    // Series resolution: prefer DB-stored series (already populated by seeder),
+    // fall back to resolveSeries override map for known IDs, then 'Other'.
+    // We cannot use set.serie?.name here because fetchAllSets() returns TcgdexSetBrief
+    // which does not include the serie field (only fetchSet() returns TcgdexSetDetail).
+    const dbSeries = meta?.series ?? ''
+    const series = resolveSeries(s.id, dbSeries || 'Other')
+    const slug = toSeriesSlug(series)
+    const dbTotalValue =
+      (meta?.totalValueEUR ?? meta?.totalValue) !== undefined
+        ? (meta?.totalValueEUR ?? meta?.totalValue ?? null)
+        : null
     const row: SetRow = {
       setId: s.id,
       setName: s.name,
-      releaseDate: s.releaseDate,
-      apiTotal: s.total,
-      printedTotal: s.printedTotal,
-      logoUrl: s.images.logo,
+      releaseDate: s.releaseDate ?? '',
+      apiTotal: s.cardCount?.total ?? 0,
+      printedTotal: s.cardCount?.official ?? 0,
+      logoUrl: buildAssetUrl(s.logo) ?? '',
       inDb: !!meta,
       dbCardCount: meta?.cardCount ?? 0,
-      dbTotalValue: meta?.totalValue ?? null,
+      dbTotalValue,
     }
     if (!groups.has(series)) {
       groups.set(series, { name: series, slug, sets: [] })
@@ -82,7 +100,7 @@ export default async function AdminSeedPage() {
       <header className="space-y-1">
         <h1 className="text-2xl font-russo">Admin · Seed</h1>
         <p className="text-sm text-overlay1">
-          Re-seed individual sets or whole series from the pokemontcg.io API.
+          Re-seed individual sets or whole series from the TCGdex API.
           {' '}<span className="tabular-nums">{dbSetCount}</span> in DB ·
           {' '}<span className="tabular-nums">{newSetCount}</span> new ·
           {' '}<span className="tabular-nums">{totalSets}</span> total.

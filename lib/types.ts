@@ -26,6 +26,10 @@ export interface PokemonSet {
   totalValue: number | null
   logoUrl: string
   symbolUrl: string
+  tcgdex_id?: string | null
+  language?: string | null
+  totalValueEUR?: number | null
+  totalValueUSD?: number | null
 }
 
 export interface PokemonCard {
@@ -44,6 +48,21 @@ export interface PokemonCard {
   imageUrl: string
   imageUrlHiRes: string
   cardmarketPrice: number | null
+  tcgdex_id?: string | null
+  language?: string | null
+  priceEUR?: number | null
+  priceUSD?: number | null
+  variants?: {
+    firstEdition: boolean
+    holo: boolean
+    normal: boolean
+    reverse: boolean
+    wPromo: boolean
+  } | null
+  pricing?: {
+    cardmarket?: Record<string, unknown>
+    tcgplayer?: Record<string, unknown>
+  } | null
 }
 
 export type CardVariant =

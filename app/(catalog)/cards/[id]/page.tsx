@@ -6,8 +6,8 @@ import { getSetById } from '@/lib/sets'
 import { getUserCardsForCard } from '@/lib/userCards'
 import { getWishlistContext } from '@/lib/wishlist'
 import { auth } from '@/lib/auth'
-import Breadcrumb from '@/components/catalog/Breadcrumb'
 import OwnedCounter from '@/components/collection/OwnedCounter'
+import OwnedCopiesList from '@/components/collection/OwnedCopiesList'
 import WishlistStar from '@/components/wishlist/WishlistStar'
 import { normaliseRarity } from '@/lib/taxonomy/rarity'
 
@@ -55,18 +55,6 @@ export default async function CardDetailPage({ params }: Props) {
 
   return (
     <div>
-      <Breadcrumb
-        segments={[
-          { label: 'Browse', href: '/browse' },
-          ...(set
-            ? [
-                { label: set.series, href: `/browse/${set.seriesSlug}` },
-                { label: set.name, href: `/browse/${set.seriesSlug}/${set.pokemontcg_id}` },
-              ]
-            : []),
-          { label: card.name },
-        ]}
-      />
 
       <div className="flex gap-6 flex-col sm:flex-row">
         {/* Card image */}
@@ -117,6 +105,15 @@ export default async function CardDetailPage({ params }: Props) {
                 </div>
               ))}
           </div>
+
+          {userId && copies.length > 0 && (
+            <OwnedCopiesList
+              cardId={card.pokemontcg_id}
+              card={card}
+              set={set}
+              copies={copies}
+            />
+          )}
 
           {set && (
             <Link

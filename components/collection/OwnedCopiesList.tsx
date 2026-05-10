@@ -46,7 +46,8 @@ export default function OwnedCopiesList({ cardId, card, set, copies }: Props) {
               {group.label} · ×{group.copies.length}
             </p>
             {group.copies.map((copy) => {
-              const id = String(copy._id)
+              if (!copy._id) return null
+              const id = copy._id
               const mode: RowMode = active && active.userCardId === id ? active.type : 'read'
               return (
                 <OwnedCopyRow

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Pencil, Tag, Trash2 } from 'lucide-react'
 import { updateUserCard, markUserCardAsSold, removeUserCard } from '@/app/(catalog)/cards/[id]/actions'
-import { userCardInputSchema } from '@/lib/schemas/userCard'
+import { userCardInputSchema, markAsSoldInputSchema } from '@/lib/schemas/userCard'
 import type { CardCondition, GradingCompany, UserCard } from '@/lib/types'
 
 const CONDITIONS: CardCondition[] = ['NM', 'LP', 'MP', 'HP', 'DMG']
@@ -34,6 +34,8 @@ function formatDate(d: Date | string): string {
 }
 
 export default function OwnedCopyRow({ copy, cardId, mode, onEnterMode, onLeaveMode }: Props) {
+  if (!copy._id) return null
+  const userCardId = copy._id
   const acquired = formatDate(copy.acquiredAt)
 
   const summary =
@@ -46,7 +48,7 @@ export default function OwnedCopyRow({ copy, cardId, mode, onEnterMode, onLeaveM
       <div className="flex items-center gap-2">
         <span className="flex-1 text-xs text-text">{summary}</span>
         {mode === 'delete' ? (
-          <DeleteStrip copy={copy} cardId={cardId} onLeave={onLeaveMode} />
+          <DeleteStrip userCardId={userCardId} cardId={cardId} onLeave={onLeaveMode} />
         ) : mode === 'read' ? (
           <>
             <button
@@ -87,13 +89,13 @@ export default function OwnedCopyRow({ copy, cardId, mode, onEnterMode, onLeaveM
           </button>
         )}
       </div>
-      {mode === 'edit' && <EditForm copy={copy} cardId={cardId} onDone={onLeaveMode} />}
-      {mode === 'sell' && <SellForm copy={copy} cardId={cardId} onDone={onLeaveMode} />}
+      {mode === 'edit' && <EditForm copy={copy} userCardId={userCardId} cardId={cardId} onDone={onLeaveMode} />}
+      {mode === 'sell' && <SellForm userCardId={userCardId} cardId={cardId} onDone={onLeaveMode} />}
     </div>
   )
 }
 
-function DeleteStrip({ copy, cardId, onLeave }: { copy: UserCard; cardId: string; onLeave: () => void }) {
+function DeleteStrip({ userCardId, cardId, onLeave }: { userCardId: string; cardId: string; onLeave: () => void }) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -101,7 +103,7 @@ function DeleteStrip({ copy, cardId, onLeave }: { copy: UserCard; cardId: string
     setError(null)
     setSubmitting(true)
     try {
-      await removeUserCard(copy._id!, cardId)
+      await removeUserCard(userCardId, cardId)
       onLeave()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete')
@@ -133,7 +135,7 @@ function DeleteStrip({ copy, cardId, onLeave }: { copy: UserCard; cardId: string
   )
 }
 
-function SellForm({ copy, cardId, onDone }: { copy: UserCard; cardId: string; onDone: () => void }) {
+function SellForm({ userCardId, cardId, onDone }: { userCardId: string; cardId: string; onDone: () => void }) {
   const [soldPrice, setSoldPrice] = useState('')
   const [soldDate, setSoldDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [submitting, setSubmitting] = useState(false)
@@ -142,18 +144,15 @@ function SellForm({ copy, cardId, onDone }: { copy: UserCard; cardId: string; on
   async function submit() {
     setError(null)
     const price = Number(soldPrice)
-    if (!Number.isFinite(price) || price < 0) {
-      setError('Enter a valid sold price')
-      return
-    }
     const d = new Date(soldDate)
-    if (Number.isNaN(d.getTime())) {
-      setError('Enter a valid sold date')
+    const parsed = markAsSoldInputSchema.safeParse({ soldPrice: price, soldAt: d })
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? 'Invalid input')
       return
     }
     setSubmitting(true)
     try {
-      await markUserCardAsSold(copy._id!, cardId, { soldPrice: price, soldAt: d })
+      await markUserCardAsSold(userCardId, cardId, parsed.data)
       onDone()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to mark as sold')
@@ -199,7 +198,7 @@ function SellForm({ copy, cardId, onDone }: { copy: UserCard; cardId: string; on
   )
 }
 
-function EditForm({ copy, cardId, onDone }: { copy: UserCard; cardId: string; onDone: () => void }) {
+function EditForm({ copy, userCardId, cardId, onDone }: { copy: UserCard; userCardId: string; cardId: string; onDone: () => void }) {
   const [cost, setCost] = useState(copy.cost != null ? String(copy.cost) : '')
   const [acquiredAt, setAcquiredAt] = useState(formatDate(copy.acquiredAt))
   const [notes, setNotes] = useState(copy.notes ?? '')
@@ -240,7 +239,7 @@ function EditForm({ copy, cardId, onDone }: { copy: UserCard; cardId: string; on
     }
     setSubmitting(true)
     try {
-      await updateUserCard(copy._id!, cardId, parsed.data)
+      await updateUserCard(userCardId, cardId, parsed.data)
       onDone()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save')

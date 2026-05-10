@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { X, Pencil, Trash2 } from 'lucide-react'
+import { X, Pencil, Trash2, Tag } from 'lucide-react'
 import type { CardVariant, CardCondition, GradingCompany, PokemonSet } from '@/lib/types'
 import {
   addUserCard,
   removeUserCard,
   updateUserCard,
   fetchUserCardsForVariant,
+  markUserCardAsSold,
 } from '@/app/(catalog)/cards/[id]/actions'
 import { applicableVariantsForSet, variantLabel } from '@/lib/taxonomy/variant'
 
@@ -33,6 +34,7 @@ interface Props {
   onClose: () => void
   set: PokemonSet | null
   rarity?: string | null
+  mode?: 'full' | 'add'
 }
 
 const CONDITIONS: CardCondition[] = ['NM', 'LP', 'MP', 'HP', 'DMG']
@@ -46,7 +48,7 @@ const CONDITION_LABEL: Record<CardCondition, string> = {
 const COMPANIES: GradingCompany[] = ['PSA', 'GRAAD', 'BGS', 'CGC', 'SGC', 'TAG', 'Ace', 'GMA', 'Other']
 const CENTERINGS = ['Perfect', 'Good', 'Poor', 'Error Print'] as const
 
-export default function CopiesDialog({ cardId, variant, open, onClose, set, rarity }: Props) {
+export default function CopiesDialog({ cardId, variant, open, onClose, set, rarity, mode = 'full' }: Props) {
   const router = useRouter()
   const [copies, setCopies] = useState<SerializedCopy[]>([])
   const [loading, setLoading] = useState(true)
@@ -74,6 +76,12 @@ export default function CopiesDialog({ cardId, variant, open, onClose, set, rari
     reload()
   }
 
+  async function handleMarkSold(copyId: string, soldPrice: number, soldAt: Date) {
+    await markUserCardAsSold(copyId, cardId, { soldPrice, soldAt })
+    router.refresh()
+    reload()
+  }
+
   async function handleAdded() {
     router.refresh()
     await reload()
@@ -95,7 +103,7 @@ export default function CopiesDialog({ cardId, variant, open, onClose, set, rari
           </button>
         </div>
 
-        {!loading && copies.length > 0 && (
+        {mode === 'full' && !loading && copies.length > 0 && (
           <div className="mb-4 flex flex-col gap-2">
             <p className="text-[11px] text-overlay0 uppercase tracking-wider">In your collection</p>
             {copies.map((copy) =>
@@ -114,6 +122,7 @@ export default function CopiesDialog({ cardId, variant, open, onClose, set, rari
                   copy={copy}
                   onEdit={() => setEditingId(copy._id!)}
                   onDelete={() => handleDelete(copy._id!)}
+                  onMarkSold={(price, date) => handleMarkSold(copy._id!, price, date)}
                 />
               )
             )}
@@ -121,7 +130,9 @@ export default function CopiesDialog({ cardId, variant, open, onClose, set, rari
           </div>
         )}
 
-        <p className="text-[11px] text-overlay0 uppercase tracking-wider mb-2">Add a copy</p>
+        {mode === 'full' && (
+          <p className="text-[11px] text-overlay0 uppercase tracking-wider mb-2">Add a copy</p>
+        )}
         <AddForm
           cardId={cardId}
           variant={variant}
@@ -138,12 +149,19 @@ function CopyRow({
   copy,
   onEdit,
   onDelete,
+  onMarkSold,
 }: {
   copy: SerializedCopy
   onEdit: () => void
   onDelete: () => void
+  onMarkSold: (soldPrice: number, soldAt: Date) => Promise<void> | void
 }) {
   const [confirming, setConfirming] = useState(false)
+  const [selling, setSelling] = useState(false)
+  const [soldPrice, setSoldPrice] = useState('')
+  const [soldDate, setSoldDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const date = copy.acquiredAt.slice(0, 10)
 
   const summary =
@@ -151,36 +169,115 @@ function CopyRow({
       ? `Raw · ${CONDITION_LABEL[copy.condition]}${copy.cost != null ? ` · €${copy.cost.toFixed(2)}` : ''} · ${date}`
       : `${copy.gradingCompany} ${copy.grade}${copy.gradedValue != null ? ` · €${copy.gradedValue.toFixed(2)}` : ''} · ${date}`
 
+  function startSelling() {
+    setError(null)
+    setConfirming(false)
+    setSoldPrice('')
+    setSoldDate(new Date().toISOString().slice(0, 10))
+    setSelling(true)
+  }
+
+  async function submitSell() {
+    setError(null)
+    const price = Number(soldPrice)
+    if (!Number.isFinite(price) || price < 0) {
+      setError('Enter a valid sold price')
+      return
+    }
+    const d = new Date(soldDate)
+    if (Number.isNaN(d.getTime())) {
+      setError('Enter a valid sold date')
+      return
+    }
+    setSubmitting(true)
+    try {
+      await onMarkSold(price, d)
+      setSelling(false)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to mark as sold')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
-    <div className="flex items-center gap-2 px-2 py-1.5 rounded bg-mantle border border-surface0">
-      <span className="flex-1 text-xs text-text">{summary}</span>
-      {confirming ? (
-        <>
+    <div className="flex flex-col gap-2 px-2 py-1.5 rounded bg-mantle border border-surface0">
+      <div className="flex items-center gap-2">
+        <span className="flex-1 text-xs text-text">{summary}</span>
+        {confirming ? (
+          <>
+            <button
+              type="button"
+              onClick={() => { setConfirming(false); onDelete() }}
+              className="text-[10px] text-red px-1.5 py-0.5 rounded border border-red/40 hover:bg-red/10"
+            >
+              Confirm
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className="text-[10px] text-overlay1 hover:text-text"
+            >
+              Cancel
+            </button>
+          </>
+        ) : selling ? (
           <button
             type="button"
-            onClick={() => { setConfirming(false); onDelete() }}
-            className="text-[10px] text-red px-1.5 py-0.5 rounded border border-red/40 hover:bg-red/10"
-          >
-            Confirm
-          </button>
-          <button
-            type="button"
-            onClick={() => setConfirming(false)}
+            onClick={() => setSelling(false)}
             className="text-[10px] text-overlay1 hover:text-text"
           >
             Cancel
           </button>
-        </>
-      ) : (
-        <>
-          <button type="button" onClick={onEdit} className="text-overlay0 hover:text-blue" aria-label="Edit">
-            <Pencil size={13} />
+        ) : (
+          <>
+            <button type="button" onClick={onEdit} className="text-overlay0 hover:text-blue" aria-label="Edit" title="Edit">
+              <Pencil size={13} />
+            </button>
+            <button type="button" onClick={startSelling} className="text-overlay0 hover:text-green" aria-label="Mark as sold" title="Mark as sold">
+              <Tag size={13} />
+            </button>
+            <button type="button" onClick={() => setConfirming(true)} className="text-overlay0 hover:text-red" aria-label="Delete" title="Delete">
+              <Trash2 size={13} />
+            </button>
+          </>
+        )}
+      </div>
+      {selling && (
+        <div className="flex flex-wrap items-end gap-2">
+          <label className="flex flex-col gap-0.5">
+            <span className="text-[10px] text-overlay0 uppercase tracking-wider">Sold price (€)</span>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={soldPrice}
+              onChange={(e) => setSoldPrice(e.target.value)}
+              placeholder="0.00"
+              className="w-24 bg-base border border-surface0 rounded px-2 py-1 text-xs text-text focus:outline-none"
+              autoFocus
+            />
+          </label>
+          <label className="flex flex-col gap-0.5">
+            <span className="text-[10px] text-overlay0 uppercase tracking-wider">Sold on</span>
+            <input
+              type="date"
+              value={soldDate}
+              onChange={(e) => setSoldDate(e.target.value)}
+              className="bg-base border border-surface0 rounded px-2 py-1 text-xs text-text focus:outline-none"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={submitSell}
+            disabled={submitting}
+            className="ml-auto text-[11px] bg-green text-white px-3 py-1 rounded font-russo disabled:opacity-50"
+          >
+            {submitting ? 'Saving…' : 'Mark sold'}
           </button>
-          <button type="button" onClick={() => setConfirming(true)} className="text-overlay0 hover:text-red" aria-label="Delete">
-            <Trash2 size={13} />
-          </button>
-        </>
+        </div>
       )}
+      {error && <p className="text-[10px] text-red">{error}</p>}
     </div>
   )
 }

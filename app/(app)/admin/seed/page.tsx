@@ -29,14 +29,14 @@ async function getDbSetsMeta(): Promise<Map<string, DbSetMeta>> {
   const countMap = new Map(counts.map((c) => [c._id, c.count]))
   const map = new Map<string, DbSetMeta>()
   for (const s of sets) {
-    const id = s.tcgdex_id as string
+    const id = typeof s.tcgdex_id === 'string' ? s.tcgdex_id : null
     if (!id) continue
     map.set(id, {
       tcgdex_id: id,
       cardCount: countMap.get(id) ?? 0,
-      totalValueEUR: (s.totalValueEUR as number | null | undefined) ?? null,
-      totalValue: (s.totalValue as number | null | undefined) ?? null,
-      series: (s.series as string | undefined) ?? undefined,
+      totalValueEUR: s.totalValueEUR,
+      totalValue: s.totalValue,
+      series: typeof s.series === 'string' ? s.series : undefined,
     })
   }
   return map
@@ -53,12 +53,17 @@ export default async function AdminSeedPage() {
     // We cannot use set.serie?.name here because fetchAllSets() returns TcgdexSetBrief
     // which does not include the serie field (only fetchSet() returns TcgdexSetDetail).
     const dbSeries = meta?.series ?? ''
+    // Use || (not ??) so an empty-string series also falls back to 'Other'.
     const series = resolveSeries(s.id, dbSeries || 'Other')
     const slug = toSeriesSlug(series)
+    // Prefer EUR value; fall back to legacy only when totalValueEUR is absent (undefined),
+    // not when it is null (EUR valuation ran and found nothing).
     const dbTotalValue =
-      (meta?.totalValueEUR ?? meta?.totalValue) !== undefined
-        ? (meta?.totalValueEUR ?? meta?.totalValue ?? null)
-        : null
+      meta == null
+        ? null
+        : meta.totalValueEUR !== undefined
+          ? meta.totalValueEUR
+          : (meta.totalValue ?? null)
     const row: SetRow = {
       setId: s.id,
       setName: s.name,

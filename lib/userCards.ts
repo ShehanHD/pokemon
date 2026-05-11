@@ -30,7 +30,7 @@ export async function getOwnedCountsBySet(userId: string): Promise<Map<string, n
       $lookup: {
         from: 'cards',
         localField: 'cardId',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'card',
       },
     },
@@ -51,7 +51,7 @@ export async function getOwnedCountsByCardVariant(userId: string, setId: string)
       $lookup: {
         from: 'cards',
         localField: 'cardId',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'card',
       },
     },
@@ -73,7 +73,7 @@ export async function getOwnedVariantCountsBySet(userId: string): Promise<Map<st
       $lookup: {
         from: 'cards',
         localField: 'cardId',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'card',
       },
     },
@@ -97,7 +97,7 @@ export async function getOwnedUniqueCardCountsBySet(userId: string): Promise<Map
       $lookup: {
         from: 'cards',
         localField: 'cardId',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'card',
       },
     },
@@ -121,7 +121,7 @@ export async function getOwnedRarityCountsBySet(userId: string): Promise<Map<str
         $lookup: {
           from: 'cards',
           localField: 'cardId',
-          foreignField: 'pokemontcg_id',
+          foreignField: 'tcgdex_id',
           as: 'card',
         },
       },
@@ -150,7 +150,7 @@ export async function getCollectionValueBySet(userId: string): Promise<Map<strin
       $lookup: {
         from: 'cards',
         localField: 'cardId',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'card',
       },
     },
@@ -158,7 +158,7 @@ export async function getCollectionValueBySet(userId: string): Promise<Map<strin
     {
       $group: {
         _id: '$card.set_id',
-        value: { $sum: { $ifNull: ['$card.cardmarketPrice', 0] } },
+        value: { $sum: { $ifNull: ['$card.priceEUR', 0] } },
       },
     },
   ]).toArray()
@@ -176,7 +176,7 @@ export async function getCollectionCostBySet(userId: string): Promise<Map<string
       $lookup: {
         from: 'cards',
         localField: 'cardId',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'card',
       },
     },
@@ -198,10 +198,10 @@ export async function getCollectionValueForSet(userId: string, setId: string): P
   const db = await getDb()
   const rows = await db.collection('userCards').aggregate<{ _id: null; value: number }>([
     { $match: { userId } },
-    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'tcgdex_id', as: 'card' } },
     { $unwind: '$card' },
     { $match: { 'card.set_id': setId } },
-    { $group: { _id: null, value: { $sum: { $ifNull: ['$card.cardmarketPrice', 0] } } } },
+    { $group: { _id: null, value: { $sum: { $ifNull: ['$card.priceEUR', 0] } } } },
   ]).toArray()
   return rows[0]?.value ?? 0
 }
@@ -210,7 +210,7 @@ export async function getCollectionCostForSet(userId: string, setId: string): Pr
   const db = await getDb()
   const rows = await db.collection('userCards').aggregate<{ _id: null; cost: number }>([
     { $match: { userId } },
-    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'tcgdex_id', as: 'card' } },
     { $unwind: '$card' },
     { $match: { 'card.set_id': setId } },
     { $group: { _id: null, cost: { $sum: { $ifNull: ['$cost', 0] } } } },
@@ -226,7 +226,7 @@ export async function getOwnedCountsBySeries(userId: string): Promise<Map<string
       $lookup: {
         from: 'cards',
         localField: 'cardId',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'card',
       },
     },
@@ -285,7 +285,7 @@ export async function getOwnedCardsGrouped(
       $lookup: {
         from: 'cards',
         localField: '_id',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'card',
       },
     },
@@ -294,7 +294,7 @@ export async function getOwnedCardsGrouped(
       $lookup: {
         from: 'sets',
         localField: 'card.set_id',
-        foreignField: 'pokemontcg_id',
+        foreignField: 'tcgdex_id',
         as: 'set',
       },
     },
@@ -396,7 +396,7 @@ export async function getBySeriesBreakdown(userId: string): Promise<Array<{ seri
   const db = await getDb()
   const rows = await db.collection('userCards').aggregate<{ _id: string; copies: number; spend: number }>([
     { $match: { userId } },
-    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'tcgdex_id', as: 'card' } },
     { $unwind: '$card' },
     { $group: { _id: '$card.series', copies: { $sum: 1 }, spend: { $sum: { $ifNull: ['$cost', 0] } } } },
     { $sort: { copies: -1 } },
@@ -408,7 +408,7 @@ export async function getBySetBreakdown(userId: string, limit = 10): Promise<Arr
   const db = await getDb()
   const rows = await db.collection('userCards').aggregate<{ _id: string; setName: string; copies: number; spend: number }>([
     { $match: { userId } },
-    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'tcgdex_id', as: 'card' } },
     { $unwind: '$card' },
     { $group: { _id: '$card.set_id', setName: { $first: '$card.setName' }, copies: { $sum: 1 }, spend: { $sum: { $ifNull: ['$cost', 0] } } } },
     { $sort: { copies: -1 } },
@@ -421,7 +421,7 @@ export async function getRarityBreakdown(userId: string): Promise<Array<{ rarity
   const db = await getDb()
   const rows = await db.collection('userCards').aggregate<{ _id: string | null; copies: number }>([
     { $match: { userId } },
-    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'tcgdex_id', as: 'card' } },
     { $unwind: '$card' },
     { $group: { _id: '$card.rarity', copies: { $sum: 1 } } },
     { $sort: { copies: -1 } },

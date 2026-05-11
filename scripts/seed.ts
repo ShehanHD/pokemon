@@ -94,7 +94,7 @@ async function seed() {
         supertype: card.supertype,
         imageUrl: card.images.small,
         imageUrlHiRes: card.images.large,
-        cardmarketPrice: resolvePrice(card),
+        priceEUR: resolvePrice(card),
       }
 
       await db.collection('cards').updateOne(
@@ -109,10 +109,10 @@ async function seed() {
     const prices = cards
       .map((c) => resolvePrice(c))
       .filter((p): p is number => p !== null)
-    const totalValue = prices.length > 0 ? prices.reduce((sum, p) => sum + p, 0) : null
+    const totalValueEUR = prices.length > 0 ? prices.reduce((sum, p) => sum + p, 0) : null
     await db.collection('sets').updateOne(
       { pokemontcg_id: ptcgSet.id },
-      { $set: { totalValue } }
+      { $set: { totalValueEUR } }
     )
     }
 

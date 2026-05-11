@@ -78,8 +78,8 @@ export default async function SetPage({
     'number-asc':  (a, b) => parseCardNumber(a.number) - parseCardNumber(b.number),
     'number-desc': (a, b) => parseCardNumber(b.number) - parseCardNumber(a.number),
     'rarity':      (a, b) => normaliseRarity(a.rarity).localeCompare(normaliseRarity(b.rarity)),
-    'price-asc':   (a, b) => (a.cardmarketPrice ?? Infinity) - (b.cardmarketPrice ?? Infinity),
-    'price-desc':  (a, b) => (b.cardmarketPrice ?? -Infinity) - (a.cardmarketPrice ?? -Infinity),
+    'price-asc':   (a, b) => (a.priceEUR ?? Infinity) - (b.priceEUR ?? Infinity),
+    'price-desc':  (a, b) => (b.priceEUR ?? -Infinity) - (a.priceEUR ?? -Infinity),
   }
   visible = [...visible].sort(compare[sort])
 

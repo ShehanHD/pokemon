@@ -25,7 +25,6 @@ export interface PokemonSet {
   releaseDate: string       // "YYYY/MM/DD"
   totalCards: number
   printedTotal: number
-  totalValue: number | null
   totalValueEUR?: number | null
   totalValueUSD?: number | null
   logoUrl: string
@@ -49,7 +48,6 @@ export interface PokemonCard {
   supertype: string
   imageUrl: string
   imageUrlHiRes: string
-  cardmarketPrice: number | null
   priceEUR?: number | null
   priceUSD?: number | null
   variants?: {

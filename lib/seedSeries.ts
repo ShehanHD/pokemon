@@ -94,7 +94,7 @@ async function seedOneSet(ptcgSet: PtcgSet): Promise<SeedSetResult> {
           supertype: card.supertype,
           imageUrl: card.images.small,
           imageUrlHiRes: card.images.large,
-          cardmarketPrice: resolvePrice(card),
+          priceEUR: resolvePrice(card),
         },
       },
       upsert: true,
@@ -108,11 +108,11 @@ async function seedOneSet(ptcgSet: PtcgSet): Promise<SeedSetResult> {
   const prices = cards
     .map((c) => resolvePrice(c))
     .filter((p): p is number => p !== null)
-  const totalValue = prices.length > 0 ? prices.reduce((sum, p) => sum + p, 0) : null
+  const totalValueEUR = prices.length > 0 ? prices.reduce((sum, p) => sum + p, 0) : null
 
   await db.collection('sets').updateOne(
     { pokemontcg_id: ptcgSet.id },
-    { $set: { totalValue } }
+    { $set: { totalValueEUR } }
   )
 
   return {
@@ -120,7 +120,7 @@ async function seedOneSet(ptcgSet: PtcgSet): Promise<SeedSetResult> {
     setName: ptcgSet.name,
     cardsUpserted: cards.length,
     pricedCards: prices.length,
-    totalValue,
+    totalValue: totalValueEUR,
   }
 }
 

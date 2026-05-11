@@ -49,7 +49,7 @@ export default async function CardDetailPage({ params }: Props) {
     { label: 'Rarity', value: rarityValue },
     {
       label: 'Cardmarket Price',
-      value: card.cardmarketPrice !== null ? `€${card.cardmarketPrice.toFixed(2)}` : null,
+      value: card.priceEUR != null ? `€${card.priceEUR.toFixed(2)}` : null,
     },
   ]
 
@@ -77,8 +77,8 @@ export default async function CardDetailPage({ params }: Props) {
             <h1 className="font-russo text-xl text-text flex-1">{card.name}</h1>
             <WishlistStar cardId={card.pokemontcg_id} initialState={wishlistInitialState} />
           </div>
-          {card.cardmarketPrice !== null && (
-            <p className="text-2xl font-russo text-blue mb-4">€{card.cardmarketPrice.toFixed(2)}</p>
+          {card.priceEUR != null && (
+            <p className="text-2xl font-russo text-blue mb-4">€{card.priceEUR.toFixed(2)}</p>
           )}
 
           <div className="flex flex-wrap items-center gap-2 mb-3">

@@ -120,7 +120,7 @@ async function seedOneSet(brief: TcgdexSetBrief): Promise<SeedSetResult> {
 
   await db.collection('sets').updateOne(
     { tcgdex_id: brief.id },
-    { $set: { totalValueEUR, totalValueUSD: null, totalValue: totalValueEUR } },
+    { $set: { totalValueEUR, totalValueUSD: null } },
   )
 
   return {

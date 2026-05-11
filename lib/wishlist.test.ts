@@ -15,10 +15,10 @@ const userId = 'wishlist-test-user'
 beforeEach(async () => {
   const db = await getDb()
   await db.collection('wishlist').deleteMany({ userId })
-  await db.collection('cards').deleteMany({ pokemontcg_id: { $in: ['w1', 'w2'] } })
+  await db.collection('cards').deleteMany({ tcgdex_id: { $in: ['w1', 'w2'] } })
   await db.collection('cards').insertMany([
-    { pokemontcg_id: 'w1', name: 'Mew', number: '151', set_id: 'base1', setName: 'Base', series: 'Original', seriesSlug: 'original', rarity: 'Promo', types: [], subtypes: [], supertype: 'Pokémon', imageUrl: '', imageUrlHiRes: '', cardmarketPrice: null },
-    { pokemontcg_id: 'w2', name: 'Mewtwo', number: '150', set_id: 'base1', setName: 'Base', series: 'Original', seriesSlug: 'original', rarity: 'Rare Holo', types: [], subtypes: [], supertype: 'Pokémon', imageUrl: '', imageUrlHiRes: '', cardmarketPrice: null },
+    { pokemontcg_id: 'w1', tcgdex_id: 'w1', name: 'Mew', number: '151', set_id: 'base1', setName: 'Base', series: 'Original', seriesSlug: 'original', rarity: 'Promo', types: [], subtypes: [], supertype: 'Pokémon', imageUrl: '', imageUrlHiRes: '', priceEUR: null },
+    { pokemontcg_id: 'w2', tcgdex_id: 'w2', name: 'Mewtwo', number: '150', set_id: 'base1', setName: 'Base', series: 'Original', seriesSlug: 'original', rarity: 'Rare Holo', types: [], subtypes: [], supertype: 'Pokémon', imageUrl: '', imageUrlHiRes: '', priceEUR: null },
   ])
 })
 

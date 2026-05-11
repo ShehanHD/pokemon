@@ -15,10 +15,10 @@ const userId = 'user-test-aggs'
 async function seed() {
   const db = await getDb()
   await db.collection('userCards').deleteMany({ userId })
-  await db.collection('cards').deleteMany({ pokemontcg_id: { $in: ['c1', 'c2'] } })
+  await db.collection('cards').deleteMany({ tcgdex_id: { $in: ['c1', 'c2'] } })
   await db.collection('cards').insertMany([
-    { pokemontcg_id: 'c1', name: 'Pikachu', number: '25', set_id: 'base1', setName: 'Base', series: 'Original', seriesSlug: 'original', rarity: 'Common', types: ['Lightning'], subtypes: [], supertype: 'Pokémon', imageUrl: '', imageUrlHiRes: '', cardmarketPrice: null },
-    { pokemontcg_id: 'c2', name: 'Charizard', number: '4', set_id: 'base1', setName: 'Base', series: 'Original', seriesSlug: 'original', rarity: 'Rare Holo', types: ['Fire'], subtypes: [], supertype: 'Pokémon', imageUrl: '', imageUrlHiRes: '', cardmarketPrice: null },
+    { pokemontcg_id: 'c1', tcgdex_id: 'c1', name: 'Pikachu', number: '25', set_id: 'base1', setName: 'Base', series: 'Original', seriesSlug: 'original', rarity: 'Common', types: ['Lightning'], subtypes: [], supertype: 'Pokémon', imageUrl: '', imageUrlHiRes: '', priceEUR: null },
+    { pokemontcg_id: 'c2', tcgdex_id: 'c2', name: 'Charizard', number: '4', set_id: 'base1', setName: 'Base', series: 'Original', seriesSlug: 'original', rarity: 'Rare Holo', types: ['Fire'], subtypes: [], supertype: 'Pokémon', imageUrl: '', imageUrlHiRes: '', priceEUR: null },
   ])
   await db.collection('userCards').insertMany([
     { userId, cardId: 'c1', type: 'raw', variant: 'normal', condition: 'NM', cost: 5, acquiredAt: new Date('2026-01-01'), createdAt: new Date(), updatedAt: new Date() },

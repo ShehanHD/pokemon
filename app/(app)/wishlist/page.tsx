@@ -58,9 +58,9 @@ export default async function WishlistPage() {
                         <span className="tabular-nums">{card.number}</span>
                         <span aria-label={card.rarity ?? 'Unknown rarity'} className="text-overlay2">{raritySymbol(card.rarity)}</span>
                       </div>
-                      {card.cardmarketPrice !== null && (
+                      {card.priceEUR != null && (
                         <div className="absolute bottom-1 right-1 rounded bg-base/80 backdrop-blur-sm px-1.5 py-1 text-[11px] font-semibold text-blue tabular-nums leading-none">
-                          €{card.cardmarketPrice.toFixed(2)}
+                          €{card.priceEUR.toFixed(2)}
                         </div>
                       )}
                     </div>

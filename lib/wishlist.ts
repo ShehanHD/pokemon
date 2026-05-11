@@ -74,7 +74,7 @@ export async function getWishlistForUser(userId: string): Promise<Array<Wishlist
   const rows = await db.collection('wishlist').aggregate<Record<string, unknown>>([
     { $match: { userId } },
     { $sort: { addedAt: -1 } },
-    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
+    { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'tcgdex_id', as: 'card' } },
     { $unwind: '$card' },
   ]).toArray()
   return rows.map((r) => {

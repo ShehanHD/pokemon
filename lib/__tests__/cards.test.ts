@@ -24,7 +24,7 @@ const sampleCard = {
   supertype: 'Pokémon',
   imageUrl: 'https://example.com/small.png',
   imageUrlHiRes: 'https://example.com/large.png',
-  cardmarketPrice: 12.5,
+  priceEUR: 12.5,
 }
 
 describe('getCardsBySet', () => {
@@ -63,11 +63,11 @@ describe('getCardById', () => {
   })
 
   it('returns card with null optional fields', async () => {
-    const nullableCard = { ...sampleCard, rarity: null, cardmarketPrice: null }
+    const nullableCard = { ...sampleCard, rarity: null, priceEUR: null }
     mockFindOne.mockResolvedValue(nullableCard)
     const result = await getCardById('base1-1')
     expect(result).toEqual(nullableCard)
     expect(result?.rarity).toBeNull()
-    expect(result?.cardmarketPrice).toBeNull()
+    expect(result?.priceEUR).toBeNull()
   })
 })

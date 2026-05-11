@@ -12,7 +12,7 @@ function fakeSet(id: string, series: string): PokemonSet {
     releaseDate: '2024/01/01',
     totalCards: 1,
     printedTotal: 1,
-    totalValue: null,
+    totalValueEUR: null,
     logoUrl: '',
     symbolUrl: '',
   }

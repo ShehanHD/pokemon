@@ -148,14 +148,14 @@ export default function SetInfoDialog({
               </div>
 
               {/* Financials card */}
-              {(set.totalValue != null || collectionValue !== undefined || collectionCost !== undefined) && (
+              {(set.totalValueEUR != null || collectionValue !== undefined || collectionCost !== undefined) && (
                 <div className="bg-surface0/40 border border-surface0 rounded-xl p-4">
                   <p className="text-[9px] font-bold uppercase tracking-wider text-overlay0 mb-3">Financials</p>
                   <div className="grid grid-cols-4 divide-x divide-surface0">
-                    {set.totalValue != null && (
+                    {set.totalValueEUR != null && (
                       <div className="px-4 first:pl-0">
                         <p className="text-[9px] text-overlay0 mb-1">Market Price</p>
-                        <p className="text-[18px] text-text tabular-nums font-bold">€{set.totalValue.toFixed(2)}</p>
+                        <p className="text-[18px] text-text tabular-nums font-bold">€{set.totalValueEUR.toFixed(2)}</p>
                       </div>
                     )}
                     {collectionValue !== undefined && (

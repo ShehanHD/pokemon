@@ -68,8 +68,8 @@ export default function SetCard({ set, seriesSlug, variantCounts, ownedUniqueCou
           {set.name}
         </span>
       </div>
-      {set.totalValue != null && (
-        <p className="text-[10px] font-semibold text-blue tabular-nums text-center mt-1">€{set.totalValue.toFixed(2)}</p>
+      {set.totalValueEUR != null && (
+        <p className="text-[10px] font-semibold text-blue tabular-nums text-center mt-1">€{set.totalValueEUR.toFixed(2)}</p>
       )}
 
       {ownedUniqueCount !== undefined && (

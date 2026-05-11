@@ -59,13 +59,14 @@ describe('getSetsBySeries', () => {
 })
 
 describe('getSetById', () => {
-  it('returns a set by pokemontcg_id', async () => {
-    const mockFindOne = vi.fn().mockResolvedValue({ pokemontcg_id: 'base1', name: 'Base Set' })
+  it('returns a set by tcgdex_id', async () => {
+    const mockFindOne = vi.fn().mockResolvedValue({ tcgdex_id: 'base1', name: 'Base Set' })
     vi.mocked(getDb).mockResolvedValue(
       makeCollection({ findOne: mockFindOne }) as never
     )
     const set = await getSetById('base1')
-    expect(set?.pokemontcg_id).toBe('base1')
+    expect(set?.tcgdex_id).toBe('base1')
+    expect(mockFindOne).toHaveBeenCalledWith({ tcgdex_id: 'base1' })
   })
 
   it('returns null when set not found', async () => {

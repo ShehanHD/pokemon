@@ -16,7 +16,9 @@ export interface User {
 
 export interface PokemonSet {
   _id?: string
-  pokemontcg_id: string
+  pokemontcg_id?: string | null
+  tcgdex_id: string
+  language?: string | null
   name: string
   series: string
   seriesSlug: string
@@ -24,17 +26,17 @@ export interface PokemonSet {
   totalCards: number
   printedTotal: number
   totalValue: number | null
-  logoUrl: string
-  symbolUrl: string
-  tcgdex_id?: string | null
-  language?: string | null
   totalValueEUR?: number | null
   totalValueUSD?: number | null
+  logoUrl: string
+  symbolUrl: string
 }
 
 export interface PokemonCard {
   _id?: string
   pokemontcg_id: string
+  tcgdex_id?: string | null
+  language?: string | null
   name: string
   number: string
   set_id: string
@@ -48,8 +50,6 @@ export interface PokemonCard {
   imageUrl: string
   imageUrlHiRes: string
   cardmarketPrice: number | null
-  tcgdex_id?: string | null
-  language?: string | null
   priceEUR?: number | null
   priceUSD?: number | null
   variants?: {

@@ -33,7 +33,7 @@ export default function SetCard({ set, seriesSlug, variantCounts, ownedUniqueCou
 
   return (
     <Link
-      href={`/browse/${seriesSlug}/${set.pokemontcg_id}`}
+      href={`/browse/${seriesSlug}/${set.tcgdex_id}`}
       className="relative bg-base border border-surface0 rounded-xl px-4 py-8 hover:border-blue/50 hover:bg-surface0/30 transition-colors group flex flex-col"
     >
       <div className="absolute top-2 right-2">

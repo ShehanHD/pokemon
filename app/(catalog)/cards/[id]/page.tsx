@@ -117,7 +117,7 @@ export default async function CardDetailPage({ params }: Props) {
 
           {set && (
             <Link
-              href={`/browse/${set.seriesSlug}/${set.pokemontcg_id}`}
+              href={`/browse/${set.seriesSlug}/${set.tcgdex_id}`}
               className="inline-flex items-center gap-2 mt-4 text-[11px] text-blue hover:underline"
             >
               {'\u2190'} Back to {set.name}

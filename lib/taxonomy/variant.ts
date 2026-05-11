@@ -35,7 +35,8 @@ const SET_OVERRIDES: Record<string, CardVariant[]> = {
 }
 
 export function applicableVariantsForSet(set: PokemonSet): CardVariant[] {
-  const override = SET_OVERRIDES[set.pokemontcg_id.toLowerCase()]
+  const id = (set.pokemontcg_id ?? set.tcgdex_id).toLowerCase()
+  const override = SET_OVERRIDES[id]
   if (override) return override
   return SERIES_VARIANTS[set.series] ?? PERMISSIVE
 }
@@ -43,9 +44,10 @@ export function applicableVariantsForSet(set: PokemonSet): CardVariant[] {
 const REGULAR_SET_ID_RE = /^[a-z]+\d+(pt\d+)?$/
 
 export function isRegularSet(set: PokemonSet): boolean {
-  if (SET_OVERRIDES[set.pokemontcg_id.toLowerCase()]) return true
+  const id = (set.pokemontcg_id ?? set.tcgdex_id).toLowerCase()
+  if (SET_OVERRIDES[id]) return true
   if (/promo/i.test(set.name)) return false
-  return REGULAR_SET_ID_RE.test(set.pokemontcg_id.toLowerCase())
+  return REGULAR_SET_ID_RE.test(id)
 }
 
 export interface VariantChip {

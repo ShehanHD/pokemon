@@ -14,12 +14,13 @@ const OVERRIDES: Record<string, string> = {
 const SHAPE_RE = /^([a-z]+)(\d+)(pt\d+)?$/
 
 export function setCodeFor(set: PokemonSet): string {
-  const id = set.pokemontcg_id.toLowerCase()
+  const raw = set.pokemontcg_id ?? set.tcgdex_id
+  const id = raw.toLowerCase()
   if (OVERRIDES[id]) return OVERRIDES[id]
   const m = SHAPE_RE.exec(id)
   if (!m) {
-    console.warn(`[taxonomy/setCode] unknown id shape "${set.pokemontcg_id}" — using uppercased id`)
-    return set.pokemontcg_id.toUpperCase()
+    console.warn(`[taxonomy/setCode] unknown id shape "${raw}" — using uppercased id`)
+    return raw.toUpperCase()
   }
   const [, prefix, num, pt] = m
   const padded = prefix === 'swsh' ? num.padStart(2, '0') : num

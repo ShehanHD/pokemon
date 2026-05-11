@@ -35,8 +35,8 @@ export default async function DashboardPage() {
 
   const setIds = Array.from(countsBySet.keys())
   const sets = setIds.length > 0 ? await getSetsByIds(setIds) : []
-  const setNameById = new Map(sets.map((s) => [s.pokemontcg_id, s.name]))
-  const setSeriesSlugById = new Map(sets.map((s) => [s.pokemontcg_id, s.seriesSlug]))
+  const setNameById = new Map(sets.map((s) => [s.tcgdex_id, s.name]))
+  const setSeriesSlugById = new Map(sets.map((s) => [s.tcgdex_id, s.seriesSlug]))
 
   const topSetsByValue = Array.from(valueBySet.entries())
     .filter(([, v]) => v > 0)

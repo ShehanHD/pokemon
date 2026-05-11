@@ -5,6 +5,7 @@ import type { PokemonSet } from '@/lib/types'
 function fakeSet(id: string, name = 'Set'): PokemonSet {
   return {
     pokemontcg_id: id,
+    tcgdex_id: id,
     name,
     series: 'X',
     seriesSlug: 'x',

@@ -41,15 +41,15 @@ export default async function BrowsePage() {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
                 {s.sets.map((set) => (
                   <SetCard
-                    key={set.pokemontcg_id}
+                    key={set.tcgdex_id}
                     set={set}
                     seriesSlug={s.slug}
-                    variantCounts={userId ? (variantCountsBySet.get(set.pokemontcg_id) ?? new Map()) : undefined}
-                    ownedUniqueCount={userId ? (uniqueCountsBySet.get(set.pokemontcg_id) ?? 0) : undefined}
-                    rarityTotals={rarityTotalsBySet.get(set.pokemontcg_id)}
-                    rarityOwnedCounts={userId ? rarityOwnedBySet.get(set.pokemontcg_id) : undefined}
-                    collectionValue={userId ? collectionValueBySet.get(set.pokemontcg_id) : undefined}
-                    collectionCost={userId ? collectionCostBySet.get(set.pokemontcg_id) : undefined}
+                    variantCounts={userId ? (variantCountsBySet.get(set.tcgdex_id) ?? new Map()) : undefined}
+                    ownedUniqueCount={userId ? (uniqueCountsBySet.get(set.tcgdex_id) ?? 0) : undefined}
+                    rarityTotals={rarityTotalsBySet.get(set.tcgdex_id)}
+                    rarityOwnedCounts={userId ? rarityOwnedBySet.get(set.tcgdex_id) : undefined}
+                    collectionValue={userId ? collectionValueBySet.get(set.tcgdex_id) : undefined}
+                    collectionCost={userId ? collectionCostBySet.get(set.tcgdex_id) : undefined}
                   />
                 ))}
               </div>

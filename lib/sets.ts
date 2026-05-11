@@ -97,9 +97,9 @@ export async function getSetsBySeries(seriesSlug: string): Promise<PokemonSet[]>
   return docs.map(serializeSet)
 }
 
-export async function getSetById(pokemontcg_id: string): Promise<PokemonSet | null> {
+export async function getSetById(tcgdex_id: string): Promise<PokemonSet | null> {
   const db = await getDb()
-  const doc = await db.collection('sets').findOne({ pokemontcg_id })
+  const doc = await db.collection('sets').findOne({ tcgdex_id })
   return doc ? serializeSet(doc as Record<string, unknown>) : null
 }
 
@@ -108,7 +108,7 @@ export async function getSetsByIds(ids: string[]): Promise<PokemonSet[]> {
   const db = await getDb()
   const docs = await db
     .collection('sets')
-    .find({ pokemontcg_id: { $in: ids } })
+    .find({ tcgdex_id: { $in: ids } })
     .toArray()
   return docs.map((d) => serializeSet(d as Record<string, unknown>))
 }

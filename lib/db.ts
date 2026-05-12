@@ -1,28 +1,31 @@
 import { MongoClient, Db } from 'mongodb'
 
-const uri = process.env.MONGODB_URI
-if (!uri) throw new Error('MONGODB_URI environment variable is not set')
-const dbName = process.env.MONGODB_DB ?? 'pokemon'
-
 declare global {
   // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined
 }
 
-let clientPromise: Promise<MongoClient>
+let clientPromise: Promise<MongoClient> | undefined
 
-if (process.env.NODE_ENV === 'development') {
-  if (!global._mongoClientPromise) {
-    global._mongoClientPromise = new MongoClient(uri).connect()
+function getClientPromise(): Promise<MongoClient> {
+  const uri = process.env.MONGODB_URI
+  if (!uri) throw new Error('MONGODB_URI environment variable is not set')
+
+  if (process.env.NODE_ENV === 'development') {
+    if (!global._mongoClientPromise) {
+      global._mongoClientPromise = new MongoClient(uri).connect()
+    }
+    return global._mongoClientPromise
   }
-  clientPromise = global._mongoClientPromise
-} else {
-  clientPromise = new MongoClient(uri).connect()
+
+  if (!clientPromise) {
+    clientPromise = new MongoClient(uri).connect()
+  }
+  return clientPromise
 }
 
 export async function getDb(): Promise<Db> {
-  const client = await clientPromise
+  const client = await getClientPromise()
+  const dbName = process.env.MONGODB_DB ?? 'pokemon'
   return client.db(dbName)
 }
-
-export default clientPromise

@@ -1,34 +1,28 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
-import { getWishlistForUser, FREE_TIER_WISHLIST_CAP } from '@/lib/wishlist'
+import { getWishlistForUser } from '@/lib/wishlist'
 import WishlistStar from '@/components/wishlist/WishlistStar'
 import { raritySymbol } from '@/lib/taxonomy/rarity'
-import type { Tier } from '@/lib/types'
+import { CardSizeSlider, ResizableCardGrid } from '@/components/catalog/CardGridSize'
 
 export default async function WishlistPage() {
   const session = await auth()
   const userId = session?.user?.id
+  if (!userId) redirect('/login?next=/wishlist')
+  if (session?.user?.tier !== 'pro') redirect('/dashboard')
 
-  if (!userId) {
-    return (
-      <div className="bg-base border border-surface0 rounded-xl p-6 text-center">
-        <p className="text-overlay0 text-sm">Sign in to view your wishlist.</p>
-      </div>
-    )
-  }
-
-  const tier: Tier = (session?.user?.tier as Tier | undefined) ?? 'free'
   const items = await getWishlistForUser(userId)
-  const isPro = tier === 'pro' || tier === 'adfree'
 
   return (
     <main className="p-6 max-w-7xl mx-auto">
       <header className="mb-4 flex flex-wrap items-baseline gap-3">
         <h1 className="text-2xl font-russo">Wishlist</h1>
         <span className="text-overlay0 text-xs tabular-nums">
-          {isPro ? `${items.length} cards` : `${items.length}/${FREE_TIER_WISHLIST_CAP}`}
+          {items.length} cards
         </span>
+        {items.length > 0 && <div className="ml-auto"><CardSizeSlider /></div>}
       </header>
 
       {items.length === 0 ? (
@@ -36,7 +30,7 @@ export default async function WishlistPage() {
           <p className="text-overlay0 text-sm">Your wishlist is empty. Tap the star on any card to add it.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+        <ResizableCardGrid>
           {items.map((item) => {
             const card = item.card
             return (
@@ -56,7 +50,10 @@ export default async function WishlistPage() {
                         className="absolute bottom-1 left-1 flex items-center gap-1 rounded bg-base/80 backdrop-blur-sm px-1.5 py-1 text-[11px] font-semibold text-text leading-none"
                       >
                         <span className="tabular-nums">{card.number}</span>
-                        <span aria-label={card.rarity ?? 'Unknown rarity'} className="text-overlay2">{raritySymbol(card.rarity)}</span>
+                        {(() => {
+                          const symbol = raritySymbol(card.rarity)
+                          return symbol && <span aria-label={card.rarity ?? 'Unknown rarity'} className="text-overlay2">{symbol}</span>
+                        })()}
                       </div>
                       {card.priceEUR != null && (
                         <div className="absolute bottom-1 right-1 rounded bg-base/80 backdrop-blur-sm px-1.5 py-1 text-[11px] font-semibold text-blue tabular-nums leading-none">
@@ -78,7 +75,7 @@ export default async function WishlistPage() {
               </div>
             )
           })}
-        </div>
+        </ResizableCardGrid>
       )}
     </main>
   )

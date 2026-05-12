@@ -1,5 +1,9 @@
 export type Tier = 'free' | 'adfree' | 'pro'
 
+export type Currency = 'EUR' | 'USD' | 'GBP' | 'JPY'
+
+export const DEFAULT_CURRENCY: Currency = 'EUR'
+
 export interface User {
   _id?: string
   email: string
@@ -7,6 +11,7 @@ export interface User {
   image?: string
   provider: 'credentials' | 'google'
   tier: Tier
+  currency?: Currency
   stripeCustomerId?: string
   stripeSubscriptionId?: string
   themePokemonId?: number
@@ -25,6 +30,7 @@ export interface PokemonSet {
   releaseDate: string       // "YYYY/MM/DD"
   totalCards: number
   printedTotal: number
+  totalValue: number | null
   totalValueEUR?: number | null
   totalValueUSD?: number | null
   logoUrl: string
@@ -48,6 +54,7 @@ export interface PokemonCard {
   supertype: string
   imageUrl: string
   imageUrlHiRes: string
+  cardmarketPrice: number | null
   priceEUR?: number | null
   priceUSD?: number | null
   variants?: {
@@ -84,6 +91,8 @@ export type CardCondition = 'NM' | 'LP' | 'MP' | 'HP' | 'DMG'
 
 export type GradingCompany = 'PSA' | 'GRAAD' | 'BGS' | 'CGC' | 'SGC' | 'TAG' | 'Ace' | 'GMA' | 'Other'
 
+export type UserCardStatus = 'owned' | 'sold'
+
 interface UserCardBase {
   _id?: string
   userId: string
@@ -92,6 +101,9 @@ interface UserCardBase {
   acquiredAt: Date
   cost?: number
   notes?: string
+  status?: UserCardStatus
+  soldAt?: Date
+  soldPrice?: number
   createdAt: Date
   updatedAt: Date
 }
@@ -114,9 +126,11 @@ export type UserCard = UserCardRaw | UserCardGraded
 export interface OwnedCardGroup {
   cardId: string
   card: PokemonCard
+  printedTotal: number | null
   copyCount: number
   rawCount: number
   gradedCount: number
+  gradedValue: number
   totalCost: number
   estValue: number
   lastAcquiredAt: Date
@@ -146,6 +160,52 @@ export interface CollectionStats {
   uniqueCards: number
   totalSpend: number
   estValue: number
+}
+
+export type ExpenseCategory =
+  | 'purchase'
+  | 'grading'
+  | 'shipping'
+  | 'supplies'
+  | 'other'
+
+export interface Expense {
+  _id?: string
+  userId: string
+  amount: number
+  date: Date
+  category: ExpenseCategory
+  note?: string
+  cardId?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type ExpenseSource = 'expense' | 'card'
+
+export interface UnifiedExpenseRow {
+  id: string
+  source: ExpenseSource
+  date: Date
+  category: ExpenseCategory
+  amount: number
+  note?: string
+  cardId?: string
+  cardName?: string
+  cardImageUrl?: string
+}
+
+export interface SoldCardRow {
+  _id: string
+  cardId: string
+  card: PokemonCard
+  variant: CardVariant
+  type: 'raw' | 'graded'
+  cost: number | null
+  soldPrice: number
+  soldAt: Date
+  acquiredAt: Date
+  pnl: number
 }
 
 export type WishlistPriority = 'low' | 'med' | 'high'

@@ -16,14 +16,13 @@ import BySeriesChart from './charts/BySeriesChart'
 import BySetChart from './charts/BySetChart'
 import AcquisitionTimeline from './charts/AcquisitionTimeline'
 import SpendTimeline from './charts/SpendTimeline'
-import AnalyticsTeaser from './AnalyticsTeaser'
 import Link from 'next/link'
 
 export default async function AnalyticsPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login?next=/analytics')
+  if (session.user.tier !== 'pro') redirect('/dashboard')
   const userId = session.user.id
-  const isPro = session.user.tier === 'pro'
 
   const cachedStats = unstable_cache(
     async (uid: string) => getCollectionStats(uid),
@@ -46,7 +45,7 @@ export default async function AnalyticsPage() {
     <div className="space-y-4">
       <h1 className="text-2xl text-text">Analytics</h1>
       <KpiCards stats={stats} />
-      {isPro ? <ProCharts userId={userId} /> : <AnalyticsTeaser />}
+      <ProCharts userId={userId} />
     </div>
   )
 }

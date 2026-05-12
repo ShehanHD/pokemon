@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Info, X } from 'lucide-react'
 import type { PokemonSet } from '@/lib/types'
+import { getDisplayLogo } from '@/lib/setLogo'
 import { applicableVariantsForSet, variantLabel, computeVariantTotalsFromRarities } from '@/lib/taxonomy/variant'
 import { normalisedRaritySchema } from '@/lib/taxonomy/rarity'
 
@@ -45,6 +46,7 @@ export default function SetInfoDialog({
     ? Math.min(100, Math.round((ownedUniqueCount / denom) * 100))
     : 0
   const variantTotals = rarityTotals ? computeVariantTotalsFromRarities(rarityTotals, set) : null
+  const dialogLogo = getDisplayLogo(set)
   const sortedRarities = rarityTotals
     ? RARITY_ORDER.filter((r) => (rarityTotals.get(r) ?? 0) > 0)
     : []
@@ -88,9 +90,9 @@ export default function SetInfoDialog({
                   <X size={18} />
                 </button>
               </div>
-              {set.logoUrl && (
+              {dialogLogo && (
                 <div className="mt-4 flex justify-center">
-                  <Image src={set.logoUrl} alt="" width={220} height={80} className="object-contain max-h-16" />
+                  <Image src={dialogLogo} alt="" width={220} height={80} className="object-contain max-h-16" />
                 </div>
               )}
             </div>

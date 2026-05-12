@@ -3,10 +3,13 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { PokemonSet } from '@/lib/types'
+import { getDisplayLogo } from '@/lib/setLogo'
 import SetInfoDialog from './SetInfoDialog'
 
 function formatDate(dateStr: string): string {
-  const [y, m, d] = dateStr.split('/')
+  if (!dateStr) return ''
+  const [y, m, d] = dateStr.split(/[-/]/)
+  if (!y || !m || !d) return ''
   return new Date(Number(y), Number(m) - 1, Number(d)).toLocaleDateString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric',
   })
@@ -25,6 +28,7 @@ interface Props {
 
 export default function SetCard({ set, seriesSlug, variantCounts, ownedUniqueCount, rarityTotals, rarityOwnedCounts, collectionValue, collectionCost }: Props) {
   const isPromo = set.name.toLowerCase().includes('promo')
+  const logoSrc = getDisplayLogo(set)
   const denom = set.totalCards
 
   const overallPct = ownedUniqueCount !== undefined
@@ -32,11 +36,13 @@ export default function SetCard({ set, seriesSlug, variantCounts, ownedUniqueCou
     : 0
 
   return (
-    <Link
-      href={`/browse/${seriesSlug}/${set.tcgdex_id}`}
-      className="relative bg-base border border-surface0 rounded-xl px-4 py-8 hover:border-blue/50 hover:bg-surface0/30 transition-colors group flex flex-col"
-    >
-      <div className="absolute top-2 right-2">
+    <div className="relative bg-base border border-surface0 rounded-xl px-4 py-8 hover:border-blue/50 hover:bg-surface0/30 transition-colors group flex flex-col">
+      <Link
+        href={`/browse/${seriesSlug}/${set.tcgdex_id}`}
+        aria-label={set.name}
+        className="absolute inset-0 rounded-xl z-0"
+      />
+      <div className="absolute top-2 right-2 z-10">
         <SetInfoDialog
           set={set}
           variantCounts={variantCounts}
@@ -48,10 +54,10 @@ export default function SetCard({ set, seriesSlug, variantCounts, ownedUniqueCou
           buttonClassName="text-overlay0 hover:text-blue transition-colors p-0.5"
         />
       </div>
-      {set.logoUrl && (
+      {logoSrc && (
         <div className={`flex items-center justify-center w-full overflow-hidden mb-3 ${isPromo ? 'h-8' : 'h-14'}`}>
           <Image
-            src={set.logoUrl}
+            src={logoSrc}
             alt=""
             width={isPromo ? 72 : 140}
             height={isPromo ? 28 : 52}
@@ -68,8 +74,8 @@ export default function SetCard({ set, seriesSlug, variantCounts, ownedUniqueCou
           {set.name}
         </span>
       </div>
-      {set.totalValueEUR != null && (
-        <p className="text-[10px] font-semibold text-blue tabular-nums text-center mt-1">€{set.totalValueEUR.toFixed(2)}</p>
+      {(set.totalValue ?? set.totalValueEUR) != null && (
+        <p className="text-[10px] font-semibold text-blue tabular-nums text-center mt-1">€{(set.totalValue ?? set.totalValueEUR ?? 0).toFixed(2)}</p>
       )}
 
       {ownedUniqueCount !== undefined && (
@@ -83,6 +89,6 @@ export default function SetCard({ set, seriesSlug, variantCounts, ownedUniqueCou
           <p className="text-[9px] text-overlay0 tabular-nums text-right mt-1">{ownedUniqueCount}/{denom}</p>
         </div>
       )}
-    </Link>
+    </div>
   )
 }

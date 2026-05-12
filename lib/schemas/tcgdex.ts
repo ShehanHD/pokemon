@@ -30,28 +30,28 @@ export const TcgdexSetDetailSchema = TcgdexSetBriefSchema.extend({
 })
 export type TcgdexSetDetail = z.infer<typeof TcgdexSetDetailSchema>
 
-const TcgdexCardmarketPricesSchema = z.object({
-  averageSellPrice: z.number().nullable().optional(),
-  lowPrice: z.number().nullable().optional(),
-  trendPrice: z.number().nullable().optional(),
-  reverseHoloSell: z.number().nullable().optional(),
-  reverseHoloLow: z.number().nullable().optional(),
-  reverseHoloTrend: z.number().nullable().optional(),
-  avg1: z.number().nullable().optional(),
-  avg7: z.number().nullable().optional(),
-  avg30: z.number().nullable().optional(),
-}).passthrough()
+const TcgdexCardmarketSchema = z
+  .object({
+    updated: z.string().optional(),
+    unit: z.string().optional(),
+    idProduct: z.number().optional(),
+    avg: z.number().nullable().optional(),
+    low: z.number().nullable().optional(),
+    trend: z.number().nullable().optional(),
+    avg1: z.number().nullable().optional(),
+    avg7: z.number().nullable().optional(),
+    avg30: z.number().nullable().optional(),
+    'avg-holo': z.number().nullable().optional(),
+    'low-holo': z.number().nullable().optional(),
+    'trend-holo': z.number().nullable().optional(),
+    'avg1-holo': z.number().nullable().optional(),
+    'avg7-holo': z.number().nullable().optional(),
+    'avg30-holo': z.number().nullable().optional(),
+  })
+  .passthrough()
 
 const TcgdexPricingSchema = z.object({
-  cardmarket: z
-    .object({
-      updated: z.string().optional(),
-      unit: z.string().optional(),
-      prices: TcgdexCardmarketPricesSchema.optional(),
-    })
-    .partial()
-    .passthrough()
-    .optional(),
+  cardmarket: TcgdexCardmarketSchema.nullable().optional(),
   tcgplayer: z.unknown().optional(),
 }).passthrough()
 

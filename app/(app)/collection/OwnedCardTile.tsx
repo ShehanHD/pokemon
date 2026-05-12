@@ -1,12 +1,10 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import type { OwnedCardGroup } from '@/lib/types'
+import { raritySymbol } from '@/lib/taxonomy/rarity'
 
 export default function OwnedCardTile({ group }: { group: OwnedCardGroup }) {
-  const { card, copyCount, rawCount, gradedCount, totalCost } = group
-  const homogeneous =
-    (rawCount === 0 && gradedCount > 0) ? 'G' :
-    (gradedCount === 0 && rawCount > 0) ? 'R' : null
+  const { card, printedTotal, copyCount, gradedCount, gradedValue, totalCost } = group
 
   return (
     <Link href={`/cards/${card.pokemontcg_id}`} className="group flex flex-col">
@@ -21,19 +19,22 @@ export default function OwnedCardTile({ group }: { group: OwnedCardGroup }) {
         <span className="absolute top-1 right-1 px-1.5 py-0.5 rounded-md bg-blue text-base text-[10px] font-bold tabular-nums">
           ×{copyCount}
         </span>
-      </div>
-      <div className="mt-1 px-0.5">
-        <p className="text-[10px] text-overlay2 truncate leading-tight">{card.name}</p>
-        <p className="text-[9px] text-overlay0 tabular-nums">
-          {card.setName} · {card.number}
-        </p>
-        <div className="flex items-center justify-between mt-0.5">
-          <span className="text-[9px] font-bold text-overlay1">
-            {homogeneous ?? `R ${rawCount} · G ${gradedCount}`}
+        <div
+          title={card.rarity ?? 'Unknown rarity'}
+          className="absolute bottom-1 left-1 flex items-center gap-1 rounded bg-base/80 backdrop-blur-sm px-1.5 py-1 text-[11px] font-semibold text-text leading-none"
+        >
+          <span className="tabular-nums">
+            {card.number}{printedTotal ? `/${printedTotal}` : ''}
           </span>
-          {totalCost > 0 && (
-            <span className="text-[9px] text-mauve tabular-nums">€{totalCost.toFixed(2)}</span>
-          )}
+          {(() => {
+            const symbol = raritySymbol(card.rarity)
+            return symbol && <span aria-label={card.rarity ?? 'Unknown rarity'} className="text-overlay2">{symbol}</span>
+          })()}
+        </div>
+        <div className="absolute bottom-1 right-1 flex flex-col items-end gap-0.5 rounded bg-base/80 backdrop-blur-sm px-1.5 py-1 text-[11px] font-semibold tabular-nums leading-none">
+          {card.priceEUR != null && <span className="text-blue">R: €{card.priceEUR.toFixed(2)}</span>}
+          {gradedCount > 0 && <span className="text-blue">G: €{gradedValue.toFixed(2)}</span>}
+          {totalCost > 0 && <span className="text-text">C: €{totalCost.toFixed(2)}</span>}
         </div>
       </div>
     </Link>

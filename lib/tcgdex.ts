@@ -10,7 +10,7 @@ import {
 const BASE = 'https://api.tcgdex.net/v2'
 
 function lang(): string {
-  return process.env.TCGDEX_LANG ?? 'it'
+  return process.env.TCGDEX_LANG ?? 'en'
 }
 
 async function fetchJson(path: string): Promise<unknown> {

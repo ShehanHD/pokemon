@@ -1,18 +1,22 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useState } from 'react'
 import {
   LayoutDashboard,
   Search,
   BookOpen,
+  Layers,
   Star,
+  Tag,
   BarChart2,
+  Receipt,
   Lock,
   ChevronLeft,
   ChevronRight,
+  Database,
 } from 'lucide-react'
 import UserMenu from './UserMenu'
 
@@ -20,19 +24,39 @@ const COOKIE_KEY = 'sidebar-collapsed'
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, section: 'main', matchPrefix: false },
-  { href: '/browse', label: 'Browse', Icon: Search, section: 'main', matchPrefix: true },
-  { href: '/collection', label: 'My Cards', Icon: BookOpen, section: 'collection', matchPrefix: false },
-  { href: '/wishlist', label: 'Wishlist', Icon: Star, section: 'collection', pro: false, matchPrefix: false },
-  { href: '/analytics', label: 'Analytics', Icon: BarChart2, section: 'collection', pro: true, matchPrefix: false },
+  { href: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, section: 'main', match: 'exact' as const },
+  { href: '/browse', label: 'Browse Sets', Icon: Layers, section: 'main', match: 'browse-sets' as const },
+  { href: '/browse?view=cards', label: 'Browse Cards', Icon: Search, section: 'main', match: 'browse-cards' as const },
+  { href: '/collection', label: 'My Cards', Icon: BookOpen, section: 'collection', match: 'exact' as const },
+  { href: '/wishlist', label: 'Wishlist', Icon: Star, section: 'collection', pro: true, match: 'exact' as const },
+  { href: '/sold', label: 'Sold', Icon: Tag, section: 'collection', pro: true, match: 'exact' as const },
+  { href: '/expenses', label: 'Expenses', Icon: Receipt, section: 'collection', pro: true, match: 'exact' as const },
+  { href: '/analytics', label: 'Analytics', Icon: BarChart2, section: 'collection', pro: true, match: 'exact' as const },
+  ...(process.env.NODE_ENV !== 'production'
+    ? [{ href: '/admin/seed', label: 'Seed (dev)', Icon: Database, section: 'admin', match: 'exact' as const }]
+    : []),
 ]
 
 export default function Sidebar({ initialCollapsed = false }: { initialCollapsed?: boolean }) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const view = searchParams?.get('view') ?? null
   const { data: session } = useSession()
   const tier = session?.user?.tier ?? 'free'
   const isPro = tier === 'pro'
   const [collapsed, setCollapsed] = useState(initialCollapsed)
+
+  const isActive = (item: (typeof navItems)[number]) => {
+    switch (item.match) {
+      case 'browse-cards':
+        return pathname === '/browse' && view === 'cards'
+      case 'browse-sets':
+        return pathname.startsWith('/browse') && !(pathname === '/browse' && view === 'cards')
+      case 'exact':
+      default:
+        return pathname === item.href
+    }
+  }
 
   const toggle = () => {
     setCollapsed((prev) => {
@@ -44,6 +68,7 @@ export default function Sidebar({ initialCollapsed = false }: { initialCollapsed
 
   const mainItems = navItems.filter((i) => i.section === 'main')
   const collectionItems = navItems.filter((i) => i.section === 'collection')
+  const adminItems = navItems.filter((i) => i.section === 'admin')
 
   return (
     <aside
@@ -72,7 +97,7 @@ export default function Sidebar({ initialCollapsed = false }: { initialCollapsed
           <NavItem
             key={item.href}
             item={item}
-            active={item.matchPrefix ? pathname.startsWith(item.href) : pathname === item.href}
+            active={isActive(item)}
             isPro={isPro}
             collapsed={collapsed}
           />
@@ -89,11 +114,32 @@ export default function Sidebar({ initialCollapsed = false }: { initialCollapsed
           <NavItem
             key={item.href}
             item={item}
-            active={item.matchPrefix ? pathname.startsWith(item.href) : pathname === item.href}
+            active={isActive(item)}
             isPro={isPro}
             collapsed={collapsed}
           />
         ))}
+
+        {adminItems.length > 0 && (
+          <>
+            {!collapsed ? (
+              <div className="px-4 py-2 mt-2 text-[9px] uppercase tracking-widest text-overlay0 font-semibold">
+                Admin
+              </div>
+            ) : (
+              <div className="my-2 mx-3 border-t border-surface0" aria-hidden="true" />
+            )}
+            {adminItems.map((item) => (
+              <NavItem
+                key={item.href}
+                item={item}
+                active={isActive(item)}
+                isPro={isPro}
+                collapsed={collapsed}
+              />
+            ))}
+          </>
+        )}
       </nav>
 
       {/* Collapse toggle */}
@@ -124,7 +170,7 @@ function NavItem({
   isPro: boolean
   collapsed: boolean
 }) {
-  const locked = item.pro && !isPro && item.href !== '/analytics'
+  const locked = !!item.pro && !isPro
   const { Icon } = item
   const title = collapsed ? `${item.label}${locked ? ' (Pro)' : ''}` : undefined
   const className = [

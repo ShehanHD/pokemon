@@ -46,9 +46,11 @@ export async function getCardsBySet(setId: string): Promise<PokemonCard[]> {
     .sort((a, b) => parseCardNumber(a.number) - parseCardNumber(b.number) || a.number.localeCompare(b.number))
 }
 
-export async function getCardById(tcgdex_id: string): Promise<PokemonCard | null> {
+export async function getCardById(id: string): Promise<PokemonCard | null> {
   const db = await getDb()
-  const doc = await db.collection('cards').findOne({ tcgdex_id })
+  const doc = await db.collection('cards').findOne({
+    $or: [{ pokemontcg_id: id }, { tcgdex_id: id }],
+  })
   return doc ? serializeCard(doc as Record<string, unknown>) : null
 }
 

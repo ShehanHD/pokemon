@@ -50,3 +50,12 @@ export const userCardInputSchema = z.discriminatedUnion('type', [
 ])
 
 export type UserCardInput = z.infer<typeof userCardInputSchema>
+
+export const userCardStatusSchema = z.enum(['owned', 'sold'])
+
+export const markAsSoldInputSchema = z.object({
+  soldPrice: z.number().min(0),
+  soldAt: z.coerce.date(),
+})
+
+export type MarkAsSoldInput = z.infer<typeof markAsSoldInputSchema>

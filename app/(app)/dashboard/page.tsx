@@ -1,12 +1,24 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import { Receipt } from 'lucide-react'
 import { auth } from '@/lib/auth'
 import {
   getOwnedCountsBySet,
   getCollectionValueBySet,
-  getCollectionCostBySet,
   getOwnedCountsBySeries,
 } from '@/lib/userCards'
 import { getSetsByIds } from '@/lib/sets'
+import { getRecentUnifiedExpenses, getTotalSpend } from '@/lib/expenses'
+import { formatCurrency } from '@/lib/currency'
+import { DEFAULT_CURRENCY, type Currency, type ExpenseCategory } from '@/lib/types'
+
+const CATEGORY_LABEL: Record<ExpenseCategory, string> = {
+  purchase: 'Purchase',
+  grading: 'Grading',
+  shipping: 'Shipping',
+  supplies: 'Supplies',
+  other: 'Other',
+}
 
 function sumMap(m: Map<string, number>): number {
   let total = 0
@@ -18,20 +30,24 @@ export default async function DashboardPage() {
   const session = await auth()
   const userId = session?.user?.id
   const isPro = session?.user?.tier === 'pro'
+  const currency: Currency = session?.user?.currency ?? DEFAULT_CURRENCY
 
-  const [countsBySet, valueBySet, costBySet, countsBySeries] = userId
-    ? await Promise.all([
-        getOwnedCountsBySet(userId),
-        getCollectionValueBySet(userId),
-        getCollectionCostBySet(userId),
-        getOwnedCountsBySeries(userId),
-      ])
-    : [
-        new Map<string, number>(),
-        new Map<string, number>(),
-        new Map<string, number>(),
-        new Map<string, number>(),
-      ]
+  const [countsBySet, valueBySet, countsBySeries, totalSpend, recentExpenses] =
+    userId
+      ? await Promise.all([
+          getOwnedCountsBySet(userId),
+          getCollectionValueBySet(userId),
+          getOwnedCountsBySeries(userId),
+          getTotalSpend(userId),
+          getRecentUnifiedExpenses(userId, 5),
+        ])
+      : ([
+          new Map<string, number>(),
+          new Map<string, number>(),
+          new Map<string, number>(),
+          0,
+          [] as Awaited<ReturnType<typeof getRecentUnifiedExpenses>>,
+        ] as const)
 
   const setIds = Array.from(countsBySet.keys())
   const sets = setIds.length > 0 ? await getSetsByIds(setIds) : []
@@ -59,11 +75,10 @@ export default async function DashboardPage() {
 
   const cardsOwned = sumMap(countsBySet)
   const collectionValue = sumMap(valueBySet)
-  const collectionCost = sumMap(costBySet)
-  const gainLoss = collectionValue - collectionCost
+  const gainLoss = collectionValue - totalSpend
   const setsTracked = countsBySet.size
 
-  const gainLossPct = collectionCost > 0 ? (gainLoss / collectionCost) * 100 : 0
+  const gainLossPct = totalSpend > 0 ? (gainLoss / totalSpend) * 100 : 0
   const gainLossSign = gainLoss > 0 ? '+' : gainLoss < 0 ? '−' : ''
   const gainLossColor = gainLoss > 0 ? 'text-green' : gainLoss < 0 ? 'text-red' : 'text-text'
 
@@ -81,19 +96,22 @@ export default async function DashboardPage() {
     },
     {
       label: 'Collection Value',
-      value: `€${collectionValue.toFixed(2)}`,
+      value: formatCurrency(collectionValue, currency),
       sub: collectionValue === 0 ? 'Add cards to track value' : 'Cardmarket prices',
     },
     {
-      label: 'Collection Cost',
-      value: `€${collectionCost.toFixed(2)}`,
-      sub: collectionCost === 0 ? 'Set cost when adding copies' : 'What you paid',
+      label: 'Total Spend',
+      value: formatCurrency(totalSpend, currency),
+      sub: totalSpend === 0 ? 'Cards & expenses' : 'Cards + expenses',
     },
     isPro
       ? {
           label: 'Gain / Loss',
-          value: collectionCost === 0 ? '—' : `${gainLossSign}€${Math.abs(gainLoss).toFixed(2)}`,
-          sub: collectionCost === 0 ? 'Add cost to track P/L' : `${gainLossSign}${Math.abs(gainLossPct).toFixed(1)}%`,
+          value:
+            totalSpend === 0
+              ? '—'
+              : `${gainLossSign}${formatCurrency(Math.abs(gainLoss), currency)}`,
+          sub: totalSpend === 0 ? 'Add cost to track P/L' : `${gainLossSign}${Math.abs(gainLossPct).toFixed(1)}%`,
           valueClass: gainLossColor,
         }
       : { label: 'Gain / Loss', value: '—', sub: 'Pro feature', locked: true },
@@ -150,7 +168,7 @@ export default async function DashboardPage() {
                       <Link href={href} className="block group">
                         <div className="flex items-baseline justify-between gap-2 mb-1">
                           <span className="text-xs text-text truncate group-hover:text-blue transition-colors">{s.name}</span>
-                          <span className="text-xs text-mauve tabular-nums shrink-0">€{s.value.toFixed(2)}</span>
+                          <span className="text-xs text-mauve tabular-nums shrink-0">{formatCurrency(s.value, currency)}</span>
                         </div>
                         <div className="relative h-2 bg-surface0 rounded-full overflow-hidden">
                           <div
@@ -202,6 +220,51 @@ export default async function DashboardPage() {
               </ul>
             )}
           </div>
+        </div>
+      )}
+
+      {recentExpenses.length > 0 && (
+        <div className="mt-4 bg-base border border-surface0 rounded-xl p-5">
+          <div className="flex items-baseline justify-between mb-4">
+            <h2 className="text-xs uppercase tracking-widest text-overlay1 font-bold flex items-center gap-2">
+              <Receipt size={12} className="text-blue" />
+              Recent Expenses
+            </h2>
+            <Link href="/expenses" className="text-[10px] text-overlay0 hover:text-blue transition-colors">
+              View all →
+            </Link>
+          </div>
+          <ul className="divide-y divide-surface0">
+            {recentExpenses.map((row) => (
+              <li key={row.id} className="flex items-center gap-3 py-2.5">
+                <div className="w-20 shrink-0 text-[11px] text-overlay1 tabular-nums">
+                  {row.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                </div>
+                <span className="text-[10px] uppercase tracking-wider text-overlay0 shrink-0 w-16">
+                  {CATEGORY_LABEL[row.category]}
+                </span>
+                <div className="flex-1 min-w-0 flex items-center gap-2">
+                  {row.cardId && row.cardImageUrl && (
+                    <div className="relative w-6 h-8 rounded overflow-hidden bg-surface0 shrink-0">
+                      <Image
+                        src={row.cardImageUrl}
+                        alt={row.cardName ?? ''}
+                        fill
+                        sizes="24px"
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  <span className="text-xs text-text truncate">
+                    {row.cardId ? (row.cardName ?? row.cardId) : (row.note || '—')}
+                  </span>
+                </div>
+                <div className="text-xs text-text tabular-nums shrink-0">
+                  {formatCurrency(row.amount, currency)}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

@@ -40,6 +40,8 @@ export default function SeedClient({ groups }: { groups: SeriesGroup[] }) {
     setStates((prev) => ({ ...prev, [setId]: state }))
   }
 
+  const CHUNK_SIZE = 25
+
   async function runSeed(setIds: string[]) {
     if (setIds.length === 0) return
     setBusy((prev) => {
@@ -49,22 +51,37 @@ export default function SeedClient({ groups }: { groups: SeriesGroup[] }) {
     })
     for (const id of setIds) setRowState(id, { kind: 'running' })
 
+    const chunks: string[][] = []
+    for (let i = 0; i < setIds.length; i += CHUNK_SIZE) {
+      chunks.push(setIds.slice(i, i + CHUNK_SIZE))
+    }
+
     try {
-      const report: SeedReport = await seedSetsAction({ setIds })
-      const resultMap = new Map(report.results.map((r) => [r.setId, r]))
-      const errorMap = new Map(report.errors.map((e) => [e.setId, e.message]))
-      for (const id of setIds) {
-        const r = resultMap.get(id)
-        if (r) {
-          setRowState(id, { kind: 'done', result: r })
-        } else {
-          setRowState(id, { kind: 'error', message: errorMap.get(id) ?? 'Unknown error' })
+      for (const chunk of chunks) {
+        try {
+          const report: SeedReport = await seedSetsAction({ setIds: chunk })
+          const resultMap = new Map(report.results.map((r) => [r.setId, r]))
+          const errorMap = new Map(report.errors.map((e) => [e.setId, e.message]))
+          for (const id of chunk) {
+            const r = resultMap.get(id)
+            if (r) {
+              setRowState(id, { kind: 'done', result: r })
+            } else {
+              setRowState(id, { kind: 'error', message: errorMap.get(id) ?? 'Unknown error' })
+            }
+          }
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          for (const id of chunk) setRowState(id, { kind: 'error', message })
+        } finally {
+          setBusy((prev) => {
+            const next = new Set(prev)
+            for (const id of chunk) next.delete(id)
+            return next
+          })
         }
       }
       startTransition(() => router.refresh())
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err)
-      for (const id of setIds) setRowState(id, { kind: 'error', message })
     } finally {
       setBusy((prev) => {
         const next = new Set(prev)
@@ -74,8 +91,39 @@ export default function SeedClient({ groups }: { groups: SeriesGroup[] }) {
     }
   }
 
+  const allIds = groups.flatMap((g) => g.sets.map((s) => s.setId))
+  const newIds = groups.flatMap((g) => g.sets.filter((s) => !s.inDb).map((s) => s.setId))
+  const allBusyCount = allIds.filter((id) => busy.has(id)).length
+  const anyBusy = allBusyCount > 0
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between gap-3 p-4 bg-base border border-surface0 rounded-xl">
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-text">Bulk seed</p>
+          <p className="text-[11px] text-overlay0 tabular-nums">
+            {allIds.length} total · {newIds.length} new · chunks of {CHUNK_SIZE}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => runSeed(newIds)}
+            disabled={anyBusy || newIds.length === 0}
+            className="text-xs font-bold px-3 py-2 rounded border border-yellow/50 bg-yellow/10 text-yellow hover:bg-yellow/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Seed new only ({newIds.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => runSeed(allIds)}
+            disabled={anyBusy || allIds.length === 0}
+            className="text-xs font-bold px-3 py-2 rounded border border-red/50 bg-red/10 text-red hover:bg-red/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {anyBusy ? `Seeding… (${allBusyCount}/${allIds.length})` : `Seed all (${allIds.length})`}
+          </button>
+        </div>
+      </div>
       {groups.map((group) => {
         const seriesIds = group.sets.map((s) => s.setId)
         const busyCount = seriesIds.filter((id) => busy.has(id)).length

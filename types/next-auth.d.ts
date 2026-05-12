@@ -1,12 +1,13 @@
 import 'next-auth'
 import type { DefaultSession } from 'next-auth'
-import type { Tier } from '@/lib/types'
+import type { Tier, Currency } from '@/lib/types'
 
 declare module 'next-auth' {
   interface User {
     id?: string
     tier?: Tier
     themePokemonId?: number
+    currency?: Currency
   }
 
   interface Session {
@@ -14,6 +15,7 @@ declare module 'next-auth' {
       id: string
       tier: Tier
       themePokemonId?: number
+      currency?: Currency
     }
   }
 }
@@ -23,5 +25,6 @@ declare module 'next-auth/jwt' {
     id?: string
     tier?: Tier
     themePokemonId?: number
+    currency?: Currency
   }
 }

@@ -44,3 +44,6 @@ next-env.d.ts
 # tool artifacts
 .claude/
 .superpowers/
+
+# local backups
+.backup/

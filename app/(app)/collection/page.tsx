@@ -6,6 +6,7 @@ import { parseOwnedCardsQuery } from '@/lib/schemas/ownedCardsQuery'
 import CollectionFilters from './CollectionFilters'
 import OwnedCardTile from './OwnedCardTile'
 import Link from 'next/link'
+import { CardSizeSlider, ResizableCardGrid } from '@/components/catalog/CardGridSize'
 
 export default async function CollectionPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await auth()
@@ -26,9 +27,12 @@ export default async function CollectionPage({ searchParams }: { searchParams: P
     <div className="space-y-4">
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
         <h1 className="text-2xl text-text">My Cards</h1>
-        <p className="text-sm text-overlay1 tabular-nums">
-          {stats.uniqueCards} unique · {stats.totalCopies} copies
-        </p>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-overlay1 tabular-nums">
+            {stats.uniqueCards} unique · {stats.totalCopies} copies
+          </p>
+          {groups.length > 0 && <CardSizeSlider />}
+        </div>
       </div>
 
       <CollectionFilters
@@ -44,9 +48,9 @@ export default async function CollectionPage({ searchParams }: { searchParams: P
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2">
+        <ResizableCardGrid>
           {groups.map((g) => <OwnedCardTile key={g.cardId} group={g} />)}
-        </div>
+        </ResizableCardGrid>
       )}
     </div>
   )

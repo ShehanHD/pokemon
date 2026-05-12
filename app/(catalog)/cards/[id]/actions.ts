@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb'
 import { auth } from '@/lib/auth'
 import { getDb } from '@/lib/db'
 import { getUserCardsForCard } from '@/lib/userCards'
-import { userCardInputSchema } from '@/lib/schemas/userCard'
+import { userCardInputSchema, markAsSoldInputSchema } from '@/lib/schemas/userCard'
 
 export async function addUserCard(input: unknown) {
   const session = await auth()
@@ -51,6 +51,29 @@ export async function updateUserCard(userCardId: string, cardId: string, input: 
   )
 
   revalidatePath(`/cards/${cardId}`)
+  revalidatePath('/', 'layout')
+}
+
+export async function markUserCardAsSold(userCardId: string, cardId: string, input: unknown) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error('UNAUTHORIZED')
+
+  const parsed = markAsSoldInputSchema.parse(input)
+  const db = await getDb()
+  await db.collection('userCards').updateOne(
+    { _id: new ObjectId(userCardId), userId: session.user.id },
+    {
+      $set: {
+        status: 'sold',
+        soldPrice: parsed.soldPrice,
+        soldAt: parsed.soldAt,
+        updatedAt: new Date(),
+      },
+    },
+  )
+
+  revalidatePath(`/cards/${cardId}`)
+  revalidatePath('/sold')
   revalidatePath('/', 'layout')
 }
 

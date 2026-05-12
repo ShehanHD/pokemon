@@ -8,6 +8,7 @@ import manifest from '@/lib/themes/manifest.json'
 import type { ThemeManifest } from '@/lib/schemas/theme'
 import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
+import AdsLayer, { getAdsLayerState } from '@/components/ads/AdsLayer'
 
 export default async function CatalogLayout({ children }: { children: ReactNode }) {
   const session: Session | null = await auth()
@@ -25,15 +26,21 @@ export default async function CatalogLayout({ children }: { children: ReactNode 
     ? Number(cookieValue)
     : (session?.user?.themePokemonId ?? null)
 
+  const tier = session?.user?.tier ?? 'free'
+  const ads = await getAdsLayerState(tier)
+
   return (
     <SessionProvider session={session}>
       <div className="flex h-screen overflow-hidden bg-[ghostwhite]">
         <Sidebar initialCollapsed={sidebarCollapsed} />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Topbar themePokemonId={theme ? themePokemonId : null} themeName={theme?.name ?? null} />
-          <main className="flex-1 overflow-y-auto p-4">{children}</main>
+          <main className="flex-1 overflow-y-auto p-4">
+            {children}
+          </main>
         </div>
       </div>
+      <AdsLayer {...ads} />
     </SessionProvider>
   )
 }

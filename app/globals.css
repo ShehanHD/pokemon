@@ -81,3 +81,18 @@ h1, h2, h3, h4, h5, h6 {
   background-size: 300% 300%;
   animation: holo-shimmer 8s ease infinite;
 }
+
+/* Recharts: suppress focus outline on bars, slices, dots, and surface */
+.recharts-wrapper :focus,
+.recharts-wrapper :focus-visible,
+.recharts-surface,
+.recharts-surface:focus,
+.recharts-sector,
+.recharts-sector:focus,
+.recharts-rectangle,
+.recharts-rectangle:focus,
+.recharts-active-dot,
+.recharts-active-dot:focus,
+.recharts-layer:focus {
+  outline: none !important;
+}

@@ -1,21 +1,51 @@
 'use client'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts'
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts'
+import { ChartCard, CustomTooltip, axisTickStyle, gridStyle } from './chartTheme'
 
 interface Row { month: string; copiesAdded: number; cumulativeCopies: number; cumulativeSpend: number }
 
 export default function AcquisitionTimeline({ data }: { data: Row[] }) {
+  const latest = data.length ? data[data.length - 1].cumulativeCopies : 0
   return (
-    <div className="rounded-xl bg-mantle border border-surface0 p-4 h-72">
-      <h3 className="text-sm text-text mb-2">Acquisitions over time</h3>
-      <ResponsiveContainer width="100%" height="90%">
-        <LineChart data={data} margin={{ left: 0, right: 8, top: 8, bottom: 8 }}>
-          <CartesianGrid stroke="var(--color-surface0)" strokeDasharray="3 3" />
-          <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-          <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
-          <Tooltip />
-          <Line type="monotone" dataKey="cumulativeCopies" stroke="var(--color-blue)" strokeWidth={2} dot={false} />
-        </LineChart>
+    <ChartCard
+      title="Acquisitions over time"
+      subtitle={`${latest.toLocaleString()} cumulative copies`}
+      accent="var(--color-blue)"
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={data} margin={{ left: -12, right: 8, top: 8, bottom: 0 }}>
+          <defs>
+            <linearGradient id="acq-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--color-blue)" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="var(--color-blue)" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid {...gridStyle} />
+          <XAxis
+            dataKey="month"
+            tick={axisTickStyle}
+            tickLine={false}
+            axisLine={{ stroke: 'var(--color-surface0)' }}
+          />
+          <YAxis
+            tick={axisTickStyle}
+            allowDecimals={false}
+            tickLine={false}
+            axisLine={false}
+          />
+          <Tooltip cursor={{ stroke: 'var(--color-surface1)', strokeDasharray: '3 3' }} content={<CustomTooltip />} />
+          <Area
+            type="monotone"
+            dataKey="cumulativeCopies"
+            name="Cumulative copies"
+            stroke="var(--color-blue)"
+            strokeWidth={2}
+            fill="url(#acq-fill)"
+            dot={false}
+            activeDot={{ r: 4, stroke: 'var(--color-base)', strokeWidth: 2 }}
+          />
+        </AreaChart>
       </ResponsiveContainer>
-    </div>
+    </ChartCard>
   )
 }

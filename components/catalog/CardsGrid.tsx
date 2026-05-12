@@ -8,6 +8,7 @@ import { chipsForCard } from '@/lib/taxonomy/variant'
 import { raritySymbol } from '@/lib/taxonomy/rarity'
 import CopiesDialog from '@/components/collection/CopiesDialog'
 import WishlistStar from '@/components/wishlist/WishlistStar'
+import { CardSizeSlider, ResizableCardGrid } from './CardGridSize'
 
 export default function CardsGrid({ cards, set, variantCounts, wishlistedIds, userState }: {
   cards: PokemonCard[]
@@ -24,12 +25,18 @@ export default function CardsGrid({ cards, set, variantCounts, wishlistedIds, us
         <p className="text-overlay0 text-sm text-center py-8">No cards match this filter.</p>
       ) : (
       <>
-      <p className="text-[11px] text-overlay1 mb-2 px-0.5">
-        Tip: click a variant tag (e.g. <span className="font-bold text-overlay2">N</span>, <span className="font-bold text-overlay2">H</span>, <span className="font-bold text-overlay2">RH</span>) under a card to add it to your collection.
-      </p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-        {cards.map((card) => {
+      <div className="flex items-center gap-3 mb-2 px-0.5">
+        <p className="text-[11px] text-overlay1 flex-1 min-w-0">
+          Tip: click a variant tag (e.g. <span className="font-bold text-overlay2">N</span>, <span className="font-bold text-overlay2">H</span>, <span className="font-bold text-overlay2">RH</span>) under a card to add it to your collection.
+        </p>
+        <CardSizeSlider />
+      </div>
+      <ResizableCardGrid>
+        {cards.map((card, idx) => {
           const chips = chipsForCard(card, set)
+          const owned = variantCounts
+            ? chips.some((c) => (variantCounts.get(`${card.pokemontcg_id}:${c.variant}`) ?? 0) > 0)
+            : true
           const labelClasses =
             chips.length <= 1
               ? { short: '@[100px]:hidden', long: 'hidden @[100px]:inline' }
@@ -39,23 +46,32 @@ export default function CardsGrid({ cards, set, variantCounts, wishlistedIds, us
               ? { short: '@[260px]:hidden', long: 'hidden @[260px]:inline' }
               : { short: '@[360px]:hidden', long: 'hidden @[360px]:inline' }
           return (
-          <div key={card.pokemontcg_id} className="@container flex flex-col">
+          <div key={card.pokemontcg_id ?? `card-${idx}`} className="@container flex flex-col">
             <div className="relative">
               <Link href={`/cards/${card.pokemontcg_id}`} className="group block">
                 <div className="relative aspect-[245/342] rounded-lg overflow-hidden bg-surface0 border border-surface0 group-hover:border-blue/50 transition-colors">
-                  <Image
-                    src={card.imageUrl}
-                    alt={card.name}
-                    fill
-                    sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, (max-width: 1024px) 20vw, (max-width: 1280px) 16vw, 14vw"
-                    className="object-cover"
-                  />
+                  {card.imageUrl ? (
+                    <Image
+                      src={card.imageUrl}
+                      alt={card.name}
+                      fill
+                      sizes="(max-width: 640px) 33vw, (max-width: 768px) 25vw, (max-width: 1024px) 20vw, (max-width: 1280px) 16vw, 14vw"
+                      className={`object-cover transition-[filter] ${owned ? '' : 'grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100'}`}
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-overlay0 text-[10px] text-center px-2">
+                      No image
+                    </div>
+                  )}
                   <div
                     title={card.rarity ?? 'Unknown rarity'}
                     className="absolute bottom-1 left-1 flex items-center gap-1 rounded bg-base/80 backdrop-blur-sm px-1.5 py-1 text-[11px] font-semibold text-text leading-none"
                   >
                     <span className="tabular-nums">{card.number}/{set.printedTotal}</span>
-                    <span aria-label={card.rarity ?? 'Unknown rarity'} className="text-overlay2">{raritySymbol(card.rarity)}</span>
+                    {(() => {
+                      const symbol = raritySymbol(card.rarity)
+                      return symbol && <span aria-label={card.rarity ?? 'Unknown rarity'} className="text-overlay2">{symbol}</span>
+                    })()}
                   </div>
                   {card.priceEUR != null && (
                     <div className="absolute bottom-1 right-1 rounded bg-base/80 backdrop-blur-sm px-1.5 py-1 text-[11px] font-semibold text-blue tabular-nums leading-none">
@@ -104,7 +120,7 @@ export default function CardsGrid({ cards, set, variantCounts, wishlistedIds, us
           </div>
           )
         })}
-      </div>
+      </ResizableCardGrid>
       </>
       )}
       {dialog && (

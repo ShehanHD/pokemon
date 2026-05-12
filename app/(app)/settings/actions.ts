@@ -1,11 +1,13 @@
 'use server'
 
+import { z } from 'zod'
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { ObjectId } from 'mongodb'
 import { auth } from '@/lib/auth'
 import { getDb } from '@/lib/db'
 import { setThemePokemonInputSchema } from '@/lib/schemas/theme'
+import { currencyEnum } from '@/lib/schemas/expense'
 import { tierAllows } from '@/lib/themes/resolve'
 import manifest from '@/lib/themes/manifest.json'
 import type { ThemeManifest } from '@/lib/schemas/theme'
@@ -49,6 +51,22 @@ export async function setThemePokemon(input: unknown): Promise<void> {
       await users.updateOne({ _id }, { $set: { themePokemonId: pokemonId } })
     }
   }
+
+  revalidatePath('/', 'layout')
+}
+
+const setCurrencyInputSchema = z.object({ currency: currencyEnum })
+
+export async function setUserCurrency(input: unknown): Promise<void> {
+  const { currency } = setCurrencyInputSchema.parse(input)
+  const session = await auth()
+  if (!session?.user?.id) throw new Error('Unauthorized')
+
+  const db = await getDb()
+  const _id = ObjectId.isValid(session.user.id)
+    ? new ObjectId(session.user.id)
+    : (session.user.id as unknown as ObjectId)
+  await db.collection('users').updateOne({ _id }, { $set: { currency } })
 
   revalidatePath('/', 'layout')
 }

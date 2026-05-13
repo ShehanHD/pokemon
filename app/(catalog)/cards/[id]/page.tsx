@@ -9,7 +9,7 @@ import { auth } from '@/lib/auth'
 import OwnedCounter from '@/components/collection/OwnedCounter'
 import OwnedCopiesList from '@/components/collection/OwnedCopiesList'
 import WishlistStar from '@/components/wishlist/WishlistStar'
-import { normaliseRarity } from '@/lib/taxonomy/rarity'
+import { normaliseRarity, rarityShortLabel } from '@/lib/taxonomy/rarity'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -37,8 +37,6 @@ export default async function CardDetailPage({ params }: Props) {
 
   const normalised = normaliseRarity(card.rarity)
 
-  const rarityValue = card.rarity ? `${normalised} (${card.rarity})` : normalised
-
   const rows: { label: string; value: string | null }[] = [
     { label: 'Set', value: card.setName },
     { label: 'Series', value: card.series },
@@ -46,7 +44,7 @@ export default async function CardDetailPage({ params }: Props) {
     { label: 'Supertype', value: card.supertype },
     { label: 'Subtypes', value: card.subtypes.length ? card.subtypes.join(', ') : null },
     { label: 'Types', value: card.types.length ? card.types.join(', ') : null },
-    { label: 'Rarity', value: rarityValue },
+    { label: 'Rarity', value: normalised },
     {
       label: 'Cardmarket Price',
       value: card.priceEUR != null ? `€${card.priceEUR.toFixed(2)}` : null,
@@ -82,7 +80,12 @@ export default async function CardDetailPage({ params }: Props) {
           )}
 
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-blue/20 text-blue">{normalised}</span>
+            <span
+              title={normalised}
+              className="text-[10px] font-medium px-2 py-0.5 rounded bg-blue/20 text-blue"
+            >
+              {rarityShortLabel(normalised)}
+            </span>
           </div>
 
           {userId && <OwnedCounter cardId={card.pokemontcg_id} card={card} copies={copies} set={set} />}
@@ -101,7 +104,7 @@ export default async function CardDetailPage({ params }: Props) {
                   <span className="text-[11px] text-overlay0 uppercase tracking-wider w-28 flex-shrink-0">
                     {row.label}
                   </span>
-                  <span className="text-sm text-text">{row.value}</span>
+                  <span className="text-sm text-text flex-1 min-w-0 break-words">{row.value}</span>
                 </div>
               ))}
           </div>

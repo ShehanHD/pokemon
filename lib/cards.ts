@@ -1,32 +1,8 @@
 import { getDb } from './db'
 import type { PokemonCard } from './types'
-import { normaliseRarity, type NormalisedRarity } from './taxonomy/rarity'
+import { normaliseRarity, getRawRaritiesFor, type NormalisedRarity } from './taxonomy/rarity'
 
 export type CardsSort = 'name' | 'name-desc' | 'price-desc' | 'price-asc' | 'release-desc' | 'release-asc'
-
-const RAW_RARITIES_BY_NORMALISED: Record<NormalisedRarity, string[]> = {
-  'Common': ['Common', 'Comune'],
-  'Uncommon': ['Uncommon', 'Non comune'],
-  'Rare': ['Rare', 'Rara'],
-  'Rare Holo': ['Rare Holo', 'Olografica Rara'],
-  'Double Rare': ['Double Rare', 'Rara doppia'],
-  'Ultra Rare': [
-    'Rare Holo EX', 'Rare Holo GX', 'Rare Holo V', 'Rare Holo VMAX', 'Rare Holo VSTAR',
-    'Rare Holo LV.X', 'Rare Ultra', 'Ultra Rare', 'Rare BREAK', 'Rare Prism Star',
-    'Rare Prime', 'Rare Shining', 'Amazing Rare', 'Radiant Rare', 'LEGEND',
-    'Ultrarara', 'Olografica Rara V', 'Olografica Rara VMAX', 'Olografica Rara VSTAR',
-    'Shiny rare', 'Shiny rare V', 'Shiny rare VMAX', 'ultrarara cromatica',
-    'Rara Bianco e Nero', 'Rara Lucente',
-  ],
-  'Illustration Rare': ['Illustration Rare', 'Rara illustrazione'],
-  'Special Illustration Rare': ['Special Illustration Rare', 'Rara illustrazione speciale', "Allenatore d'arte completa"],
-  'Hyper Rare': ['Hyper Rare', 'Rare Secret', 'Rare Rainbow', 'Rare Shiny', 'Rare Shiny GX', 'Rara iper', 'Segreto rara'],
-  'Mega Hyper Rare': ['Mega Hyper Rare', 'Mega Iper Raro'],
-  'Trainer Gallery': ['Trainer Gallery Rare Holo', 'Rare Holo Star'],
-  'ACE SPEC Rare': ['Rare ACE', 'ACE SPEC Rare', 'rara ASSO TATTICO'],
-  'Promo': ['Promo', 'Rare Promo'],
-  'Unknown': [],
-}
 
 function serializeCard(doc: Record<string, unknown>): PokemonCard {
   const { _id, ...rest } = doc
@@ -141,9 +117,11 @@ export async function listAllCards(opts: {
     Object.assign(filter, queryFilter)
   }
   if (opts.rarity) {
-    const rawValues = RAW_RARITIES_BY_NORMALISED[opts.rarity]
     if (opts.rarity === 'Unknown') filter.rarity = null
-    else if (rawValues.length > 0) filter.rarity = { $in: rawValues }
+    else {
+      const rawValues = getRawRaritiesFor(opts.rarity)
+      if (rawValues.length > 0) filter.rarity = { $in: rawValues }
+    }
   }
   if (opts.supertype) filter.supertype = opts.supertype
   if (opts.sort === 'price-asc' || opts.sort === 'price-desc') {

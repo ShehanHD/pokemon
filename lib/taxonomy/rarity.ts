@@ -92,6 +92,19 @@ export function normaliseRarity(raw: string | null): NormalisedRarity {
   return 'Unknown'
 }
 
+const RAW_RARITIES_BY_NORMALISED: Record<NormalisedRarity, string[]> = (() => {
+  const out = {} as Record<NormalisedRarity, string[]>
+  for (const value of normalisedRaritySchema.options) out[value] = []
+  for (const [raw, normalised] of Object.entries(RARITY_MAP)) {
+    out[normalised].push(raw)
+  }
+  return out
+})()
+
+export function getRawRaritiesFor(target: NormalisedRarity): string[] {
+  return RAW_RARITIES_BY_NORMALISED[target]
+}
+
 const RARITY_SYMBOLS: Record<NormalisedRarity, string> = {
   'Common': '●',
   'Uncommon': '◆',
@@ -111,4 +124,25 @@ const RARITY_SYMBOLS: Record<NormalisedRarity, string> = {
 
 export function raritySymbol(raw: string | null): string {
   return RARITY_SYMBOLS[normaliseRarity(raw)]
+}
+
+const RARITY_SHORT_LABELS: Record<NormalisedRarity, string> = {
+  'Common': 'C',
+  'Uncommon': 'U',
+  'Rare': 'R',
+  'Rare Holo': 'RH',
+  'Double Rare': 'DR',
+  'Ultra Rare': 'UR',
+  'Illustration Rare': 'IR',
+  'Special Illustration Rare': 'SIR',
+  'Hyper Rare': 'HR',
+  'Mega Hyper Rare': 'MHR',
+  'Trainer Gallery': 'TG',
+  'ACE SPEC Rare': 'ACE',
+  'Promo': 'PR',
+  'Unknown': '?',
+}
+
+export function rarityShortLabel(target: NormalisedRarity): string {
+  return RARITY_SHORT_LABELS[target]
 }

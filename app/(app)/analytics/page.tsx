@@ -21,7 +21,7 @@ import Link from 'next/link'
 export default async function AnalyticsPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login?next=/analytics')
-  if (session.user.tier !== 'pro') redirect('/dashboard')
+  if (session.user.tier !== 'pro') redirect('/dashboard?upgrade=1')
   const userId = session.user.id
 
   const cachedStats = unstable_cache(

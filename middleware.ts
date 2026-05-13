@@ -11,7 +11,8 @@ export default auth((req) => {
   const isProtected = protectedPrefixes.some((p) => pathname.startsWith(p))
 
   if (isProtected && !req.auth) {
-    const loginUrl = new URL('/login', req.url)
+    const loginUrl = new URL('/browse', req.url)
+    loginUrl.searchParams.set('login', '1')
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
   }

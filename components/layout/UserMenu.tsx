@@ -21,7 +21,7 @@ export default function UserMenu({ collapsed }: { collapsed: boolean }) {
 
   const onConfirm = () => {
     setPending(true)
-    void signOut({ callbackUrl: '/login' })
+    void signOut({ callbackUrl: '/browse' })
   }
 
   return (

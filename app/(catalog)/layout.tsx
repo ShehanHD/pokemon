@@ -9,6 +9,7 @@ import type { ThemeManifest } from '@/lib/schemas/theme'
 import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
 import AdsLayer, { getAdsLayerState } from '@/components/ads/AdsLayer'
+import AuthDialogProvider from '@/components/auth/AuthDialogProvider'
 
 export default async function CatalogLayout({ children }: { children: ReactNode }) {
   const session: Session | null = await auth()
@@ -31,16 +32,18 @@ export default async function CatalogLayout({ children }: { children: ReactNode 
 
   return (
     <SessionProvider session={session}>
-      <div className="flex h-screen overflow-hidden bg-[ghostwhite]">
-        <Sidebar initialCollapsed={sidebarCollapsed} />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <Topbar themePokemonId={theme ? themePokemonId : null} themeName={theme?.name ?? null} />
-          <main className="flex-1 overflow-y-auto p-4">
-            {children}
-          </main>
+      <AuthDialogProvider>
+        <div className="flex h-screen overflow-hidden bg-[ghostwhite]">
+          <Sidebar initialCollapsed={sidebarCollapsed} />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Topbar themePokemonId={theme ? themePokemonId : null} themeName={theme?.name ?? null} />
+            <main className="flex-1 overflow-y-auto p-4">
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
-      <AdsLayer {...ads} />
+        <AdsLayer {...ads} />
+      </AuthDialogProvider>
     </SessionProvider>
   )
 }

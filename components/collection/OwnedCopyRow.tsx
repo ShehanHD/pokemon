@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Pencil, Tag, Trash2 } from 'lucide-react'
 import { updateUserCard, markUserCardAsSold, removeUserCard } from '@/app/(catalog)/cards/[id]/actions'
 import { userCardInputSchema, markAsSoldInputSchema } from '@/lib/schemas/userCard'
-import type { CardCondition, GradingCompany, UserCard } from '@/lib/types'
+import type { CardCondition, GradingCompany, UserCard, CardLanguage } from '@/lib/types'
+import { CARD_LANGUAGE_LABEL } from '@/lib/types'
 
 const CONDITIONS: CardCondition[] = ['NM', 'LP', 'MP', 'HP', 'DMG']
 const CONDITION_LABEL: Record<CardCondition, string> = {
@@ -38,10 +39,14 @@ export default function OwnedCopyRow({ copy, cardId, mode, onEnterMode, onLeaveM
   const userCardId = copy._id
   const acquired = formatDate(copy.acquiredAt)
 
+  const totalCost = (copy.cost ?? 0) + (copy.extraCost ?? 0)
+  const hasCost = copy.cost != null || copy.extraCost != null
+  const costSegment = hasCost ? ` · €${totalCost.toFixed(2)}` : ''
+  const langSegment = copy.language ? ` · ${copy.language.toUpperCase()}` : ''
   const summary =
     copy.type === 'raw'
-      ? `Raw · ${CONDITION_LABEL[copy.condition]}${copy.cost != null ? ` · €${copy.cost.toFixed(2)}` : ''} · ${acquired}`
-      : `${copy.gradingCompany} ${copy.grade}${copy.gradedValue != null ? ` · €${copy.gradedValue.toFixed(2)}` : ''} · ${acquired}`
+      ? `Raw · ${CONDITION_LABEL[copy.condition]}${costSegment}${langSegment} · ${acquired}`
+      : `${copy.gradingCompany} ${copy.grade}${copy.gradedValue != null ? ` · €${copy.gradedValue.toFixed(2)}` : ''}${costSegment}${langSegment} · ${acquired}`
 
   return (
     <div className="flex flex-col gap-2 px-2 py-1.5 rounded bg-mantle border border-surface0">
@@ -200,6 +205,8 @@ function SellForm({ userCardId, cardId, onDone }: { userCardId: string; cardId: 
 
 function EditForm({ copy, userCardId, cardId, onDone }: { copy: UserCard; userCardId: string; cardId: string; onDone: () => void }) {
   const [cost, setCost] = useState(copy.cost != null ? String(copy.cost) : '')
+  const [extraCost, setExtraCost] = useState(copy.extraCost != null ? String(copy.extraCost) : '')
+  const [language, setLanguage] = useState<CardLanguage>(copy.language ?? 'en')
   const [acquiredAt, setAcquiredAt] = useState(formatDate(copy.acquiredAt))
   const [notes, setNotes] = useState(copy.notes ?? '')
   const [condition, setCondition] = useState<CardCondition>(copy.type === 'raw' ? copy.condition : 'NM')
@@ -220,6 +227,8 @@ function EditForm({ copy, userCardId, cardId, onDone }: { copy: UserCard; userCa
       variant: copy.variant,
       acquiredAt,
       cost: cost !== '' ? Number(cost) : undefined,
+      extraCost: extraCost !== '' ? Number(extraCost) : undefined,
+      language,
       notes: notes.trim() || undefined,
     }
     const candidate =
@@ -251,7 +260,7 @@ function EditForm({ copy, userCardId, cardId, onDone }: { copy: UserCard; userCa
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-2 p-3 rounded bg-mantle border border-blue/30">
       <div className="grid grid-cols-2 gap-2">
-        <SmallField label="Cost (€)">
+        <SmallField label="Card cost (€)">
           <input
             type="number"
             min={0}
@@ -260,6 +269,27 @@ function EditForm({ copy, userCardId, cardId, onDone }: { copy: UserCard; userCa
             onChange={(e) => setCost(e.target.value)}
             className={inputCls}
           />
+        </SmallField>
+        <SmallField label="Other expenses (€)">
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            value={extraCost}
+            onChange={(e) => setExtraCost(e.target.value)}
+            className={inputCls}
+          />
+        </SmallField>
+        <SmallField label="Language">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as CardLanguage)}
+            className={inputCls}
+          >
+            {(Object.keys(CARD_LANGUAGE_LABEL) as CardLanguage[]).map((l) => (
+              <option key={l} value={l}>{CARD_LANGUAGE_LABEL[l]}</option>
+            ))}
+          </select>
         </SmallField>
         <SmallField label="Acquired">
           <input

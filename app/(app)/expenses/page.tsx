@@ -8,8 +8,8 @@ import ExpensesPanel from '@/components/expenses/ExpensesPanel'
 export default async function ExpensesPage() {
   const session = await auth()
   const userId = session?.user?.id
-  if (!userId) redirect('/login')
-  if (session?.user?.tier !== 'pro') redirect('/dashboard')
+  if (!userId) redirect('/browse?login=1')
+  if (session?.user?.tier !== 'pro') redirect('/dashboard?upgrade=1')
 
   const currency: Currency = session?.user?.currency ?? DEFAULT_CURRENCY
   const { rows, totals } = await getUnifiedExpenses(userId)

@@ -21,11 +21,17 @@ const gradeSchema = z
 
 export const centeringSchema = z.enum(['Perfect', 'Good', 'Poor', 'Error Print']).optional()
 
+export const cardLanguageSchema = z.enum([
+  'en', 'ja', 'fr', 'de', 'it', 'es', 'pt', 'ko', 'zh-tw', 'zh-cn',
+])
+
 const baseFields = {
   cardId: z.string().min(1),
   variant: cardVariantSchema,
   acquiredAt: z.coerce.date(),
   cost: z.number().min(0).optional(),
+  extraCost: z.number().min(0).optional(),
+  language: cardLanguageSchema.optional(),
   notes: z.string().max(500).optional(),
 }
 
@@ -59,3 +65,12 @@ export const markAsSoldInputSchema = z.object({
 })
 
 export type MarkAsSoldInput = z.infer<typeof markAsSoldInputSchema>
+
+export const editSoldInputSchema = z.object({
+  soldPrice: z.number().min(0),
+  soldAt: z.coerce.date(),
+  cost: z.number().min(0).optional(),
+  extraCost: z.number().min(0).optional(),
+})
+
+export type EditSoldInput = z.infer<typeof editSoldInputSchema>

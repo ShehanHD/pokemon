@@ -9,9 +9,6 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   session: { strategy: 'jwt' },
-  pages: {
-    signIn: '/login',
-  },
   trustHost: true,
   callbacks: {
     authorized({ auth }) {

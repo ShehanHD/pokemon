@@ -4,6 +4,13 @@ import { normaliseRarity } from './taxonomy/rarity'
 
 const NOT_SOLD = { status: { $ne: 'sold' as const } }
 
+const COMBINED_COST_EXPR = {
+  $add: [
+    { $ifNull: ['$cost', 0] },
+    { $ifNull: ['$extraCost', 0] },
+  ],
+}
+
 function serialize(doc: Record<string, unknown>): UserCard {
   const { _id, ...rest } = doc
   return { _id: String(_id), ...rest } as UserCard
@@ -214,7 +221,7 @@ export async function getCollectionCostBySet(userId: string): Promise<Map<string
     {
       $group: {
         _id: '$card.set_id',
-        cost: { $sum: { $ifNull: ['$cost', 0] } },
+        cost: { $sum: COMBINED_COST_EXPR },
       },
     },
   ]).toArray()
@@ -243,7 +250,7 @@ export async function getCollectionCostForSet(userId: string, setId: string): Pr
     { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
     { $unwind: '$card' },
     { $match: { 'card.set_id': setId } },
-    { $group: { _id: null, cost: { $sum: { $ifNull: ['$cost', 0] } } } },
+    { $group: { _id: null, cost: { $sum: COMBINED_COST_EXPR } } },
   ]).toArray()
   return rows[0]?.cost ?? 0
 }
@@ -302,13 +309,13 @@ export async function getOwnedCardsGrouped(
             $cond: [{ $eq: ['$type', 'graded'] }, { $ifNull: ['$gradedValue', 0] }, 0],
           },
         },
-        totalCost: { $sum: { $ifNull: ['$cost', 0] } },
+        totalCost: { $sum: COMBINED_COST_EXPR },
         estValue: {
           $sum: {
             $cond: [
               { $eq: ['$type', 'graded'] },
               { $ifNull: ['$gradedValue', 0] },
-              { $ifNull: ['$cost', 0] },
+              COMBINED_COST_EXPR,
             ],
           },
         },
@@ -392,13 +399,13 @@ export async function getCollectionStats(userId: string): Promise<CollectionStat
         _id: null,
         totalCopies: { $sum: 1 },
         uniqueCards: { $addToSet: '$cardId' },
-        totalSpend: { $sum: { $ifNull: ['$cost', 0] } },
+        totalSpend: { $sum: COMBINED_COST_EXPR },
         estValue: {
           $sum: {
             $cond: [
               { $eq: ['$type', 'graded'] },
               { $ifNull: ['$gradedValue', 0] },
-              { $ifNull: ['$cost', 0] },
+              COMBINED_COST_EXPR,
             ],
           },
         },
@@ -421,7 +428,7 @@ export async function getRawVsGradedSplit(userId: string): Promise<{ raw: { copi
   const db = await getDb()
   const rows = await db.collection('userCards').aggregate<{ _id: 'raw' | 'graded'; copies: number; spend: number }>([
     { $match: { userId, ...NOT_SOLD } },
-    { $group: { _id: '$type', copies: { $sum: 1 }, spend: { $sum: { $ifNull: ['$cost', 0] } } } },
+    { $group: { _id: '$type', copies: { $sum: 1 }, spend: { $sum: COMBINED_COST_EXPR } } },
   ]).toArray()
   const raw = rows.find((r) => r._id === 'raw') ?? { copies: 0, spend: 0 }
   const graded = rows.find((r) => r._id === 'graded') ?? { copies: 0, spend: 0 }
@@ -437,7 +444,7 @@ export async function getBySeriesBreakdown(userId: string): Promise<Array<{ seri
     { $match: { userId, ...NOT_SOLD } },
     { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
     { $unwind: '$card' },
-    { $group: { _id: '$card.series', copies: { $sum: 1 }, spend: { $sum: { $ifNull: ['$cost', 0] } } } },
+    { $group: { _id: '$card.series', copies: { $sum: 1 }, spend: { $sum: COMBINED_COST_EXPR } } },
     { $sort: { copies: -1 } },
   ]).toArray()
   return rows.map((r) => ({ series: r._id, copies: r.copies, spend: r.spend }))
@@ -449,7 +456,7 @@ export async function getBySetBreakdown(userId: string, limit = 10): Promise<Arr
     { $match: { userId, ...NOT_SOLD } },
     { $lookup: { from: 'cards', localField: 'cardId', foreignField: 'pokemontcg_id', as: 'card' } },
     { $unwind: '$card' },
-    { $group: { _id: '$card.set_id', setName: { $first: '$card.setName' }, copies: { $sum: 1 }, spend: { $sum: { $ifNull: ['$cost', 0] } } } },
+    { $group: { _id: '$card.set_id', setName: { $first: '$card.setName' }, copies: { $sum: 1 }, spend: { $sum: COMBINED_COST_EXPR } } },
     { $sort: { copies: -1 } },
     { $limit: limit },
   ]).toArray()
@@ -476,6 +483,7 @@ export async function getSoldCardsForUser(userId: string): Promise<SoldCardRow[]
     variant: string
     type: 'raw' | 'graded'
     cost?: number
+    extraCost?: number
     soldPrice: number
     soldAt: Date
     acquiredAt: Date
@@ -490,6 +498,8 @@ export async function getSoldCardsForUser(userId: string): Promise<SoldCardRow[]
   return rows.map((r) => {
     const { _id: cardDocId, ...cardRest } = r.card
     const cost = typeof r.cost === 'number' ? r.cost : null
+    const extraCost = typeof r.extraCost === 'number' ? r.extraCost : null
+    const totalCost = (cost ?? 0) + (extraCost ?? 0)
     return {
       _id: String(r._id),
       cardId: r.cardId,
@@ -497,10 +507,12 @@ export async function getSoldCardsForUser(userId: string): Promise<SoldCardRow[]
       variant: r.variant as SoldCardRow['variant'],
       type: r.type,
       cost,
+      extraCost,
+      totalCost,
       soldPrice: r.soldPrice,
       soldAt: r.soldAt,
       acquiredAt: r.acquiredAt,
-      pnl: r.soldPrice - (cost ?? 0),
+      pnl: r.soldPrice - totalCost,
     }
   })
 }
@@ -515,7 +527,7 @@ export async function getCollectionTimeseries(userId: string): Promise<Array<{ m
           $dateToString: { format: '%Y-%m', date: '$acquiredAt' },
         },
         copies: { $sum: 1 },
-        spend: { $sum: { $ifNull: ['$cost', 0] } },
+        spend: { $sum: COMBINED_COST_EXPR },
       },
     },
     { $sort: { _id: 1 } },

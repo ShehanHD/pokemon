@@ -5,6 +5,7 @@ import { auth } from '@/lib/auth'
 import { getSoldCardsForUser } from '@/lib/userCards'
 import { formatCurrency } from '@/lib/currency'
 import { DEFAULT_CURRENCY, type Currency } from '@/lib/types'
+import EditSoldDialog from '@/components/sold/EditSoldDialog'
 
 function formatDate(d: Date): string {
   return new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
@@ -14,13 +15,13 @@ export default async function SoldPage() {
   const session = await auth()
   const userId = session?.user?.id
   if (!userId) redirect('/login?next=/sold')
-  if (session?.user?.tier !== 'pro') redirect('/dashboard')
+  if (session?.user?.tier !== 'pro') redirect('/dashboard?upgrade=1')
 
   const currency: Currency = session?.user?.currency ?? DEFAULT_CURRENCY
   const rows = await getSoldCardsForUser(userId)
 
   const totalSold = rows.reduce((s, r) => s + r.soldPrice, 0)
-  const totalCost = rows.reduce((s, r) => s + (r.cost ?? 0), 0)
+  const totalCost = rows.reduce((s, r) => s + r.totalCost, 0)
   const totalPnl = rows.reduce((s, r) => s + r.pnl, 0)
 
   return (
@@ -70,6 +71,7 @@ export default async function SoldPage() {
                   <th className="px-3 py-2 font-normal text-right">Sold</th>
                   <th className="px-3 py-2 font-normal text-right">P&amp;L</th>
                   <th className="px-3 py-2 font-normal">Sold on</th>
+                  <th className="px-3 py-2 font-normal text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface0">
@@ -99,7 +101,7 @@ export default async function SoldPage() {
                       <span className="ml-2 text-[10px] uppercase tracking-wider text-overlay0">{r.type}</span>
                     </td>
                     <td className="px-3 py-2 text-right tabular-nums text-overlay1">
-                      {r.cost != null && r.cost > 0 ? formatCurrency(r.cost, currency) : '—'}
+                      {r.totalCost > 0 ? formatCurrency(r.totalCost, currency) : '—'}
                     </td>
                     <td className="px-3 py-2 text-right tabular-nums text-text">
                       {formatCurrency(r.soldPrice, currency)}
@@ -113,6 +115,17 @@ export default async function SoldPage() {
                       {r.pnl >= 0 ? '+' : '−'}{formatCurrency(Math.abs(r.pnl), currency)}
                     </td>
                     <td className="px-3 py-2 text-overlay1">{formatDate(r.soldAt)}</td>
+                    <td className="px-3 py-2 text-right">
+                      <EditSoldDialog
+                        userCardId={r._id}
+                        cardName={`${r.card.name} · ${r.card.setName} · ${r.card.number}`}
+                        initialSoldPrice={r.soldPrice}
+                        initialSoldAt={r.soldAt}
+                        initialCost={r.cost}
+                        initialExtraCost={r.extraCost}
+                        currency={currency}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

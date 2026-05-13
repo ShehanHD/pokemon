@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 import { addUserCard } from '@/app/(catalog)/cards/[id]/actions'
 import { applicableVariantsForSet, variantLabel } from '@/lib/taxonomy/variant'
-import type { CardVariant, CardCondition, GradingCompany, PokemonSet } from '@/lib/types'
+import type { CardVariant, CardCondition, GradingCompany, PokemonSet, CardLanguage } from '@/lib/types'
+import { CARD_LANGUAGE_LABEL } from '@/lib/types'
 
 interface Props {
   cardId: string
@@ -32,6 +33,8 @@ export default function AddCopyDialog({ cardId, open, onClose, set, initialVaria
   const [type, setType] = useState<'raw' | 'graded'>('raw')
   const [variant, setVariant] = useState<CardVariant>(initialVariant ?? variants[0] ?? 'normal')
   const [cost, setCost] = useState('')
+  const [extraCost, setExtraCost] = useState('')
+  const [language, setLanguage] = useState<CardLanguage>('en')
   const [acquiredAt, setAcquiredAt] = useState(() => new Date().toISOString().slice(0, 10))
   const [condition, setCondition] = useState<CardCondition>('NM')
   const [centering, setCentering] = useState('')
@@ -54,6 +57,8 @@ export default function AddCopyDialog({ cardId, open, onClose, set, initialVaria
         variant,
         acquiredAt,
         cost: cost !== '' ? Number(cost) : undefined,
+        extraCost: extraCost !== '' ? Number(extraCost) : undefined,
+        language,
         notes: notes.trim() ? notes.trim() : undefined,
       }
       const input =
@@ -129,7 +134,7 @@ export default function AddCopyDialog({ cardId, open, onClose, set, initialVaria
             </select>
           </Field>
 
-          <Field label="Cost (€)">
+          <Field label="Card cost (€)">
             <input
               type="number"
               min={0}
@@ -138,6 +143,30 @@ export default function AddCopyDialog({ cardId, open, onClose, set, initialVaria
               onChange={(e) => setCost(e.target.value)}
               className="w-full bg-base border border-surface0 rounded px-2 py-1.5 text-sm text-text"
             />
+          </Field>
+
+          <Field label="Other expenses (€)">
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              value={extraCost}
+              onChange={(e) => setExtraCost(e.target.value)}
+              placeholder="Grading, shipping, supplies…"
+              className="w-full bg-base border border-surface0 rounded px-2 py-1.5 text-sm text-text"
+            />
+          </Field>
+
+          <Field label="Language">
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as CardLanguage)}
+              className="w-full bg-base border border-surface0 rounded px-2 py-1.5 text-sm text-text"
+            >
+              {(Object.keys(CARD_LANGUAGE_LABEL) as CardLanguage[]).map((l) => (
+                <option key={l} value={l}>{CARD_LANGUAGE_LABEL[l]}</option>
+              ))}
+            </select>
           </Field>
 
           <Field label="Acquired">

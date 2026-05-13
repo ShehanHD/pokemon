@@ -93,6 +93,22 @@ export type GradingCompany = 'PSA' | 'GRAAD' | 'BGS' | 'CGC' | 'SGC' | 'TAG' | '
 
 export type UserCardStatus = 'owned' | 'sold'
 
+export type CardLanguage =
+  | 'en' | 'ja' | 'fr' | 'de' | 'it' | 'es' | 'pt' | 'ko' | 'zh-tw' | 'zh-cn'
+
+export const CARD_LANGUAGE_LABEL: Record<CardLanguage, string> = {
+  en: 'English',
+  ja: 'Japanese',
+  fr: 'French',
+  de: 'German',
+  it: 'Italian',
+  es: 'Spanish',
+  pt: 'Portuguese',
+  ko: 'Korean',
+  'zh-tw': 'Chinese (Traditional)',
+  'zh-cn': 'Chinese (Simplified)',
+}
+
 interface UserCardBase {
   _id?: string
   userId: string
@@ -100,6 +116,8 @@ interface UserCardBase {
   variant: CardVariant
   acquiredAt: Date
   cost?: number
+  extraCost?: number
+  language?: CardLanguage
   notes?: string
   status?: UserCardStatus
   soldAt?: Date
@@ -202,6 +220,8 @@ export interface SoldCardRow {
   variant: CardVariant
   type: 'raw' | 'graded'
   cost: number | null
+  extraCost: number | null
+  totalCost: number
   soldPrice: number
   soldAt: Date
   acquiredAt: Date

@@ -11,7 +11,7 @@ export default async function WishlistPage() {
   const session = await auth()
   const userId = session?.user?.id
   if (!userId) redirect('/login?next=/wishlist')
-  if (session?.user?.tier !== 'pro') redirect('/dashboard')
+  if (session?.user?.tier !== 'pro') redirect('/dashboard?upgrade=1')
 
   const items = await getWishlistForUser(userId)
 

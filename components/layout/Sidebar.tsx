@@ -19,6 +19,7 @@ import {
   Database,
 } from 'lucide-react'
 import UserMenu from './UserMenu'
+import { useAuthDialog } from '@/components/auth/AuthDialogProvider'
 
 const COOKIE_KEY = 'sidebar-collapsed'
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
@@ -173,23 +174,30 @@ function NavItem({
   const locked = !!item.pro && !isPro
   const { Icon } = item
   const title = collapsed ? `${item.label}${locked ? ' (Pro)' : ''}` : undefined
+  const { openUpgrade } = useAuthDialog()
   const className = [
-    'flex items-center text-[11px] transition-colors',
+    'flex items-center text-[11px] transition-colors w-full text-left',
     collapsed ? 'justify-center px-0 py-2.5' : 'gap-2.5 px-4 py-2.5',
     active
       ? 'bg-blue/15 text-text border-r-2 border-blue'
       : locked
-        ? 'text-overlay0 cursor-not-allowed opacity-60'
+        ? 'text-overlay0 opacity-60 hover:opacity-100 hover:text-text hover:bg-surface0/50'
         : 'text-overlay1 hover:text-text hover:bg-surface0/50',
   ].join(' ')
 
   if (locked) {
     return (
-      <span className={className} aria-disabled="true" title={title}>
+      <button
+        type="button"
+        onClick={() => openUpgrade()}
+        className={className}
+        title={title}
+        aria-label={`${item.label} (Pro — upgrade required)`}
+      >
         <Icon size={13} className="flex-shrink-0" />
         {!collapsed && <span className="flex-1">{item.label}</span>}
         {!collapsed && <Lock size={10} className="flex-shrink-0 text-overlay0" />}
-      </span>
+      </button>
     )
   }
 

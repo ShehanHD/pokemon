@@ -8,10 +8,11 @@ import type { ThemeManifest } from '@/lib/schemas/theme'
 import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
 import AdsLayer, { getAdsLayerState } from '@/components/ads/AdsLayer'
+import AuthDialogProvider from '@/components/auth/AuthDialogProvider'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
-  if (!session) redirect('/login')
+  if (!session) redirect('/browse?login=1')
 
   const cookieStore = await cookies()
   const cookieValue = cookieStore.get('theme-pokemon')?.value ?? null
@@ -30,16 +31,18 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <SessionProvider session={session}>
-      <div className="flex h-screen overflow-hidden bg-[ghostwhite]">
-        <Sidebar initialCollapsed={sidebarCollapsed} />
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <Topbar themePokemonId={theme ? themePokemonId : null} themeName={theme?.name ?? null} />
-          <main className="flex-1 overflow-y-auto p-4">
-            {children}
-          </main>
+      <AuthDialogProvider>
+        <div className="flex h-screen overflow-hidden bg-[ghostwhite]">
+          <Sidebar initialCollapsed={sidebarCollapsed} />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <Topbar themePokemonId={theme ? themePokemonId : null} themeName={theme?.name ?? null} />
+            <main className="flex-1 overflow-y-auto p-4">
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
-      <AdsLayer {...ads} />
+        <AdsLayer {...ads} />
+      </AuthDialogProvider>
     </SessionProvider>
   )
 }

@@ -34,20 +34,26 @@ export default function CardSearchResult({
       ? chips.some((c) => (variantCounts.get(`${card.pokemontcg_id}:${c.variant}`) ?? 0) > 0)
       : ownedProp ?? true
 
-  const labelClasses =
-    chips.length <= 1
-      ? { short: '@[100px]:hidden', long: 'hidden @[100px]:inline' }
-      : chips.length === 2
-      ? { short: '@[170px]:hidden', long: 'hidden @[170px]:inline' }
-      : chips.length === 3
-      ? { short: '@[260px]:hidden', long: 'hidden @[260px]:inline' }
-      : { short: '@[360px]:hidden', long: 'hidden @[360px]:inline' }
+  const longestLabel = chips.reduce((m, c) => Math.max(m, c.label.length), 0)
+  const perChipPx = Math.max(90, longestLabel * 8 + 20)
+  const threshold = chips.length * perChipPx + (chips.length - 1) * 4
+  const tw =
+    threshold <= 100 ? '@[100px]'
+    : threshold <= 130 ? '@[130px]'
+    : threshold <= 170 ? '@[170px]'
+    : threshold <= 200 ? '@[200px]'
+    : threshold <= 230 ? '@[230px]'
+    : threshold <= 260 ? '@[260px]'
+    : threshold <= 300 ? '@[300px]'
+    : threshold <= 360 ? '@[360px]'
+    : '@[420px]'
+  const labelClasses = { short: `${tw}:hidden`, long: `hidden ${tw}:inline` }
 
   const total = set?.printedTotal ?? printedTotal
   const symbol = raritySymbol(card.rarity)
 
   return (
-    <div className="@container flex flex-col">
+    <div id={`card-${card.pokemontcg_id}`} className="@container flex flex-col">
       <div className="relative">
         <Link href={`/cards/${card.pokemontcg_id}`} className="group block">
           <div className="relative aspect-[245/342] rounded-lg overflow-hidden bg-surface0 border border-surface0 group-hover:border-blue/50 transition-colors">

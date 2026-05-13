@@ -36,7 +36,7 @@ export default function SetCard({ set, seriesSlug, variantCounts, ownedUniqueCou
     : 0
 
   return (
-    <div className="relative bg-base border border-surface0 rounded-xl px-4 py-8 hover:border-blue/50 hover:bg-surface0/30 transition-colors group flex flex-col">
+    <div id={`set-${set.tcgdex_id}`} className="relative bg-base border border-surface0 rounded-xl px-4 py-8 hover:border-blue/50 hover:bg-surface0/30 transition-colors group flex flex-col">
       <Link
         href={`/browse/${seriesSlug}/${set.tcgdex_id}`}
         aria-label={set.name}

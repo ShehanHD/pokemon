@@ -8,6 +8,7 @@ import manifest from '@/lib/themes/manifest.json'
 import type { ThemeManifest } from '@/lib/schemas/theme'
 import Sidebar from '@/components/layout/Sidebar'
 import Topbar from '@/components/layout/Topbar'
+import ScrollRestorer from '@/components/layout/ScrollRestorer'
 import AdsLayer, { getAdsLayerState } from '@/components/ads/AdsLayer'
 import AuthDialogProvider from '@/components/auth/AuthDialogProvider'
 
@@ -38,6 +39,7 @@ export default async function CatalogLayout({ children }: { children: ReactNode 
           <div className="flex-1 flex flex-col overflow-hidden">
             <Topbar themePokemonId={theme ? themePokemonId : null} themeName={theme?.name ?? null} />
             <main className="flex-1 overflow-y-auto p-4">
+              <ScrollRestorer />
               {children}
             </main>
           </div>

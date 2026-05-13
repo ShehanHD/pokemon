@@ -18,7 +18,7 @@ export { SERIES_OVERRIDES, resolveSeries }
 const INTER_SET_DELAY_MS = 250
 
 function language(): string {
-  return process.env.TCGDEX_LANG ?? 'en'
+  return process.env.TCGDEX_LANG ?? 'it'
 }
 
 function resolvePriceEUR(card: TcgdexCard): number | null {
@@ -29,6 +29,66 @@ function resolvePriceEUR(card: TcgdexCard): number | null {
     if (typeof v === 'number' && Number.isFinite(v)) return v
   }
   return null
+}
+
+type FallbackImage = { imageUrl: string; imageUrlHiRes: string }
+
+const POKEMONTCG_CARD_API = 'https://api.pokemontcg.io/v2/cards'
+
+async function headOk(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, { method: 'HEAD' })
+    return res.status === 200
+  } catch {
+    return false
+  }
+}
+
+async function resolvePokemontcgFallback(
+  tcgdexId: string,
+  setSlug: string,
+): Promise<FallbackImage | null> {
+  const dash = tcgdexId.indexOf('-')
+  if (dash < 0) return null
+  const rawLocal = tcgdexId.slice(dash + 1)
+  const numeric = Number(rawLocal)
+  if (!Number.isFinite(numeric) || numeric <= 0) return null
+  const pid = `${setSlug}-${numeric}`
+  let small: string | undefined
+  let large: string | undefined
+  try {
+    const res = await fetch(`${POKEMONTCG_CARD_API}/${pid}`)
+    if (!res.ok) return null
+    const j = (await res.json()) as { data?: { images?: { small?: string; large?: string } } }
+    small = j?.data?.images?.small
+    large = j?.data?.images?.large
+  } catch {
+    return null
+  }
+  if (!small) return null
+  if (!(await headOk(small))) return null
+  let hires = ''
+  if (large && (await headOk(large))) hires = large
+  return { imageUrl: small, imageUrlHiRes: hires }
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length)
+  let cursor = 0
+  const workerCount = Math.max(1, Math.min(limit, items.length))
+  const workers = Array.from({ length: workerCount }, async () => {
+    while (true) {
+      const idx = cursor++
+      if (idx >= items.length) return
+      results[idx] = await fn(items[idx], idx)
+    }
+  })
+  await Promise.all(workers)
+  return results
 }
 
 function normaliseVariants(card: TcgdexCard) {
@@ -159,8 +219,19 @@ async function seedOneSet(brief: TcgdexSetBrief): Promise<SeedSetResult> {
   const cardIds = detail.cards.map((c) => c.id)
   const cards = await fetchCardsConcurrent(cardIds, 5)
 
-  const ops = cards.map((card) => {
+  const fallbackSetSlug = legacySet ? legacySet.pokemontcg_id : brief.id
+
+  const ops = await mapWithConcurrency(cards, 5, async (card) => {
     const imgs = buildCardImageUrls(card.image)
+    let imageUrl = imgs.imageUrl ?? ''
+    let imageUrlHiRes = imgs.imageUrlHiRes ?? ''
+    if (!imageUrl) {
+      const fb = await resolvePokemontcgFallback(card.id, fallbackSetSlug)
+      if (fb) {
+        imageUrl = fb.imageUrl
+        imageUrlHiRes = fb.imageUrlHiRes
+      }
+    }
     const priceEUR = resolvePriceEUR(card)
     const cardMergeFields = {
       tcgdex_id: card.id,
@@ -176,8 +247,8 @@ async function seedOneSet(brief: TcgdexSetBrief): Promise<SeedSetResult> {
       subtypes: [],
       supertype: card.category ?? '',
       variants: normaliseVariants(card),
-      imageUrl: imgs.imageUrl ?? '',
-      imageUrlHiRes: imgs.imageUrlHiRes ?? '',
+      imageUrl,
+      imageUrlHiRes,
       priceEUR,
       priceUSD: null,
       pricing: card.pricing ?? null,

@@ -3,11 +3,7 @@ import Credentials from 'next-auth/providers/credentials'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { getDb } from './db'
-import type { Tier, Currency } from './types'
-
-const CURRENCY_VALUES: Currency[] = ['EUR', 'USD', 'GBP', 'JPY']
-const isCurrency = (v: unknown): v is Currency =>
-  typeof v === 'string' && (CURRENCY_VALUES as string[]).includes(v)
+import type { Tier } from './types'
 import { authConfig } from './auth.config'
 
 const credentialsSchema = z.object({
@@ -47,7 +43,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             tier: (typeof user.tier === 'string' ? user.tier : 'free') as Tier,
             themePokemonId:
               typeof user.themePokemonId === 'number' ? user.themePokemonId : undefined,
-            currency: isCurrency(user.currency) ? user.currency : undefined,
           }
         } catch (err) {
           console.error('[auth] authorize error:', err)
@@ -63,7 +58,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.tier = user.tier ?? 'free'
         token.id = user.id
         token.themePokemonId = user.themePokemonId
-        token.currency = user.currency
       }
       if (account?.provider === 'google') {
         try {
@@ -81,13 +75,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.id = result.insertedId.toString()
             token.tier = 'free'
             token.themePokemonId = undefined
-            token.currency = undefined
           } else {
             token.tier = typeof existing.tier === 'string' ? existing.tier : 'free'
             token.id = existing._id.toString()
             token.themePokemonId =
               typeof existing.themePokemonId === 'number' ? existing.themePokemonId : undefined
-            token.currency = isCurrency(existing.currency) ? existing.currency : undefined
           }
         } catch (err) {
           console.error('[auth] jwt google callback error:', err)
@@ -105,7 +97,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.tier = (token.tier as Tier | undefined) ?? 'free'
         session.user.themePokemonId =
           typeof token.themePokemonId === 'number' ? token.themePokemonId : undefined
-        session.user.currency = isCurrency(token.currency) ? token.currency : undefined
       }
       return session
     },

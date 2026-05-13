@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Pencil, X, RotateCcw } from 'lucide-react'
 import { updateSoldUserCard, unsellUserCard } from '@/app/(app)/sold/actions'
-import type { Currency } from '@/lib/types'
 
 interface Props {
   userCardId: string
@@ -12,7 +11,6 @@ interface Props {
   initialSoldAt: Date
   initialCost: number | null
   initialExtraCost: number | null
-  currency: Currency
 }
 
 function toDateInput(d: Date): string {

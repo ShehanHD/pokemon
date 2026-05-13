@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getUnifiedExpenses } from '@/lib/expenses'
-import { DEFAULT_CURRENCY, type Currency } from '@/lib/types'
 import { formatCurrency } from '@/lib/currency'
 import ExpensesPanel from '@/components/expenses/ExpensesPanel'
 
@@ -11,7 +10,6 @@ export default async function ExpensesPage() {
   if (!userId) redirect('/browse?login=1')
   if (session?.user?.tier !== 'pro') redirect('/dashboard?upgrade=1')
 
-  const currency: Currency = session?.user?.currency ?? DEFAULT_CURRENCY
   const { rows, totals } = await getUnifiedExpenses(userId)
 
   return (
@@ -28,22 +26,22 @@ export default async function ExpensesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
         <SummaryCard
           label="Total Spend"
-          value={formatCurrency(totals.total, currency)}
+          value={formatCurrency(totals.total)}
           accent
         />
         <SummaryCard
           label="Card Costs"
-          value={formatCurrency(totals.cardCostTotal, currency)}
+          value={formatCurrency(totals.cardCostTotal)}
           sub="From owned copies"
         />
         <SummaryCard
           label="Other Expenses"
-          value={formatCurrency(totals.expenseTotal, currency)}
+          value={formatCurrency(totals.expenseTotal)}
           sub="Grading, shipping, etc."
         />
       </div>
 
-      <ExpensesPanel rows={rows} currency={currency} />
+      <ExpensesPanel rows={rows} />
     </main>
   )
 }

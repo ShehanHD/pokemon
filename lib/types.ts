@@ -1,9 +1,5 @@
 export type Tier = 'free' | 'adfree' | 'pro'
 
-export type Currency = 'EUR' | 'USD' | 'GBP' | 'JPY'
-
-export const DEFAULT_CURRENCY: Currency = 'EUR'
-
 export interface User {
   _id?: string
   email: string
@@ -11,7 +7,6 @@ export interface User {
   image?: string
   provider: 'credentials' | 'google'
   tier: Tier
-  currency?: Currency
   stripeCustomerId?: string
   stripeSubscriptionId?: string
   themePokemonId?: number

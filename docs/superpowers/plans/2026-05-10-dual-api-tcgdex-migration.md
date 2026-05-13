@@ -1066,3 +1066,11 @@ git commit --allow-empty -m "chore(migration): TCGdex dual-API migration complet
 - **Placeholder scan:** all step bodies contain explicit code, commands, or expected output.
 - **Type consistency:** `seedSetIdsTcgdex` returns `SeedReport`; `SeedReport`/`SeedSetResult` reused unchanged from `lib/seedSeries.ts` so `SeedClient.tsx` continues to compile. `tcgdex_id` field used identically in seeder writes (Task 4) and query reads (Tasks 9–11). `priceEUR` field used identically in seeder writes (Task 4), aggregations (Task 11), and sort filters (Task 9).
 - **USD enrichment** is deliberately deferred — schema is ready (`priceUSD`, `pricing.tcgplayer`); turn-on is a future task once a `(setName, number)` cache exists.
+
+---
+
+## Addendum (2026-05-13): pokemontcg.io image fallback in `seedSeriesTcgdex`
+
+**Problem.** TCGdex returns `image: null` for cards it has not yet ingested (e.g. svp promos beyond ~85). The seeder wrote `imageUrl: ''`, producing "No image" tiles in the catalog even when pokemontcg.io already has the asset.
+
+**Behavior added in `lib/seedSeriesTcgdex.ts`.** Inside `seedOneSet`, when `buildCardImageUrls(card.image)` yields no `imageUrl`, derive a pokemontcg-style id by stripping leading zeros from `card.localId` (`svp-085` → `svp-85`), prefixed with `legacySet?.pokemontcg_id ?? brief.id` as the set slug. Fetch `https://api.pokemontcg.io/v2/cards/{pid}`, HEAD-verify the returned `images.small` / `images.large` URLs (pokemontcg.io sometimes lists URLs that 404 — observed on svp-102), and only write them if HEAD = 200. Card-level fallback runs with bounded concurrency (5) via `mapWithConcurrency`. TCGdex remains the primary source; the fallback never overwrites a TCGdex-provided image.

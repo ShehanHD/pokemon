@@ -4,7 +4,7 @@ import { useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Plus, Pencil, Trash2, X } from 'lucide-react'
-import type { Currency, ExpenseCategory, UnifiedExpenseRow } from '@/lib/types'
+import type { ExpenseCategory, UnifiedExpenseRow } from '@/lib/types'
 import { formatCurrency } from '@/lib/currency'
 import {
   addExpenseAction,
@@ -14,7 +14,6 @@ import {
 
 interface Props {
   rows: UnifiedExpenseRow[]
-  currency: Currency
 }
 
 interface FormState {
@@ -73,7 +72,7 @@ const emptyForm = (): FormState => ({
   note: '',
 })
 
-export default function ExpensesPanel({ rows, currency }: Props) {
+export default function ExpensesPanel({ rows }: Props) {
   const [form, setForm] = useState<FormState | null>(null)
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
@@ -233,7 +232,7 @@ export default function ExpensesPanel({ rows, currency }: Props) {
                 </div>
 
                 <div className="text-sm text-text tabular-nums shrink-0">
-                  {formatCurrency(row.amount, currency)}
+                  {formatCurrency(row.amount)}
                 </div>
 
                 <span

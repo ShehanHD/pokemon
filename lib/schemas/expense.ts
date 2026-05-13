@@ -8,8 +8,6 @@ export const expenseCategoryEnum = z.enum([
   'other',
 ])
 
-export const currencyEnum = z.enum(['EUR', 'USD', 'GBP', 'JPY'])
-
 export const expenseSchema = z.object({
   userId: z.string().min(1),
   amount: z.number().nonnegative().finite(),
@@ -37,6 +35,5 @@ export const updateExpenseInputSchema = z.object({
 })
 
 export type ExpenseCategoryInput = z.infer<typeof expenseCategoryEnum>
-export type CurrencyInput = z.infer<typeof currencyEnum>
 export type AddExpenseInput = z.infer<typeof addExpenseInputSchema>
 export type UpdateExpenseInput = z.infer<typeof updateExpenseInputSchema>

@@ -10,7 +10,7 @@ import {
 import { getSetsByIds } from '@/lib/sets'
 import { getRecentUnifiedExpenses, getTotalSpend } from '@/lib/expenses'
 import { formatCurrency } from '@/lib/currency'
-import { DEFAULT_CURRENCY, type Currency, type ExpenseCategory } from '@/lib/types'
+import type { ExpenseCategory } from '@/lib/types'
 
 const CATEGORY_LABEL: Record<ExpenseCategory, string> = {
   purchase: 'Purchase',
@@ -30,7 +30,6 @@ export default async function DashboardPage() {
   const session = await auth()
   const userId = session?.user?.id
   const isPro = session?.user?.tier === 'pro'
-  const currency: Currency = session?.user?.currency ?? DEFAULT_CURRENCY
 
   const [countsBySet, valueBySet, countsBySeries, totalSpend, recentExpenses] =
     userId
@@ -96,12 +95,12 @@ export default async function DashboardPage() {
     },
     {
       label: 'Collection Value',
-      value: formatCurrency(collectionValue, currency),
+      value: formatCurrency(collectionValue),
       sub: collectionValue === 0 ? 'Add cards to track value' : 'Cardmarket prices',
     },
     {
       label: 'Total Spend',
-      value: formatCurrency(totalSpend, currency),
+      value: formatCurrency(totalSpend),
       sub: totalSpend === 0 ? 'Cards & expenses' : 'Cards + expenses',
     },
     isPro
@@ -110,7 +109,7 @@ export default async function DashboardPage() {
           value:
             totalSpend === 0
               ? '—'
-              : `${gainLossSign}${formatCurrency(Math.abs(gainLoss), currency)}`,
+              : `${gainLossSign}${formatCurrency(Math.abs(gainLoss))}`,
           sub: totalSpend === 0 ? 'Add cost to track P/L' : `${gainLossSign}${Math.abs(gainLossPct).toFixed(1)}%`,
           valueClass: gainLossColor,
         }
@@ -168,7 +167,7 @@ export default async function DashboardPage() {
                       <Link href={href} className="block group">
                         <div className="flex items-baseline justify-between gap-2 mb-1">
                           <span className="text-xs text-text truncate group-hover:text-blue transition-colors">{s.name}</span>
-                          <span className="text-xs text-mauve tabular-nums shrink-0">{formatCurrency(s.value, currency)}</span>
+                          <span className="text-xs text-mauve tabular-nums shrink-0">{formatCurrency(s.value)}</span>
                         </div>
                         <div className="relative h-2 bg-surface0 rounded-full overflow-hidden">
                           <div
@@ -260,7 +259,7 @@ export default async function DashboardPage() {
                   </span>
                 </div>
                 <div className="text-xs text-text tabular-nums shrink-0">
-                  {formatCurrency(row.amount, currency)}
+                  {formatCurrency(row.amount)}
                 </div>
               </li>
             ))}

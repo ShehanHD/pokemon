@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { getSoldCardsForUser } from '@/lib/userCards'
 import { formatCurrency } from '@/lib/currency'
-import { DEFAULT_CURRENCY, type Currency } from '@/lib/types'
 import EditSoldDialog from '@/components/sold/EditSoldDialog'
 
 function formatDate(d: Date): string {
@@ -17,7 +16,6 @@ export default async function SoldPage() {
   if (!userId) redirect('/login?next=/sold')
   if (session?.user?.tier !== 'pro') redirect('/dashboard?upgrade=1')
 
-  const currency: Currency = session?.user?.currency ?? DEFAULT_CURRENCY
   const rows = await getSoldCardsForUser(userId)
 
   const totalSold = rows.reduce((s, r) => s + r.soldPrice, 0)
@@ -42,11 +40,11 @@ export default async function SoldPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
             <div className="bg-base border border-surface0 rounded-xl p-4">
               <p className="text-[11px] uppercase tracking-wider text-overlay0">Total revenue</p>
-              <p className="text-xl font-russo tabular-nums">{formatCurrency(totalSold, currency)}</p>
+              <p className="text-xl font-russo tabular-nums">{formatCurrency(totalSold)}</p>
             </div>
             <div className="bg-base border border-surface0 rounded-xl p-4">
               <p className="text-[11px] uppercase tracking-wider text-overlay0">Total cost</p>
-              <p className="text-xl font-russo tabular-nums">{formatCurrency(totalCost, currency)}</p>
+              <p className="text-xl font-russo tabular-nums">{formatCurrency(totalCost)}</p>
             </div>
             <div className="bg-base border border-surface0 rounded-xl p-4">
               <p className="text-[11px] uppercase tracking-wider text-overlay0">Realized P&amp;L</p>
@@ -56,7 +54,7 @@ export default async function SoldPage() {
                   totalPnl > 0 ? 'text-green' : totalPnl < 0 ? 'text-red' : 'text-text',
                 ].join(' ')}
               >
-                {totalPnl >= 0 ? '+' : '−'}{formatCurrency(Math.abs(totalPnl), currency)}
+                {totalPnl >= 0 ? '+' : '−'}{formatCurrency(Math.abs(totalPnl))}
               </p>
             </div>
           </div>
@@ -101,10 +99,10 @@ export default async function SoldPage() {
                       <span className="ml-2 text-[10px] uppercase tracking-wider text-overlay0">{r.type}</span>
                     </td>
                     <td className="px-3 py-2 text-right tabular-nums text-overlay1">
-                      {r.totalCost > 0 ? formatCurrency(r.totalCost, currency) : '—'}
+                      {r.totalCost > 0 ? formatCurrency(r.totalCost) : '—'}
                     </td>
                     <td className="px-3 py-2 text-right tabular-nums text-text">
-                      {formatCurrency(r.soldPrice, currency)}
+                      {formatCurrency(r.soldPrice)}
                     </td>
                     <td
                       className={[
@@ -112,7 +110,7 @@ export default async function SoldPage() {
                         r.pnl > 0 ? 'text-green' : r.pnl < 0 ? 'text-red' : 'text-overlay1',
                       ].join(' ')}
                     >
-                      {r.pnl >= 0 ? '+' : '−'}{formatCurrency(Math.abs(r.pnl), currency)}
+                      {r.pnl >= 0 ? '+' : '−'}{formatCurrency(Math.abs(r.pnl))}
                     </td>
                     <td className="px-3 py-2 text-overlay1">{formatDate(r.soldAt)}</td>
                     <td className="px-3 py-2 text-right">
@@ -123,7 +121,6 @@ export default async function SoldPage() {
                         initialSoldAt={r.soldAt}
                         initialCost={r.cost}
                         initialExtraCost={r.extraCost}
-                        currency={currency}
                       />
                     </td>
                   </tr>
